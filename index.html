@@ -97,6 +97,36 @@
             text-align: center;
             font-weight: 500;
         }
+        /* Style for live MOQ feedback */
+        .moq-feedback-ok {
+            color: #16a34a; /* Green */
+            font-size: 0.875rem;
+            margin-top: 4px;
+        }
+        .moq-feedback-error {
+            color: #dc2626; /* Red */
+            font-size: 0.875rem;
+            margin-top: 4px;
+        }
+        /* Table styling */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .data-table th, .data-table td {
+            border: 1px solid #e5e7eb;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        .data-table th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+            color: #374151;
+        }
+        .data-table tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
     </style>
 </head>
 <body>
@@ -130,6 +160,7 @@
                 <button onclick="selectFilial('colombia')" class="btn btn-primary md:w-1/2">Colômbia</button>
                 <button onclick="selectFilial('hongkong')" class="btn btn-primary md:w-1/2">Hong Kong</button>
             </div>
+            <button onclick="logout()" class="btn btn-secondary w-full mt-6">Sair (Logout)</button>
         </div>
 
         <!-- Hong Kong Flow Screens -->
@@ -140,19 +171,28 @@
             </div>
             <div class="space-y-4">
                 <div class="form-group">
-                    <label for="productName">Nome do Produto:</label>
-                    <input type="text" id="productName" placeholder="Ex: Smartphone XYZ" class="rounded-lg p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <label for="productCode">Código do Produto:</label>
+                    <input type="text" id="productCode" placeholder="Ex: SKU-123"
+                        oninput="updateProductDetailsOnCodeChange()"
+                        class="rounded-lg p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <div id="productDescription" class="text-gray-700 text-sm mt-2 font-medium"></div>
                 </div>
                 <div class="form-group">
-                    <label for="productQuantity">Quantidade:</label>
-                    <input type="number" id="productQuantity" min="1" value="1" class="rounded-lg p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <label for="productQuantity">Quantidade Solicitada:</label>
+                    <input type="number" id="productQuantity" min="1" value="1"
+                        oninput="checkMoqLive()"
+                        class="rounded-lg p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <div id="moqLiveFeedback" class="text-xs mt-1"></div> <!-- Live feedback for MOQ -->
                 </div>
                 <button onclick="addProduct()" class="btn btn-secondary w-full">Adicionar Produto</button>
                 <div id="productList" class="mt-4 border p-4 rounded-lg bg-gray-50 max-h-60 overflow-y-auto">
                     <h3 class="font-semibold text-gray-700 mb-2">Produtos Adicionados:</h3>
                     <div id="noProductsAdded" class="text-gray-500 text-center py-4">Nenhum produto adicionado ainda.</div>
                 </div>
-                <button onclick="submitHongKongForm()" class="btn btn-primary w-full mt-6">Enviar Solicitação</button>
+                <div class="flex flex-col md:flex-row gap-4 mt-6">
+                    <button onclick="backToFilialSelection()" class="btn btn-secondary flex-1">Voltar</button>
+                    <button onclick="submitHongKongForm()" class="btn btn-primary flex-1">Enviar Solicitação</button>
+                </div>
             </div>
         </div>
 
@@ -163,7 +203,7 @@
             <div id="moqValidationResult"></div>
             <div id="supplierSplitResult" class="mt-4"></div>
             <div id="cubagemPricePrediction" class="mt-4"></div>
-            <div class="mt-6 flex gap-4 justify-between">
+            <div class="mt-6 flex gap-4 justify-between" id="hkSummaryButtons">
                 <button onclick="backToProductEntry()" class="btn btn-secondary flex-1">Voltar e Ajustar</button>
                 <button onclick="generatePO()" class="btn btn-primary flex-1">Gerar Purchase Order</button>
             </div>
@@ -189,8 +229,7 @@
                 <p class="text-gray-600 mb-4">Simulação do processo de aprovação do Renato.</p>
             </div>
             <div class="message-box">
-                <p>A equipe de Compras Internacionais apresentou a Proforma Invoice e o comparativo.</p>
-                <p>Renato, qual sua decisão?</p>
+                <!-- Comparison details will be injected here -->
             </div>
             <div class="mt-6 flex gap-4 justify-center">
                 <button onclick="renatoApprove()" class="btn btn-primary flex-1 max-w-xs">Aprovar 👍</button>
@@ -229,7 +268,10 @@
                     <h3 class="font-semibold text-gray-700 mb-2">Produtos Adicionados:</h3>
                     <div id="noColombiaProductsAdded" class="text-gray-500 text-center py-4">Nenhum produto adicionado ainda.</div>
                 </div>
-                <button onclick="submitColombiaForm()" class="btn btn-primary w-full mt-6">Enviar Solicitação para SAP</button>
+                <div class="flex flex-col md:flex-row gap-4 mt-6">
+                    <button onclick="backToFilialSelection()" class="btn btn-secondary flex-1">Voltar</button>
+                    <button onclick="submitColombiaForm()" class="btn btn-primary flex-1">Enviar Solicitação para SAP</button>
+                </div>
             </div>
         </div>
 
@@ -300,6 +342,20 @@
         let simulatedPO = null; // Stores simulated PO details
         let renatoDecision = null; // 'approved' or 'rejected'
 
+        // --- Constants for Container Capacities (in m³) ---
+        const MAX_CUBAGE_20HC = 37.4;
+        const MAX_CUBAGE_40HC = 76.0;
+
+        // --- Simulated Product Database (Code, Description, MOQ, Simulated Unit Price) ---
+        const productDatabase = {
+            "PROD001": { description: "Smartphone Premium X1", moq: 3, unitPrice: 150.00, cubageUnit: 0.005 },
+            "PROD002": { description: "Tablet Pro Z", moq: 2, unitPrice: 250.00, cubageUnit: 0.008 },
+            "PROD003": { description: "Fone Bluetooth Max", moq: 5, unitPrice: 45.00, cubageUnit: 0.001 },
+            "PROD004": { description: "Smartwatch Sport Y", moq: 1, unitPrice: 80.00, cubageUnit: 0.002 },
+            "PROD005": { description: "Câmera Digital Ultra HD", moq: 2, unitPrice: 300.00, cubageUnit: 0.01 },
+            "PROD006": { description: "Bateria Portátil Mega", moq: 10, unitPrice: 25.00, cubageUnit: 0.0005 }
+        };
+
         // --- Utility Functions ---
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(screen => {
@@ -357,38 +413,153 @@
             } else if (filial === 'hongkong') {
                 showScreen('hongKongFormScreen');
                 renderHongKongProductList();
+                // Clear live MOQ feedback and product description when entering the form
+                document.getElementById('moqLiveFeedback').innerText = '';
+                document.getElementById('productCode').value = '';
+                document.getElementById('productDescription').innerText = '';
             }
         }
 
-        function restartFlow() {
-            // Reset state
+        // Function to go back to filial selection from forms
+        function backToFilialSelection() {
+            showScreen('filialSelectionScreen');
+        }
+
+        // Function for logout
+        function logout() {
+            // Reset all relevant state for a full logout
             selectedFilial = '';
             hongKongProducts = [];
             colombiaProducts = [];
             simulatedPO = null;
             renatoDecision = null;
-            // Clear input fields
-            document.getElementById('productName').value = '';
+            // Clear input fields for all forms
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('productCode').value = '';
             document.getElementById('productQuantity').value = '1';
             document.getElementById('colombiaProductName').value = '';
             document.getElementById('colombiaProductQuantity').value = '1';
+            document.getElementById('productDescription').innerText = ''; // Clear description
+            document.getElementById('moqLiveFeedback').innerText = ''; // Clear MOQ feedback
+
+            showScreen('loginScreen');
+        }
+
+        function restartFlow() {
+            // Reset all relevant state for a full restart
+            selectedFilial = '';
+            hongKongProducts = [];
+            colombiaProducts = [];
+            simulatedPO = null;
+            renatoDecision = null;
+            // Clear input fields for all forms
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('productCode').value = '';
+            document.getElementById('productQuantity').value = '1';
+            document.getElementById('colombiaProductName').value = '';
+            document.getElementById('colombiaProductQuantity').value = '1';
+            document.getElementById('productDescription').innerText = ''; // Clear description
+            document.getElementById('moqLiveFeedback').innerText = ''; // Clear MOQ feedback
 
             showScreen('loginScreen');
         }
 
         // --- Hong Kong Flow Logic ---
-        function addProduct() {
-            const name = document.getElementById('productName').value.trim();
-            const quantity = parseInt(document.getElementById('productQuantity').value);
 
-            if (name && quantity > 0) {
-                hongKongProducts.push({ name, quantity });
-                renderHongKongProductList();
-                document.getElementById('productName').value = '';
-                document.getElementById('productQuantity').value = '1'; // Reset quantity
+        function updateProductDetailsOnCodeChange() {
+            const productCode = document.getElementById('productCode').value.trim().toUpperCase();
+            const productDescDiv = document.getElementById('productDescription');
+            const moqLiveFeedbackDiv = document.getElementById('moqLiveFeedback');
+            const productQuantityInput = document.getElementById('productQuantity');
+
+            const productInfo = productDatabase[productCode];
+
+            if (productInfo) {
+                productDescDiv.innerText = `Descrição: ${productInfo.description}`;
+                productDescDiv.style.color = '#374151'; // Default text color
+                // Also trigger MOQ check on quantity for the new product
+                checkMoqLive();
             } else {
-                showMessage('Erro', 'Por favor, insira um nome e uma quantidade válida para o produto.', 'error');
+                productDescDiv.innerText = 'Código de produto não encontrado.';
+                productDescDiv.style.color = '#dc2626'; // Red for error
+                moqLiveFeedbackDiv.innerText = ''; // Clear MOQ feedback
             }
+        }
+
+        function checkMoqLive() {
+            const productCode = document.getElementById('productCode').value.trim().toUpperCase();
+            const productQuantity = parseInt(document.getElementById('productQuantity').value);
+            const moqFeedbackDiv = document.getElementById('moqLiveFeedback');
+
+            const productInfo = productDatabase[productCode];
+
+            if (!productInfo) {
+                moqFeedbackDiv.innerText = 'Por favor, insira um código de produto válido.';
+                moqFeedbackDiv.className = 'moq-feedback-error';
+                return;
+            }
+
+            if (isNaN(productQuantity) || productQuantity <= 0) {
+                moqFeedbackDiv.innerText = '';
+                moqFeedbackDiv.className = 'text-xs mt-1';
+                return;
+            }
+
+            const moq = productInfo.moq;
+
+            if (productQuantity < moq) {
+                moqFeedbackDiv.innerText = `⚠️ Quantidade (${productQuantity}) abaixo do MOQ mínimo (${moq}). Este item será cancelado se não for ajustado.`;
+                moqFeedbackDiv.className = 'moq-feedback-error';
+            } else {
+                moqFeedbackDiv.innerText = `✅ Quantidade (${productQuantity}) atende ao MOQ mínimo (${moq}).`;
+                moqFeedbackDiv.className = 'moq-feedback-ok';
+            }
+        }
+
+        function addProduct() {
+            const code = document.getElementById('productCode').value.trim().toUpperCase();
+            const quantity = parseInt(document.getElementById('productQuantity').value);
+            const productInfo = productDatabase[code];
+
+            if (!productInfo) {
+                showMessage('Erro', 'Código de produto inválido. Por favor, selecione um produto válido.', 'error');
+                return;
+            }
+
+            if (isNaN(quantity) || quantity <= 0) {
+                showMessage('Erro', 'Por favor, insira uma quantidade válida para o produto.', 'error');
+                return;
+            }
+
+            // Check MOQ before adding to list
+            if (quantity < productInfo.moq) {
+                showMessage('Alerta de MOQ', `A quantidade (${quantity}) do produto "${productInfo.description}" está abaixo do MOQ mínimo de ${productInfo.moq}. Este item será cancelado do pedido ao enviar, a menos que você aumente a quantidade.`, 'warning');
+                // Still allow adding to list for demo, but flag it
+            }
+
+
+            // Check if product already in list, if so, update quantity
+            const existingProductIndex = hongKongProducts.findIndex(p => p.code === code);
+            if (existingProductIndex > -1) {
+                hongKongProducts[existingProductIndex].quantity += quantity;
+            } else {
+                hongKongProducts.push({
+                    code: code,
+                    name: productInfo.description,
+                    quantity: quantity,
+                    moq: productInfo.moq,
+                    unitPrice: productInfo.unitPrice,
+                    cubageUnit: productInfo.cubageUnit
+                });
+            }
+
+            renderHongKongProductList();
+            document.getElementById('productCode').value = '';
+            document.getElementById('productDescription').innerText = '';
+            document.getElementById('productQuantity').value = '1'; // Reset quantity
+            document.getElementById('moqLiveFeedback').innerText = ''; // Clear live feedback
         }
 
         function removeProduct(index) {
@@ -404,15 +575,29 @@
                 return;
             }
 
+            // Create a table for the added products
+            let tableHtml = `<table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Descrição Produto</th>
+                                        <th>Quantidade Solicitada</th>
+                                        <th>Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody>`;
             hongKongProducts.forEach((product, index) => {
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'product-item';
-                itemDiv.innerHTML = `
-                    <span class="flex-1 text-gray-800">${product.name} (Qtd: ${product.quantity})</span>
-                    <button onclick="removeProduct(${index})" class="text-red-500 hover:text-red-700 font-bold">X</button>
+                tableHtml += `
+                    <tr>
+                        <td>${product.code}</td>
+                        <td>${product.name}</td>
+                        <td>${product.quantity}</td>
+                        <td><button onclick="removeProduct(${index})" class="text-red-500 hover:text-red-700 font-bold text-sm">Remover</button></td>
+                    </tr>
                 `;
-                listDiv.appendChild(itemDiv);
             });
+            tableHtml += `</tbody></table>`;
+            listDiv.innerHTML = listDiv.innerHTML.split('<div id="noProductsAdded"')[0] + tableHtml; // Keep heading, replace if no products msg
         }
 
         function submitHongKongForm() {
@@ -421,104 +606,242 @@
                 return;
             }
 
-            let moqResultHTML = '<h3 class="font-semibold text-gray-700 mb-2">Validação de MOQ:</h3>';
-            let allMoqMet = true;
-            let validProducts = [];
+            let moqValidationResultDiv = document.getElementById('moqValidationResult');
+            moqValidationResultDiv.innerHTML = '<h3 class="font-semibold text-gray-700 mb-2">Validação de MOQ:</h3>';
+
+            let validProductsAfterMoq = [];
+            let allItemsCancelled = true; // Assume all items will be cancelled initially
 
             hongKongProducts.forEach(product => {
-                const moq = Math.floor(Math.random() * 5) + 1; // Simulate random MOQ between 1 and 5
-                if (product.quantity < moq) {
-                    moqResultHTML += `<p class="error-message">🚫 O item "${product.name}" (Qtd: ${product.quantity}) não atende ao MOQ mínimo de ${moq}. Este item será cancelado.</p>`;
-                    allMoqMet = false; // Even if one fails, it flags for cancellation.
+                if (product.quantity < product.moq) { // Use product.moq from the stored product info
+                    moqValidationResultDiv.innerHTML += `<p class="error-message">🚫 O item "${product.name}" (Qtd: ${product.quantity}) não atende ao MOQ mínimo de ${product.moq}. Este item será cancelado do pedido.</p>`;
                 } else {
-                    moqResultHTML += `<p class="text-green-700">✅ O item "${product.name}" (Qtd: ${product.quantity}) atende ao MOQ mínimo de ${moq}.</p>`;
-                    validProducts.push(product); // Only add valid products
+                    moqValidationResultDiv.innerHTML += `<p class="text-green-700">✅ O item "${product.name}" (Qtd: ${product.quantity}) atende ao MOQ mínimo de ${product.moq}.</p>`;
+                    validProductsAfterMoq.push(product);
+                    allItemsCancelled = false; // If at least one item is valid, set to false
                 }
             });
 
-            hongKongProducts = validProducts; // Update products list to only include valid ones
+            hongKongProducts = validProductsAfterMoq; // Update global list with only valid products
 
-            if (hongKongProducts.length === 0 && !allMoqMet) {
-                moqResultHTML += `<p class="error-message">Todos os itens foram cancelados devido a falha no MOQ. Por favor, ajuste sua solicitação.</p>`;
-                document.getElementById('moqValidationResult').innerHTML = moqResultHTML;
-                document.getElementById('supplierSplitResult').innerHTML = '';
-                document.getElementById('cubagemPricePrediction').innerHTML = '';
-                document.getElementById('hongKongSummaryScreen').querySelector('.flex').classList.add('hidden'); // Hide buttons
-                showScreen('hongKongSummaryScreen');
-                return;
-            }
+            const hkSummaryButtonsDiv = document.getElementById('hkSummaryButtons');
+            const generatePoButton = hkSummaryButtonsDiv.querySelector('button:last-child'); // The 'Gerar Purchase Order' button
 
-            document.getElementById('moqValidationResult').innerHTML = moqResultHTML;
+            if (hongKongProducts.length === 0) { // Check length after MOQ validation to see if any valid products remain
+                moqValidationResultDiv.innerHTML += `<p class="error-message mt-4">Todos os itens foram cancelados devido à falha no MOQ. Por favor, utilize o botão "Voltar e Ajustar" para corrigir sua solicitação.</p>`;
+                generatePoButton.classList.add('hidden'); // Hide PO button
+            } else {
+                generatePoButton.classList.remove('hidden'); // Ensure PO button is visible if there are valid products
 
-            // Simulate supplier split
-            let supplierSplitHTML = '<h3 class="font-semibold text-gray-700 mt-4 mb-2">Divisão por Fornecedor:</h3>';
-            const suppliers = ['Fornecedor A', 'Fornecedor B', 'Fornecedor C'];
-            const supplierOrders = {};
+                // Simulate supplier split and create table
+                let supplierSplitHTML = '<h3 class="font-semibold text-gray-700 mt-4 mb-2">Divisão por Fornecedor:</h3>';
+                const suppliers = ['Fornecedor A', 'Fornecedor B', 'Fornecedor C'];
+                const supplierOrders = {};
 
-            hongKongProducts.forEach(product => {
-                const randomSupplier = suppliers[Math.floor(Math.random() * suppliers.length)];
-                if (!supplierOrders[randomSupplier]) {
-                    supplierOrders[randomSupplier] = [];
+                if (hongKongProducts.length === 1) {
+                    supplierSplitHTML += `<div class="mb-4 p-2 border rounded-md bg-white">
+                                            <strong>Pedido Único:</strong>
+                                            <table class="data-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Código</th>
+                                                        <th>Descrição Produto</th>
+                                                        <th>Quantidade Solicitada</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>${hongKongProducts[0].code}</td>
+                                                        <td>${hongKongProducts[0].name}</td>
+                                                        <td>${hongKongProducts[0].quantity}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                          </div>`;
+                } else {
+                    hongKongProducts.forEach(product => {
+                        // Assign a random supplier for the prototype
+                        const randomSupplier = suppliers[Math.floor(Math.random() * suppliers.length)];
+                        if (!supplierOrders[randomSupplier]) {
+                            supplierOrders[randomSupplier] = [];
+                        }
+                        supplierOrders[randomSupplier].push(product);
+                    });
+
+                    for (const supplier in supplierOrders) {
+                        supplierSplitHTML += `<div class="mb-4 p-2 border rounded-md bg-white">
+                                                <strong>${supplier}:</strong>
+                                                <table class="data-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Código</th>
+                                                            <th>Descrição Produto</th>
+                                                            <th>Quantidade Solicitada</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>`;
+                        supplierOrders[supplier].forEach(item => {
+                            supplierSplitHTML += `
+                                                        <tr>
+                                                            <td>${item.code}</td>
+                                                            <td>${item.name}</td>
+                                                            <td>${item.quantity}</td>
+                                                        </tr>`;
+                        });
+                        supplierSplitHTML += `
+                                                    </tbody>
+                                                </table>
+                                              </div>`;
+                    }
                 }
-                supplierOrders[randomSupplier].push(product);
-            });
+                document.getElementById('supplierSplitResult').innerHTML = supplierSplitHTML;
 
-            for (const supplier in supplierOrders) {
-                supplierSplitHTML += `<div class="mb-2 p-2 border rounded-md bg-white"><strong>${supplier}:</strong><ul class="list-disc pl-5">`;
-                supplierOrders[supplier].forEach(item => {
-                    supplierSplitHTML += `<li>${item.name} (Qtd: ${item.quantity})</li>`;
+                // Simulate cubagem and acquisition price prediction
+                let totalCubagem = 0;
+                let estimatedAcquisitionValue = 0; // Renamed for clarity as per user request
+
+                hongKongProducts.forEach(p => {
+                    totalCubagem += p.cubageUnit * p.quantity;
+                    estimatedAcquisitionValue += p.unitPrice * p.quantity;
+
+                    // Store per-product prices for Renato's approval screen
+                    // Generate currentInternalUnitPrice here for new comparison
+                    p.newSupplierUnitPrice = p.unitPrice.toFixed(2);
+                    p.currentInternalUnitPrice = (p.unitPrice * (1 + (Math.random() * 0.1 + 0.05))).toFixed(2); // 5-15% higher
                 });
-                supplierSplitHTML += `</ul></div>`;
+
+                // Calculate percentage of container occupied
+                const percent20HC = ((totalCubagem / MAX_CUBAGE_20HC) * 100).toFixed(2);
+                const percent40HC = ((totalCubagem / MAX_CUBAGE_40HC) * 100).toFixed(2);
+
+                document.getElementById('cubagemPricePrediction').innerHTML = `
+                    <h3 class="font-semibold text-gray-700 mt-4 mb-2">Previsão de Cubagem e Preços de Aquisição:</h3>
+                    <p>Cubagem Total Estimada: ${totalCubagem.toFixed(2).replace('.', ',')} m³</p>
+                    <ul class="list-disc pl-5">
+                        <li>Percentual Container 20 HC: ${percent20HC}% (Capacidade: ${MAX_CUBAGE_20HC} m³)</li>
+                        <li>Percentual Container 40 HC: ${percent40HC}% (Capacidade: ${MAX_CUBAGE_40HC} m³)</li>
+                    </ul>
+                    <p class="font-semibold mt-4">Valor de Aquisição Total Estimado dos Produtos: R$ ${estimatedAcquisitionValue.toFixed(2).replace('.', ',')}</p>
+                    <p class="text-sm text-gray-500 mt-2">Os preços são baseados em tabelas de referência e podem variar. A cubagem é um percentual da capacidade do container.</p>
+                `;
             }
-            document.getElementById('supplierSplitResult').innerHTML = supplierSplitHTML;
-
-            // Simulate cubagem and price prediction
-            let cubagem = (Math.random() * 50 + 10).toFixed(2); // Random cubagem between 10 and 60
-            let priceLCL = (cubagem * 100 + Math.random() * 500).toFixed(2);
-            let price20HC = (cubagem * 80 + Math.random() * 400).toFixed(2);
-            let price40HC = (cubagem * 60 + Math.random() * 300).toFixed(2);
-
-            document.getElementById('cubagemPricePrediction').innerHTML = `
-                <h3 class="font-semibold text-gray-700 mt-4 mb-2">Previsão de Cubagem e Preços Base:</h3>
-                <p>Cubagem Total Estimada: ${cubagem} m³</p>
-                <ul class="list-disc pl-5">
-                    <li>Previsão LCL: R$ ${priceLCL}</li>
-                    <li>Previsão Container 20 HC: R$ ${price20HC}</li>
-                    <li>Previsão Container 40 HC: R$ ${price40HC}</li>
-                </ul>
-                <p class="text-sm text-gray-500 mt-2">Os preços são baseados em tabelas de referência e podem variar.</p>
-            `;
-
-            document.getElementById('hongKongSummaryScreen').querySelector('.flex').classList.remove('hidden'); // Show buttons
             showScreen('hongKongSummaryScreen');
         }
 
         function backToProductEntry() {
             showScreen('hongKongFormScreen');
+            renderHongKongProductList(); // Re-render list if user comes back
+            document.getElementById('moqLiveFeedback').innerText = ''; // Clear live feedback
+            document.getElementById('productCode').value = ''; // Clear product code
+            document.getElementById('productDescription').innerText = ''; // Clear description
+            document.getElementById('productQuantity').value = '1'; // Reset quantity
         }
 
         function generatePO() {
+            // Get the estimated acquisition value from the summary screen
+            const estimatedAcquisitionValueText = document.getElementById('cubagemPricePrediction').innerText.match(/Valor de Aquisição Total Estimado dos Produtos: R\$ ([\d\.,]+)/)?.[1];
+            const newSupplierPriceTotal = parseFloat(estimatedAcquisitionValueText.replace('.', '').replace(',', '.')).toFixed(2);
+
+            // Calculate total current internal price from individual product prices
+            let currentInternalPriceTotal = 0;
+            hongKongProducts.forEach(p => {
+                currentInternalPriceTotal += parseFloat(p.currentInternalUnitPrice) * p.quantity; // Summing total current internal price per quantity
+            });
+            currentInternalPriceTotal = currentInternalPriceTotal.toFixed(2);
+
+
             simulatedPO = {
                 id: `PO-${Math.floor(Math.random() * 10000)}`,
                 date: new Date().toLocaleDateString('pt-BR'),
-                products: hongKongProducts,
-                totalValueEstimate: (hongKongProducts.reduce((sum, p) => sum + p.quantity * (Math.random() * 50 + 10), 0)).toFixed(2)
+                products: hongKongProducts, // This now contains per-product unit prices
+                newSupplierPriceTotal: newSupplierPriceTotal, // Total 'new' price
+                currentInternalPriceTotal: currentInternalPriceTotal // Total 'current' price
             };
 
             document.getElementById('poDetails').innerHTML = `
                 <p class="font-semibold text-lg mb-2">Detalhes da Purchase Order:</p>
                 <p><strong>ID da PO:</strong> ${simulatedPO.id}</p>
                 <p><strong>Data de Emissão:</strong> ${simulatedPO.date}</p>
-                <p class="mt-4 font-semibold">Produtos:</p>
-                <ul class="list-disc pl-5">
-                    ${simulatedPO.products.map(p => `<li>${p.name} (Qtd: ${p.quantity})</li>`).join('')}
-                </ul>
-                <p class="mt-4 font-semibold">Valor Total Estimado: R$ ${simulatedPO.totalValueEstimate}</p>
+                <p class="mt-4 font-semibold">Produtos na PO:</p>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Descrição</th>
+                            <th>Quantidade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${simulatedPO.products.map(p => `
+                            <tr>
+                                <td>${p.code}</td>
+                                <td>${p.name}</td>
+                                <td>${p.quantity}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+                <p class="mt-4 font-semibold text-xl">Valor Total Estimado (Proposta Fornecedor): R$ ${simulatedPO.newSupplierPriceTotal.replace('.', ',')}</p>
             `;
             showScreen('purchaseOrderScreen');
         }
 
         function simulateRenatoApprovalScreen() {
+            if (!simulatedPO) {
+                showMessage('Erro', 'Nenhuma PO gerada para simular a aprovação do Renato.', 'error');
+                return;
+            }
+
+            const renatoMessageBox = document.querySelector('#renatoApprovalScreen .message-box');
+            let comparisonTableHTML = `
+                <p class="font-semibold text-lg mb-4">Análise Comparativa de Preços por Produto</p>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Produto (Código)</th>
+                            <th>Preço Interno (Atual)</th>
+                            <th>Preço Fornecedor (Novo)</th>
+                            <th>Diferença Unitária</th>
+                            <th>Diferença Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            let overallPriceDifferenceTotal = 0;
+
+            simulatedPO.products.forEach(p => {
+                const currentPrice = parseFloat(p.currentInternalUnitPrice);
+                const newPrice = parseFloat(p.newSupplierUnitPrice);
+                const differenceUnit = (newPrice - currentPrice).toFixed(2);
+                const differenceTotalPerProduct = (differenceUnit * p.quantity).toFixed(2);
+                overallPriceDifferenceTotal += parseFloat(differenceTotalPerProduct);
+
+                const newPriceClass = newPrice > currentPrice ? 'text-red-600 font-bold' : 'text-green-600 font-bold';
+
+                comparisonTableHTML += `
+                    <tr>
+                        <td>${p.name} (${p.code})</td>
+                        <td>R$ ${currentPrice.toFixed(2).replace('.', ',')}</td>
+                        <td class="${newPriceClass}">R$ ${newPrice.toFixed(2).replace('.', ',')}</td>
+                        <td>R$ ${differenceUnit.replace('.', ',')}</td>
+                        <td>R$ ${differenceTotalPerProduct.replace('.', ',')}</td>
+                    </tr>
+                `;
+            });
+
+            comparisonTableHTML += `
+                    </tbody>
+                </table>
+                <p class="mt-6">Prezado Renato,</p>
+                <p>Estamos apresentando a proposta para a Purchase Order **${simulatedPO.id}**.</p>
+                <p class="mt-4"><strong>Valor Total Interno (Atual):</strong> <span class="text-blue-700 font-bold">R$ ${simulatedPO.currentInternalPriceTotal.replace('.', ',')}</span></p>
+                <p><strong>Valor Total Fornecedor (Novo):</strong> <span class="text-green-700 font-bold">R$ ${simulatedPO.newSupplierPriceTotal.replace('.', ',')}</span></p>
+                <p class="mt-4">**Diferença Total Geral:** <span class="${overallPriceDifferenceTotal > 0 ? 'text-red-600' : 'text-green-600'} font-bold">R$ ${overallPriceDifferenceTotal.toFixed(2).replace('.', ',')}</span></p>
+                <p class="mt-4">Sua aprovação é crucial para darmos continuidade ao processo.</p>
+            `;
+
+            renatoMessageBox.innerHTML = comparisonTableHTML;
             showScreen('renatoApprovalScreen');
         }
 
@@ -529,6 +852,7 @@
             document.getElementById('finalDetailsHK').innerHTML = `
                 <p class="font-semibold">Status: APROVADO ✅</p>
                 <p>Seu pedido ${simulatedPO.id} foi aprovado.</p>
+                <p class="mt-2">O valor de aquisição final negociado é de: <span class="font-bold">R$ ${simulatedPO.newSupplierPriceTotal.replace('.', ',')}</span></p>
                 <p class="mt-2">Em breve, você receberá a atualização com os preços e quantidades finais fechadas.</p>
             `;
             showScreen('hongKongFinalScreen');
@@ -543,7 +867,10 @@
                 <p>O pedido ${simulatedPO.id} não foi aprovado na negociação atual.</p>
                 <p class="mt-2">A equipe de Compras Internacionais será notificada para renegociar com o fornecedor.</p>
             `;
-            showScreen('hongKongFinalScreen');
+            // Redirect back to PO screen for simulation of renegotiation
+            setTimeout(() => {
+                showScreen('purchaseOrderScreen');
+            }, 2000); // Give user a moment to read the message
         }
 
         // --- Colombia Flow Logic ---
@@ -592,6 +919,37 @@
             }
             // Simulate sending to SAP and receiving invoice
             setTimeout(() => {
+                // Generate a simulated total value for NF-e based on Colombia products
+                const totalNfeValue = colombiaProducts.reduce((sum, p) => sum + (p.quantity * (Math.random() * 50 + 5)), 0).toFixed(2);
+                document.getElementById('nfeValue').innerText = `R$ ${totalNfeValue.replace('.', ',')}`;
+
+                // Update NF-e PDF content with actual products
+                let productsInNfePdf = colombiaProducts.map((p, idx) => `| ${String(idx + 1).padStart(2, '0')}| ${p.name.padEnd(17)}| ${String(p.quantity).padEnd(3)} | R$ ${(p.quantity * (Math.random() * 10 + 5)).toFixed(2).padEnd(10)}| R$ ${(p.quantity * (Math.random() * 10 + 5)).toFixed(2).padEnd(6)} |`).join('\n');
+                let nfePdfContent = `
+                    ----------------------------------------------------
+                    |                NOTA FISCAL ELETRÔNICA            |
+                    | Nº: NF-20250624-001                                |
+                    | Data de Emissão: 24/06/2025                        |
+                    |                                                    |
+                    | REMETENTE: EMPRESA XYZ DO BRASIL                   |
+                    | CNPJ: 00.000.000/0001-00                           |
+                    | ENDEREÇO: RUA EXEMPLO, 123 - SÃO PAULO/SP          |
+                    |                                                    |
+                    | DESTINATÁRIO: CLIENTE INTERNACIONAL COLÔMBIA       |
+                    | ENDEREÇO: CALLE 45, 7-30 - BOGOTÁ/COLÔMBIA         |
+                    |                                                    |
+                    | PRODUTOS:                                          |
+                    | -------------------------------------------------- |
+                    | ID | DESCRIÇÃO           | QTD | VALOR UNIT | TOTAL |
+                    |----|---------------------|-----|------------|-------|
+                    ${productsInNfePdf}
+                    |--------------------------------------------------|
+                    | VALOR TOTAL:                                R$ ${totalNfeValue.replace('.', ',')} |
+                    ----------------------------------------------------
+                    (Este é um exemplo simulado de NF-e.)
+                `;
+                document.querySelector('#nfePdfViewer pre').innerText = nfePdfContent;
+
                 showScreen('colombiaInvoiceScreen');
             }, 1500); // Simulate network delay
         }
