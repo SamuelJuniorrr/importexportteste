@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protótipo do Portal Fluig - Import/Export</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Light gray background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 12px; /* Rounded corners for the main container */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            padding: 32px;
+            max-width: 900px;
+            width: 100%;
+        }
+        .header {
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 20px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #374151;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px; /* Rounded corners for inputs */
+            font-size: 1rem;
+            color: #374151;
+        }
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px; /* Rounded corners for buttons */
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .btn-primary {
+            background-color: #3b82f6; /* Blue */
+            color: #ffffff;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb; /* Darker blue on hover */
+        }
+        .btn-secondary {
+            background-color: #f3f4f6; /* Light gray */
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+        .btn-secondary:hover {
+            background-color: #e5e7eb; /* Darker light gray on hover */
+        }
+        .product-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            background-color: #f9fafb;
+        }
+        .message-box {
+            background-color: #dbeafe; /* Light blue */
+            border: 1px solid #93c5fd; /* Medium blue */
+            color: #1e40af; /* Dark blue */
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .error-message {
+            background-color: #fee2e2; /* Light red */
+            border: 1px solid #ef4444; /* Red */
+            color: #b91c1c; /* Dark red */
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            text-align: center;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="app">
+        <!-- Login Screen -->
+        <div id="loginScreen" class="screen">
+            <div class="header">
+                <h1 class="text-3xl font-bold text-gray-800 mb-4">Bem-vindo ao Portal de Importação/Exportação</h1>
+                <p class="text-gray-600">Faça login para continuar.</p>
+            </div>
+            <div class="space-y-4">
+                <div class="form-group">
+                    <label for="username">Usuário:</label>
+                    <input type="text" id="username" class="rounded-lg p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Seu nome de usuário">
+                </div>
+                <div class="form-group">
+                    <label for="password">Senha:</label>
+                    <input type="password" id="password" class="rounded-lg p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Sua senha">
+                </div>
+                <button onclick="login()" class="btn btn-primary w-full mt-6">Entrar</button>
+            </div>
+        </div>
+
+        <!-- Filial Selection Screen -->
+        <div id="filialSelectionScreen" class="screen hidden">
+            <div class="header">
+                <h1 class="text-3xl font-bold text-gray-800 mb-4">Escolha a Filial</h1>
+                <p class="text-gray-600">Para qual filial você deseja enviar a solicitação?</p>
+            </div>
+            <div class="flex flex-col md:flex-row gap-6 justify-center">
+                <button onclick="selectFilial('colombia')" class="btn btn-primary md:w-1/2">Colômbia</button>
+                <button onclick="selectFilial('hongkong')" class="btn btn-primary md:w-1/2">Hong Kong</button>
+            </div>
+        </div>
+
+        <!-- Hong Kong Flow Screens -->
+        <div id="hongKongFormScreen" class="screen hidden">
+            <div class="header">
+                <h1 class="text-3xl font-bold text-gray-800 mb-4">Solicitação de Compra - Hong Kong</h1>
+                <p class="text-gray-600">Por favor, preencha os detalhes dos produtos desejados.</p>
+            </div>
+            <div class="space-y-4">
+                <div class="form-group">
+                    <label for="productName">Nome do Produto:</label>
+                    <input type="text" id="productName" placeholder="Ex: Smartphone XYZ" class="rounded-lg p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="form-group">
+                    <label for="productQuantity">Quantidade:</label>
+                    <input type="number" id="productQuantity" min="1" value="1" class="rounded-lg p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <button onclick="addProduct()" class="btn btn-secondary w-full">Adicionar Produto</button>
+                <div id="productList" class="mt-4 border p-4 rounded-lg bg-gray-50 max-h-60 overflow-y-auto">
+                    <h3 class="font-semibold text-gray-700 mb-2">Produtos Adicionados:</h3>
+                    <div id="noProductsAdded" class="text-gray-500 text-center py-4">Nenhum produto adicionado ainda.</div>
+                </div>
+                <button onclick="submitHongKongForm()" class="btn btn-primary w-full mt-6">Enviar Solicitação</button>
+            </div>
+        </div>
+
+        <div id="hongKongSummaryScreen" class="screen hidden">
+            <div class="header">
+                <h1 class="text-3xl font-bold text-gray-800 mb-4">Resumo da Solicitação - Hong Kong</h1>
+            </div>
+            <div id="moqValidationResult"></div>
+            <div id="supplierSplitResult" class="mt-4"></div>
+            <div id="cubagemPricePrediction" class="mt-4"></div>
+            <div class="mt-6 flex gap-4 justify-between">
+                <button onclick="backToProductEntry()" class="btn btn-secondary flex-1">Voltar e Ajustar</button>
+                <button onclick="generatePO()" class="btn btn-primary flex-1">Gerar Purchase Order</button>
+            </div>
+        </div>
+
+        <div id="purchaseOrderScreen" class="screen hidden">
+            <div class="header">
+                <h1 class="text-3xl font-bold text-gray-800 mb-4">Purchase Order (PO) Gerada</h1>
+                <p class="text-gray-600 mb-4">A PO foi gerada e enviada para Compras Internacionais.</p>
+            </div>
+            <div id="poDetails" class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                <!-- PO details will be injected here -->
+            </div>
+            <div class="mt-6 text-center text-gray-600">
+                <p>Aguardando negociação de Compras Internacionais e aprovação do Renato.</p>
+                <button onclick="simulateRenatoApprovalScreen()" class="btn btn-primary mt-4">Simular Aprovação do Renato</button>
+            </div>
+        </div>
+
+        <div id="renatoApprovalScreen" class="screen hidden">
+            <div class="header">
+                <h1 class="text-3xl font-bold text-gray-800 mb-4">Aprovação do Renato</h1>
+                <p class="text-gray-600 mb-4">Simulação do processo de aprovação do Renato.</p>
+            </div>
+            <div class="message-box">
+                <p>A equipe de Compras Internacionais apresentou a Proforma Invoice e o comparativo.</p>
+                <p>Renato, qual sua decisão?</p>
+            </div>
+            <div class="mt-6 flex gap-4 justify-center">
+                <button onclick="renatoApprove()" class="btn btn-primary flex-1 max-w-xs">Aprovar 👍</button>
+                <button onclick="renatoReject()" class="btn btn-secondary flex-1 max-w-xs">Não Aprovar 👎</button>
+            </div>
+        </div>
+
+        <div id="hongKongFinalScreen" class="screen hidden">
+            <div class="header">
+                <h1 class="text-3xl font-bold text-gray-800 mb-4" id="hongKongFinalTitle"></h1>
+                <p class="text-gray-600" id="hongKongFinalMessage"></p>
+            </div>
+            <div class="message-box" id="finalDetailsHK">
+                <!-- Final details based on approval/rejection -->
+            </div>
+            <button onclick="restartFlow()" class="btn btn-primary w-full mt-6">Iniciar Nova Solicitação</button>
+        </div>
+
+        <!-- Colombia Flow Screens -->
+        <div id="colombiaFormScreen" class="screen hidden">
+            <div class="header">
+                <h1 class="text-3xl font-bold text-gray-800 mb-4">Solicitação de Compra - Colômbia</h1>
+                <p class="text-gray-600">Por favor, preencha os detalhes dos produtos desejados.</p>
+            </div>
+            <div class="space-y-4">
+                <div class="form-group">
+                    <label for="colombiaProductName">Nome do Produto:</label>
+                    <input type="text" id="colombiaProductName" placeholder="Ex: Produto Colômbia" class="rounded-lg p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="form-group">
+                    <label for="colombiaProductQuantity">Quantidade:</label>
+                    <input type="number" id="colombiaProductQuantity" min="1" value="1" class="rounded-lg p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <button onclick="addColombiaProduct()" class="btn btn-secondary w-full">Adicionar Produto</button>
+                <div id="colombiaProductList" class="mt-4 border p-4 rounded-lg bg-gray-50 max-h-60 overflow-y-auto">
+                    <h3 class="font-semibold text-gray-700 mb-2">Produtos Adicionados:</h3>
+                    <div id="noColombiaProductsAdded" class="text-gray-500 text-center py-4">Nenhum produto adicionado ainda.</div>
+                </div>
+                <button onclick="submitColombiaForm()" class="btn btn-primary w-full mt-6">Enviar Solicitação para SAP</button>
+            </div>
+        </div>
+
+        <div id="colombiaInvoiceScreen" class="screen hidden">
+            <div class="header">
+                <h1 class="text-3xl font-bold text-gray-800 mb-4">Faturamento e Nota Fiscal - Colômbia</h1>
+                <p class="text-gray-600">Seu pedido foi faturado e a Nota Fiscal está disponível.</p>
+            </div>
+            <div class="message-box">
+                <p class="font-semibold">Nota Fiscal Eletrônica (NF-e) gerada com sucesso!</p>
+                <p>Número da NF-e: <span id="nfeNumber">NF-20250624-001</span></p>
+                <p>Valor Total: <span id="nfeValue">R$ 1.500,00</span></p>
+                <p class="mt-4">
+                    <a href="#" onclick="showNfePdf()" class="text-blue-600 hover:underline">Visualizar PDF da NF-e</a>
+                </p>
+            </div>
+            <div id="nfePdfViewer" class="hidden mt-6 bg-gray-100 p-4 rounded-lg border border-gray-200">
+                <p class="text-gray-700">Simulação de PDF da Nota Fiscal:</p>
+                <pre class="bg-white p-4 rounded-md border border-gray-300 text-sm overflow-auto max-h-96 mt-2">
+                    ----------------------------------------------------
+                    |                NOTA FISCAL ELETRÔNICA            |
+                    | Nº: NF-20250624-001                                |
+                    | Data de Emissão: 24/06/2025                        |
+                    |                                                    |
+                    | REMETENTE: EMPRESA XYZ DO BRASIL                   |
+                    | CNPJ: 00.000.000/0001-00                           |
+                    | ENDEREÇO: RUA EXEMPLO, 123 - SÃO PAULO/SP          |
+                    |                                                    |
+                    | DESTINATÁRIO: CLIENTE INTERNACIONAL COLÔMBIA       |
+                    | ENDEREÇO: CALLE 45, 7-30 - BOGOTÁ/COLÔMBIA         |
+                    |                                                    |
+                    | PRODUTOS:                                          |
+                    | -------------------------------------------------- |
+                    | ID | DESCRIÇÃO           | QTD | VALOR UNIT | TOTAL |
+                    |----|---------------------|-----|------------|-------|
+                    | 001| Produto Colômbia A  | 10  | R$ 100,00  | R$ 1000,00 |
+                    | 002| Produto Colômbia B  | 5   | R$ 100,00  | R$ 500,00  |
+                    |--------------------------------------------------|
+                    | VALOR TOTAL:                                R$ 1.500,00 |
+                    ----------------------------------------------------
+                    (Este é um exemplo simulado de NF-e.)
+                </pre>
+            </div>
+            <button onclick="restartFlow()" class="btn btn-primary w-full mt-6">Iniciar Nova Solicitação</button>
+        </div>
+
+        <!-- Generic Message Box (for alerts, confirmations) -->
+        <div id="messageModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4">
+            <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-sm">
+                <h3 id="messageModalTitle" class="text-xl font-bold text-gray-800 mb-4"></h3>
+                <p id="messageModalContent" class="text-gray-700 mb-6"></p>
+                <div class="flex justify-end gap-3">
+                    <button id="messageModalConfirmBtn" class="btn btn-primary hidden">Confirmar</button>
+                    <button id="messageModalCancelBtn" class="btn btn-secondary hidden">Cancelar</button>
+                    <button id="messageModalCloseBtn" class="btn btn-primary">Ok</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- State Management ---
+        let currentScreen = 'loginScreen';
+        let selectedFilial = '';
+        let hongKongProducts = [];
+        let colombiaProducts = [];
+        let simulatedPO = null; // Stores simulated PO details
+        let renatoDecision = null; // 'approved' or 'rejected'
+
+        // --- Utility Functions ---
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.add('hidden');
+            });
+            document.getElementById(screenId).classList.remove('hidden');
+            currentScreen = screenId;
+        }
+
+        function showMessage(title, content, type = 'info', onConfirm = null, onCancel = null) {
+            const modal = document.getElementById('messageModal');
+            document.getElementById('messageModalTitle').innerText = title;
+            document.getElementById('messageModalContent').innerText = content;
+
+            const confirmBtn = document.getElementById('messageModalConfirmBtn');
+            const cancelBtn = document.getElementById('messageModalCancelBtn');
+            const closeBtn = document.getElementById('messageModalCloseBtn');
+
+            confirmBtn.onclick = () => { if (onConfirm) onConfirm(); modal.classList.add('hidden'); };
+            cancelBtn.onclick = () => { if (onCancel) onCancel(); modal.classList.add('hidden'); };
+            closeBtn.onclick = () => modal.classList.add('hidden');
+
+            confirmBtn.classList.add('hidden');
+            cancelBtn.classList.add('hidden');
+            closeBtn.classList.remove('hidden'); // Default close button
+
+            if (onConfirm || onCancel) {
+                closeBtn.classList.add('hidden'); // Hide default Ok if confirm/cancel present
+                confirmBtn.classList.remove('hidden');
+                if (onCancel) {
+                    cancelBtn.classList.remove('hidden');
+                }
+            }
+            modal.classList.remove('hidden');
+        }
+
+        // --- Flow Control ---
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username && password) {
+                // Simple validation for prototype
+                showScreen('filialSelectionScreen');
+            } else {
+                showMessage('Erro de Login', 'Por favor, preencha usuário e senha.', 'error');
+            }
+        }
+
+        function selectFilial(filial) {
+            selectedFilial = filial;
+            if (filial === 'colombia') {
+                showScreen('colombiaFormScreen');
+                renderColombiaProductList();
+            } else if (filial === 'hongkong') {
+                showScreen('hongKongFormScreen');
+                renderHongKongProductList();
+            }
+        }
+
+        function restartFlow() {
+            // Reset state
+            selectedFilial = '';
+            hongKongProducts = [];
+            colombiaProducts = [];
+            simulatedPO = null;
+            renatoDecision = null;
+            // Clear input fields
+            document.getElementById('productName').value = '';
+            document.getElementById('productQuantity').value = '1';
+            document.getElementById('colombiaProductName').value = '';
+            document.getElementById('colombiaProductQuantity').value = '1';
+
+            showScreen('loginScreen');
+        }
+
+        // --- Hong Kong Flow Logic ---
+        function addProduct() {
+            const name = document.getElementById('productName').value.trim();
+            const quantity = parseInt(document.getElementById('productQuantity').value);
+
+            if (name && quantity > 0) {
+                hongKongProducts.push({ name, quantity });
+                renderHongKongProductList();
+                document.getElementById('productName').value = '';
+                document.getElementById('productQuantity').value = '1'; // Reset quantity
+            } else {
+                showMessage('Erro', 'Por favor, insira um nome e uma quantidade válida para o produto.', 'error');
+            }
+        }
+
+        function removeProduct(index) {
+            hongKongProducts.splice(index, 1);
+            renderHongKongProductList();
+        }
+
+        function renderHongKongProductList() {
+            const listDiv = document.getElementById('productList');
+            listDiv.innerHTML = '<h3 class="font-semibold text-gray-700 mb-2">Produtos Adicionados:</h3>';
+            if (hongKongProducts.length === 0) {
+                listDiv.innerHTML += '<div id="noProductsAdded" class="text-gray-500 text-center py-4">Nenhum produto adicionado ainda.</div>';
+                return;
+            }
+
+            hongKongProducts.forEach((product, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'product-item';
+                itemDiv.innerHTML = `
+                    <span class="flex-1 text-gray-800">${product.name} (Qtd: ${product.quantity})</span>
+                    <button onclick="removeProduct(${index})" class="text-red-500 hover:text-red-700 font-bold">X</button>
+                `;
+                listDiv.appendChild(itemDiv);
+            });
+        }
+
+        function submitHongKongForm() {
+            if (hongKongProducts.length === 0) {
+                showMessage('Erro', 'Por favor, adicione pelo menos um produto antes de enviar a solicitação.', 'error');
+                return;
+            }
+
+            let moqResultHTML = '<h3 class="font-semibold text-gray-700 mb-2">Validação de MOQ:</h3>';
+            let allMoqMet = true;
+            let validProducts = [];
+
+            hongKongProducts.forEach(product => {
+                const moq = Math.floor(Math.random() * 5) + 1; // Simulate random MOQ between 1 and 5
+                if (product.quantity < moq) {
+                    moqResultHTML += `<p class="error-message">🚫 O item "${product.name}" (Qtd: ${product.quantity}) não atende ao MOQ mínimo de ${moq}. Este item será cancelado.</p>`;
+                    allMoqMet = false; // Even if one fails, it flags for cancellation.
+                } else {
+                    moqResultHTML += `<p class="text-green-700">✅ O item "${product.name}" (Qtd: ${product.quantity}) atende ao MOQ mínimo de ${moq}.</p>`;
+                    validProducts.push(product); // Only add valid products
+                }
+            });
+
+            hongKongProducts = validProducts; // Update products list to only include valid ones
+
+            if (hongKongProducts.length === 0 && !allMoqMet) {
+                moqResultHTML += `<p class="error-message">Todos os itens foram cancelados devido a falha no MOQ. Por favor, ajuste sua solicitação.</p>`;
+                document.getElementById('moqValidationResult').innerHTML = moqResultHTML;
+                document.getElementById('supplierSplitResult').innerHTML = '';
+                document.getElementById('cubagemPricePrediction').innerHTML = '';
+                document.getElementById('hongKongSummaryScreen').querySelector('.flex').classList.add('hidden'); // Hide buttons
+                showScreen('hongKongSummaryScreen');
+                return;
+            }
+
+            document.getElementById('moqValidationResult').innerHTML = moqResultHTML;
+
+            // Simulate supplier split
+            let supplierSplitHTML = '<h3 class="font-semibold text-gray-700 mt-4 mb-2">Divisão por Fornecedor:</h3>';
+            const suppliers = ['Fornecedor A', 'Fornecedor B', 'Fornecedor C'];
+            const supplierOrders = {};
+
+            hongKongProducts.forEach(product => {
+                const randomSupplier = suppliers[Math.floor(Math.random() * suppliers.length)];
+                if (!supplierOrders[randomSupplier]) {
+                    supplierOrders[randomSupplier] = [];
+                }
+                supplierOrders[randomSupplier].push(product);
+            });
+
+            for (const supplier in supplierOrders) {
+                supplierSplitHTML += `<div class="mb-2 p-2 border rounded-md bg-white"><strong>${supplier}:</strong><ul class="list-disc pl-5">`;
+                supplierOrders[supplier].forEach(item => {
+                    supplierSplitHTML += `<li>${item.name} (Qtd: ${item.quantity})</li>`;
+                });
+                supplierSplitHTML += `</ul></div>`;
+            }
+            document.getElementById('supplierSplitResult').innerHTML = supplierSplitHTML;
+
+            // Simulate cubagem and price prediction
+            let cubagem = (Math.random() * 50 + 10).toFixed(2); // Random cubagem between 10 and 60
+            let priceLCL = (cubagem * 100 + Math.random() * 500).toFixed(2);
+            let price20HC = (cubagem * 80 + Math.random() * 400).toFixed(2);
+            let price40HC = (cubagem * 60 + Math.random() * 300).toFixed(2);
+
+            document.getElementById('cubagemPricePrediction').innerHTML = `
+                <h3 class="font-semibold text-gray-700 mt-4 mb-2">Previsão de Cubagem e Preços Base:</h3>
+                <p>Cubagem Total Estimada: ${cubagem} m³</p>
+                <ul class="list-disc pl-5">
+                    <li>Previsão LCL: R$ ${priceLCL}</li>
+                    <li>Previsão Container 20 HC: R$ ${price20HC}</li>
+                    <li>Previsão Container 40 HC: R$ ${price40HC}</li>
+                </ul>
+                <p class="text-sm text-gray-500 mt-2">Os preços são baseados em tabelas de referência e podem variar.</p>
+            `;
+
+            document.getElementById('hongKongSummaryScreen').querySelector('.flex').classList.remove('hidden'); // Show buttons
+            showScreen('hongKongSummaryScreen');
+        }
+
+        function backToProductEntry() {
+            showScreen('hongKongFormScreen');
+        }
+
+        function generatePO() {
+            simulatedPO = {
+                id: `PO-${Math.floor(Math.random() * 10000)}`,
+                date: new Date().toLocaleDateString('pt-BR'),
+                products: hongKongProducts,
+                totalValueEstimate: (hongKongProducts.reduce((sum, p) => sum + p.quantity * (Math.random() * 50 + 10), 0)).toFixed(2)
+            };
+
+            document.getElementById('poDetails').innerHTML = `
+                <p class="font-semibold text-lg mb-2">Detalhes da Purchase Order:</p>
+                <p><strong>ID da PO:</strong> ${simulatedPO.id}</p>
+                <p><strong>Data de Emissão:</strong> ${simulatedPO.date}</p>
+                <p class="mt-4 font-semibold">Produtos:</p>
+                <ul class="list-disc pl-5">
+                    ${simulatedPO.products.map(p => `<li>${p.name} (Qtd: ${p.quantity})</li>`).join('')}
+                </ul>
+                <p class="mt-4 font-semibold">Valor Total Estimado: R$ ${simulatedPO.totalValueEstimate}</p>
+            `;
+            showScreen('purchaseOrderScreen');
+        }
+
+        function simulateRenatoApprovalScreen() {
+            showScreen('renatoApprovalScreen');
+        }
+
+        function renatoApprove() {
+            renatoDecision = 'approved';
+            document.getElementById('hongKongFinalTitle').innerText = 'Parabéns! Pedido Aprovado!';
+            document.getElementById('hongKongFinalMessage').innerText = 'Renato aprovou sua solicitação. Compras Internacionais enviará a confirmação ao fornecedor e atualizará os preços finais no portal.';
+            document.getElementById('finalDetailsHK').innerHTML = `
+                <p class="font-semibold">Status: APROVADO ✅</p>
+                <p>Seu pedido ${simulatedPO.id} foi aprovado.</p>
+                <p class="mt-2">Em breve, você receberá a atualização com os preços e quantidades finais fechadas.</p>
+            `;
+            showScreen('hongKongFinalScreen');
+        }
+
+        function renatoReject() {
+            renatoDecision = 'rejected';
+            document.getElementById('hongKongFinalTitle').innerText = 'Solicitação Rejeitada!';
+            document.getElementById('hongKongFinalMessage').innerText = 'Renato não aprovou a proposta atual. A equipe de Compras Internacionais irá renegociar com o fornecedor.';
+            document.getElementById('finalDetailsHK').innerHTML = `
+                <p class="font-semibold">Status: REJEITADO ❌</p>
+                <p>O pedido ${simulatedPO.id} não foi aprovado na negociação atual.</p>
+                <p class="mt-2">A equipe de Compras Internacionais será notificada para renegociar com o fornecedor.</p>
+            `;
+            showScreen('hongKongFinalScreen');
+        }
+
+        // --- Colombia Flow Logic ---
+        function addColombiaProduct() {
+            const name = document.getElementById('colombiaProductName').value.trim();
+            const quantity = parseInt(document.getElementById('colombiaProductQuantity').value);
+
+            if (name && quantity > 0) {
+                colombiaProducts.push({ name, quantity });
+                renderColombiaProductList();
+                document.getElementById('colombiaProductName').value = '';
+                document.getElementById('colombiaProductQuantity').value = '1';
+            } else {
+                showMessage('Erro', 'Por favor, insira um nome e uma quantidade válida para o produto.', 'error');
+            }
+        }
+
+        function removeColombiaProduct(index) {
+            colombiaProducts.splice(index, 1);
+            renderColombiaProductList();
+        }
+
+        function renderColombiaProductList() {
+            const listDiv = document.getElementById('colombiaProductList');
+            listDiv.innerHTML = '<h3 class="font-semibold text-gray-700 mb-2">Produtos Adicionados:</h3>';
+            if (colombiaProducts.length === 0) {
+                listDiv.innerHTML += '<div id="noColombiaProductsAdded" class="text-gray-500 text-center py-4">Nenhum produto adicionado ainda.</div>';
+                return;
+            }
+
+            colombiaProducts.forEach((product, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'product-item';
+                itemDiv.innerHTML = `
+                    <span class="flex-1 text-gray-800">${product.name} (Qtd: ${product.quantity})</span>
+                    <button onclick="removeColombiaProduct(${index})" class="text-red-500 hover:text-red-700 font-bold">X</button>
+                `;
+                listDiv.appendChild(itemDiv);
+            });
+        }
+
+        function submitColombiaForm() {
+            if (colombiaProducts.length === 0) {
+                showMessage('Erro', 'Por favor, adicione pelo menos um produto antes de enviar a solicitação.', 'error');
+                return;
+            }
+            // Simulate sending to SAP and receiving invoice
+            setTimeout(() => {
+                showScreen('colombiaInvoiceScreen');
+            }, 1500); // Simulate network delay
+        }
+
+        function showNfePdf() {
+            const pdfViewer = document.getElementById('nfePdfViewer');
+            pdfViewer.classList.toggle('hidden');
+        }
+
+        // --- Initial Screen Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            showScreen('loginScreen');
+        });
+    </script>
+</body>
+</html>
