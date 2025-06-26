@@ -820,7 +820,7 @@
         <div id="loginScreen" class="screen">
             <div class="login-card"> <!-- Removido a classe 'container' daqui para usar o estilo mais específico do .login-card -->
                 <div class="login-logo">
-                    <!--  -->
+                    <!-- [Image of TOTVS FLUIG Logo] -->
                     <img src="https://placehold.co/120x40/FFFFFF/000000?text=TOTVS+FLUIG" alt="Logo TOTVS Fluig">
                 </div>
                 <div class="space-y-4">
@@ -859,6 +859,8 @@
                             <option value="Pendente">Pendente</option>
                             <option value="Em Negociação">Em Negociação</option>
                             <option value="Aguardando Aprovação">Aguardando Aprovação</option>
+                            <option value="Rejeitado">Rejeitado</option>
+                            <option value="Cancelado">Cancelado</option>
                             <option value="Aprovado">Aprovado</option>
                             <option value="Em Produção">Em Produção</option>
                             <option value="Carga Pronta">Carga Pronta</option>
@@ -866,8 +868,6 @@
                             <option value="Documentação Pendente">Documentação Pendente</option>
                             <option value="Documentação OK">Documentação OK</option>
                             <option value="Chegada no Porto de Destino (ATA)">Chegada no Porto de Destino (ATA)</option>
-                            <option value="Rejeitado">Rejeitado</option>
-                            <option value="Cancelado">Cancelado</option>
                             <!-- Adicionar opções para novos status Colômbia (já existem) -->
                             <option value="Em Separação">Em Separação</option>
                             <option value="Em Conferência">Em Conferência</option>
@@ -895,7 +895,7 @@
                                class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                oninput="renderOrdersTable()">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.0 0010.607 10.607z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                         </svg>
                     </div>
                 </div>
@@ -2317,15 +2317,15 @@
             { name: 'Pendente', class: 'pending', description: 'Pedido criado, aguardando Compras Internacionais iniciar o processo.' },
             { name: 'Em Negociação', class: 'negotiation', description: 'Pedido enviado ao fornecedor, aguardando negociação' },
             { name: 'Aguardando Aprovação', class: 'waiting-approval', description: 'Pedido recebido, Aguardando aprovação da Gerencia' },
+            { name: 'Rejeitado', class: 'rejected', description: 'Pedido Rejeitado', isFinal: true }, // Movido para antes de Aprovado
+            { name: 'Cancelado', class: 'cancelled', description: 'Pedido Cancelado', isFinal: true }, // Movido para antes de Aprovado
             { name: 'Aprovado', class: 'approved', description: 'Pedido Aprovado (via retorno da Gerência)' }, // Outcome of approval
             { name: 'Em Produção', class: 'production', description: 'Pedido Aprovado, em produção pelo fornecedor' },
             { name: 'Carga Pronta', class: 'ready-cargo', description: 'Mercadoria pronta para embarque' },
             { name: 'Saída do Porto de Embarque (ATD)', class: 'atd', description: 'Pedido embarcado' },
             { name: 'Documentação Pendente', class: 'pending-doc', description: 'Providenciando documentação de embarque (CI, PL, TELEX RELEASE, COO, Serial Numbers, conforme necessidade do cliente)' },
             { name: 'Documentação OK', class: 'doc-ok', description: 'Toda documentação de embarque ok, processo finalizado no DIMPEX' },
-            { name: 'Chegada no Porto de Destino (ATA)', class: 'ata', description: 'Navio atracado no porto de destino', isFinal: true }, // Terminal successful state
-            { name: 'Rejeitado', class: 'rejected', description: 'Pedido Rejeitado', isFinal: true }, // Terminal failure state
-            { name: 'Cancelado', class: 'cancelled', description: 'Pedido Cancelado', isFinal: true } // Terminal failure state
+            { name: 'Chegada no Porto de Destino (ATA)', class: 'ata', description: 'Navio atracado no porto de destino', isFinal: true } // Terminal successful state
         ];
 
         const colombiaTrackingFlow = [
@@ -2353,33 +2353,13 @@
                 return;
             }
 
-            // Encontra o índice do status atual no fluxo, ignorando os status finais (Rejeitado, Cancelado)
-            // se o fluxo linear principal ainda não os atingiu.
+            // Encontra o índice do status atual no fluxo
             let currentStatusIndex = flow.findIndex(step => step.name === order.status);
 
             // Se o status atual for um estado final (Rejeitado/Cancelado), garanta que ele seja o único 'active'
             // e todos os anteriores sejam 'completed' no display.
             const isTerminalStatus = ['Rejeitado', 'Cancelado'].includes(order.status);
-            if (isTerminalStatus) {
-                // Find the index of the terminal status in the flow
-                currentStatusIndex = flow.findIndex(step => step.name === order.status);
-            } else {
-                // For non-terminal statuses, ensure terminal statuses are not marked as 'completed' prematurely
-                const terminalStepsInFlow = flow.filter(step => step.isFinal);
-                // If the current status is *before* any terminal status in the conceptual flow,
-                // don't mark terminal statuses as completed.
-                if (currentStatusIndex !== -1) {
-                     const firstTerminalIndex = flow.findIndex(step => step.isFinal);
-                     if (firstTerminalIndex !== -1 && currentStatusIndex > firstTerminalIndex) {
-                        // If current status is after the conceptual "start" of terminal states,
-                        // re-adjust currentStatusIndex to represent the linear progress correctly.
-                        // This logic is complex for multiple branches, but for now, assumes linear then branches.
-                        // For a simple linear flow with terminal branches at the end, the initial find is usually fine.
-                     }
-                }
-            }
-
-
+            
             let trackingHtml = '<div class="tracking-steps">';
 
             flow.forEach((step, index) => {
@@ -2387,7 +2367,8 @@
                 let circleContent = '';
 
                 if (isTerminalStatus) {
-                    // If it's a terminal status, mark previous steps as completed, the terminal step as active, and others as future.
+                    // If it's a terminal status, mark previous steps up to the terminal as completed,
+                    // the terminal step as active, and all subsequent steps as future.
                     if (index < currentStatusIndex) {
                         stepClass = 'completed';
                     } else if (index === currentStatusIndex) {
