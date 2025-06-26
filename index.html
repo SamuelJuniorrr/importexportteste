@@ -8,14 +8,21 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* Define html and body to take full height and manage overflow */
+        html, body {
+            height: 100%; /* Ensure html and body take full height */
+            margin: 0;
+            padding: 0;
+        }
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f3f4f6; /* Fundo cinza claro */
             display: flex;
             justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
+            align-items: flex-start; /* Align to start, not center vertically, to allow natural flow and scrolling */
+            padding: 20px; /* Padding around the content */
+            box-sizing: border-box; /* Include padding in height/width */
+            overflow-y: auto; /* Allow body to scroll if content exceeds viewport */
         }
         /* O .container é para o layout geral da aplicação e não para o card de login */
         .container {
@@ -32,7 +39,7 @@
             border-radius: 12px;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             padding: 32px;
-            max-width: 1800px; /* Mais largo para as telas principais, conforme solicitado */
+            max-width: 2400px; /* Mais largo para as telas principais, conforme solicitado */
             width: 100%;
             margin: 0 auto; /* Centraliza o wrapper */
         }
@@ -204,7 +211,7 @@
         /* Layout Específico da Tela de Login e Estilo do Cartão - Corresponde a image_1e26c4.png */
         #loginScreen {
             width: 100%;
-            height: 100vh; /* Ocupa a altura total da viewport */
+            height: 100vh; /* Ocupa a altura total da viewport para centralização */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -268,17 +275,20 @@
         }
 
         /* Estilos para a Tela da Central de Pedidos (baseado na Central de Tarefas) */
-        #orderCenterScreen {
+        #orderCenterScreen, #hongKongSummaryScreen, #renatoApprovalScreen,
+        #hongKongFormScreen, #colombiaFormScreen, #orderDetailsScreen,
+        #purchaseOrderScreen, #hongKongFinalScreen, #colombiaInvoiceScreen {
             display: flex;
             flex-direction: column;
             width: 100%;
-            min-height: 100vh; /* Ocupa a altura total da viewport */
-            box-shadow: none; /* Remove sombra do container se aplicada aqui */
-            padding: 0; /* Remove preenchimento do container se aplicado aqui */
-            margin: 0; /* Remove margem do container se aplicado aqui */
-            background-color: #f3f4f6; /* Define o fundo do corpo, não do container */
-            overflow: auto; /* Permite rolagem se o conteúdo exceder */
+            /* Removed min-height: 100vh; to allow natural height and scrolling */
+            box-shadow: none; /* Remove shadow if applied by .container */
+            padding: 0; /* Remove padding if applied by .container */
+            margin: 0; /* Remove margin if applied by .container */
+            background-color: #f3f4f6; /* Define the body background, not the container's */
+            overflow: auto; /* Allows internal scrolling if content exceeds screen height */
         }
+
         #orderCenterScreen .header { /* Usar o estilo de cabeçalho geral */
             padding-top: 20px;
             margin-bottom: 16px;
@@ -303,10 +313,10 @@
             margin-right: 6px;
         }
         /* Nova categorização de cores para os status atualizados */
-        #orderCenterTable .status-indicator.green { background-color: #22c55e; } /* Aprovado, Carga Pronta, Entregue, Carga Entregue */
+        #orderCenterTable .status-indicator.green { background-color: #22c55e; } /* Aprovado, Carga Pronta, Entregue, Carga Entregue, Documentação OK, Chegada no Porto */
         #orderCenterTable .status-indicator.red { background-color: #ef4444; } /* Rejeitado */
-        #orderCenterTable .status-indicator.yellow { background-color: #eab308; } /* Pendente, Aguardando Aprovação, Em Negociação */
-        #orderCenterTable .status-indicator.blue { background-color: #3b82f6; } /* Em Processamento (genérico), Em Separação, Em Conferência, Em Rota de Entrega */
+        #orderCenterTable .status-indicator.yellow { background-color: #eab308; } /* Pendente, Aguardando Aprovação, Em Negociação, Documentação Pendente */
+        #orderCenterTable .status-indicator.blue { background-color: #3b82f6; } /* Em Processamento (genérico), Em Separação, Em Conferência, Em Rota de Entrega, Em Produção, Saída do Porto */
         #orderCenterTable .status-indicator.gray { background-color: #6b7280; } /* Cancelado */
 
 
@@ -463,15 +473,35 @@
             background-color: #22c55e; /* Verde */
             border-color: #16a34a;
         }
+        .tracking-step.production.active .circle,
+        .tracking-step.production.completed .circle {
+            background-color: #3b82f6; /* Azul padrão para Em Produção */
+            border-color: #2563eb;
+        }
         .tracking-step.ready-cargo.active .circle,
         .tracking-step.ready-cargo.completed .circle {
             background-color: #06b6d4; /* Ciano para Carga Pronta */
             border-color: #0891b2;
         }
-        .tracking-step.in-transit.active .circle,
-        .tracking-step.in-transit.completed .circle {
-            background-color: #8b5cf6; /* Roxo para Carga Em rota de Entrega / Em Rota de Entrega */
+        .tracking-step.atd.active .circle,
+        .tracking-step.atd.completed .circle {
+            background-color: #8b5cf6; /* Roxo para Saída do Porto de Embarque (ATD) */
             border-color: #7c3aed;
+        }
+        .tracking-step.pending-doc.active .circle,
+        .tracking-step.pending-doc.completed .circle {
+            background-color: #fbbf24; /* Amarelo-laranja para Documentação Pendente */
+            border-color: #d97706;
+        }
+        .tracking-step.doc-ok.active .circle,
+        .tracking-step.doc-ok.completed .circle {
+            background-color: #22c55e; /* Verde para Documentação OK */
+            border-color: #16a34a;
+        }
+        .tracking-step.ata.active .circle,
+        .tracking-step.ata.completed .circle {
+            background-color: #22c55e; /* Verde para Chegada no Porto de Destino (ATA) */
+            border-color: #16a34a;
         }
         .tracking-step.delivered.active .circle,
         .tracking-step.delivered.completed .circle {
@@ -598,37 +628,18 @@
         }
 
         /* Estilos para a Tela de Resumo para combinar com a Central de Pedidos */
-        #hongKongSummaryScreen {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            min-height: 100vh;
-            box-shadow: none;
-            padding: 0;
-            margin: 0;
-            background-color: #f3f4f6;
-        }
         #hongKongSummaryScreen .header {
             padding-top: 20px;
             margin-bottom: 16px;
         }
         /* Estilos específicos para a tela de Aprovação do Renato */
-        #renatoApprovalScreen {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            min-height: 100vh;
-            background-color: #f3f4f6;
-            padding: 20px; /* Adiciona padding ao redor do conteúdo principal */
-            box-sizing: border-box; /* Inclui padding na largura e altura */
-        }
         #renatoApprovalScreen .content-area {
             background-color: #ffffff; /* Fundo branco para o conteúdo principal */
             border-radius: 12px;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             padding: 32px;
             text-align: left; /* Alinhar texto à esquerda */
-            max-width: 1800px; /* Define largura máxima para a área de conteúdo, conforme solicitado */
+            max-width: 2400px; /* Define largura máxima para a área de conteúdo, conforme solicitado */
             width: 100%;
             margin: 0 auto; /* Centraliza a área de conteúdo */
         }
@@ -804,7 +815,7 @@
     </style>
 </head>
 <body>
-    <div id="app" class="w-full flex justify-center items-center min-h-screen">
+    <div id="app" class="w-full"> <!-- Removed min-h-screen here as body now handles it -->
         <!-- Tela de Login -->
         <div id="loginScreen" class="screen">
             <div class="login-card"> <!-- Removido a classe 'container' daqui para usar o estilo mais específico do .login-card -->
@@ -846,17 +857,18 @@
                         <select id="statusFilter" class="rounded-lg p-2 border border-gray-300 w-full" onchange="renderOrdersTable()">
                             <option value="">Todos</option>
                             <option value="Pendente">Pendente</option>
-                            <option value="Em Processamento">Em Processamento</option>
-                            <option value="Aprovado">Aprovado</option>
-                            <option value="Rejeitado">Rejeitado</option>
-                            <option value="Cancelado">Cancelado</option>
-                            <!-- Adicionar opções para novos status HK -->
                             <option value="Em Negociação">Em Negociação</option>
                             <option value="Aguardando Aprovação">Aguardando Aprovação</option>
+                            <option value="Aprovado">Aprovado</option>
+                            <option value="Em Produção">Em Produção</option>
                             <option value="Carga Pronta">Carga Pronta</option>
-                            <option value="Carga Em rota de Entrega">Carga Em rota de Entrega</option>
-                            <option value="Carga Entregue">Carga Entregue</option>
-                            <!-- Adicionar opções para novos status Colômbia -->
+                            <option value="Saída do Porto de Embarque (ATD)">Saída do Porto de Embarque (ATD)</option>
+                            <option value="Documentação Pendente">Documentação Pendente</option>
+                            <option value="Documentação OK">Documentação OK</option>
+                            <option value="Chegada no Porto de Destino (ATA)">Chegada no Porto de Destino (ATA)</option>
+                            <option value="Rejeitado">Rejeitado</option>
+                            <option value="Cancelado">Cancelado</option>
+                            <!-- Adicionar opções para novos status Colômbia (já existem) -->
                             <option value="Em Separação">Em Separação</option>
                             <option value="Em Conferência">Em Conferência</option>
                             <option value="Em Rota de Entrega">Em Rota de Entrega</option>
@@ -883,7 +895,7 @@
                                class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                oninput="renderOrdersTable()">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 0 0010.607 10.607z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.0 0010.607 10.607z" />
                         </svg>
                     </div>
                 </div>
@@ -1409,6 +1421,7 @@
                     |                NOTA FISCAL ELETRÔNICA            |
                     | Nº: NF-20250624-001                                |
                     | Data de Emissão: 24/06/2025                        |
+                    | ${clientOrderNumber ? `Seu Pedido: ${clientOrderNumber}`.padEnd(50, ' ') + `|\n` : '' }
                     |                                                    |
                     | REMETENTE: EMPRESA XYZ DO BRASIL                   |
                     | CNPJ: 00.000.000/0001-00                           |
@@ -1424,7 +1437,7 @@
                     | 001| Produto Colômbia A  | 10  | R$ 100,00  | R$ 1000,00 |
                     | 002| Produto Colômbia B  | 5   | R$ 100,00  | R$ 500,00  |
                     |--------------------------------------------------|
-                    | VALOR TOTAL:                                R$ 0,00 |
+                    | VALOR TOTAL:                                R$ ${totalNfeValue.replace('.', ',')} |
                     ----------------------------------------------------
                     (Este é um exemplo simulado de NF-e.)
                 </pre>
@@ -1585,7 +1598,7 @@
                 clientFlag: 'TOTVS BRASIL',
                 originCountry: 'Hong Kong',
                 totalValue: 5000.00,
-                status: 'Aguardando Aprovação', // Alterado: Status inicial do tracking HK
+                status: 'Aguardando Aprovação', // Status inicial do tracking HK
                 requestDate: '2025-06-20',
                 lastUpdateDate: '2025-06-22',
                 supplier: 'Fornecedor A',
@@ -1599,7 +1612,7 @@
                 clientFlag: 'ACME Corp',
                 originCountry: 'Colômbia',
                 totalValue: 1200.00,
-                status: 'Em Separação', // Alterado: Status inicial do tracking Colômbia
+                status: 'Em Separação', // Status inicial do tracking Colômbia
                 requestDate: '2025-06-21',
                 lastUpdateDate: '2025-06-21',
                 supplier: 'Fornecedor B',
@@ -1643,7 +1656,7 @@
                 clientFlag: 'Tech Solutions',
                 originCountry: 'Hong Kong',
                 totalValue: 750.00,
-                status: 'Em Negociação', // Alterado: Status detalhado do tracking HK
+                status: 'Em Negociação', // Status detalhado do tracking HK
                 requestDate: '2025-06-24',
                 lastUpdateDate: '2025-06-24',
                 supplier: 'Fornecedor B',
@@ -1658,7 +1671,7 @@
                 clientFlag: 'Eletro Mundi',
                 originCountry: 'Hong Kong',
                 totalValue: 120.00,
-                status: 'Carga Entregue', // Alterado: Status detalhado do tracking HK
+                status: 'Chegada no Porto de Destino (ATA)', // Status detalhado do tracking HK
                 requestDate: '2025-06-24',
                 lastUpdateDate: '2025-06-25',
                 supplier: 'Fornecedor A',
@@ -1673,7 +1686,7 @@
                 clientFlag: 'Casa e Conforto',
                 originCountry: 'Colômbia',
                 totalValue: 1800.00,
-                status: 'Em Conferência', // Alterado: Status detalhado do tracking Colômbia
+                status: 'Em Conferência', // Status detalhado do tracking Colômbia
                 requestDate: '2025-06-25',
                 lastUpdateDate: '2025-06-25',
                 supplier: 'Fornecedor C',
@@ -1687,7 +1700,7 @@
                 clientFlag: 'Home Office Ltda',
                 originCountry: 'Hong Kong',
                 totalValue: 700.00,
-                status: 'Carga Pronta', // Alterado: Status detalhado do tracking HK
+                status: 'Carga Pronta', // Status detalhado do tracking HK
                 requestDate: '2025-06-25',
                 lastUpdateDate: '2025-06-25',
                 supplier: 'Fornecedor B',
@@ -1744,7 +1757,7 @@
                 clientFlag: 'Tecnologia Avançada',
                 originCountry: 'Colômbia',
                 totalValue: 800.00,
-                status: 'Em Rota de Entrega', // Alterado: Status detalhado do tracking Colômbia
+                status: 'Em Rota de Entrega', // Status detalhado do tracking Colômbia
                 requestDate: '2025-06-27',
                 lastUpdateDate: '2025-06-27',
                 supplier: 'Fornecedor B',
@@ -1772,7 +1785,7 @@
                 clientFlag: 'Importadora Nova',
                 originCountry: 'Hong Kong',
                 totalValue: 160.00,
-                status: 'Carga Em rota de Entrega', // Alterado: Status detalhado do tracking HK
+                status: 'Saída do Porto de Embarque (ATD)', // Status detalhado do tracking HK
                 requestDate: '2025-06-28',
                 lastUpdateDate: '2025-06-28',
                 supplier: 'Fornecedor A',
@@ -1787,7 +1800,7 @@
                 clientFlag: 'Cliente Prototipo',
                 originCountry: 'Hong Kong',
                 totalValue: 760.00,
-                status: 'Em Processamento', // Universal, para "Em Processamento" genérico antes do Renato (Hong Kong)
+                status: 'Em Produção', // Status inicial para Hong Kong após aprovação Renato
                 requestDate: '2025-06-29',
                 lastUpdateDate: '2025-06-29',
                 supplier: 'Fornecedor A',
@@ -1801,7 +1814,7 @@
                 clientFlag: 'Cliente Prototipo',
                 originCountry: 'Hong Kong',
                 totalValue: 500.00,
-                status: 'Em Processamento', // Universal, para "Em Processamento" genérico antes do Renato (Hong Kong)
+                status: 'Em Produção', // Status inicial para Hong Kong após aprovação Renato
                 requestDate: '2025-06-29',
                 lastUpdateDate: '2025-06-29',
                 supplier: 'Fornecedor B',
@@ -2171,7 +2184,7 @@
                 }
             };
 
-            const filteredOrders = orders.filter(order => {
+            let filteredOrders = orders.filter(order => {
                 const matchesStatus = statusFilter === '' || order.status === statusFilter;
                 // Filtra por código de fornecedor, convertendo o nome do fornecedor do pedido para seu código
                 const matchesSupplier = supplierFilterCode === '' || getOrGenerateSupplierCode(order.supplier) === supplierFilterCode; 
@@ -2183,6 +2196,15 @@
                 return matchesStatus && matchesSupplier && matchesOriginCountry && matchesSearch; // Combina todos os filtros
             });
 
+            // Sort the filtered orders by parentOrderId in ascending order
+            filteredOrders.sort((a, b) => {
+                // Extrai o número do ID (ex: "SOL-001" -> 1)
+                const idA = parseInt(a.parentOrderId.replace('SOL-', ''));
+                const idB = parseInt(b.parentOrderId.replace('SOL-', ''));
+                return idA - idB; // Ordena crescentemente
+            });
+
+
             filteredOrders.forEach(order => {
                 const row = document.createElement('tr');
                 
@@ -2191,22 +2213,25 @@
                 switch (order.status) {
                     case 'Aprovado':
                     case 'Carga Pronta':
-                    case 'Carga Entregue':
-                    case 'Entregue':
+                    case 'Documentação OK':
+                    case 'Chegada no Porto de Destino (ATA)':
+                    case 'Entregue': // Colômbia
                         statusIndicatorClass = 'green';
                         break;
                     case 'Pendente':
                     case 'Aguardando Aprovação':
                     case 'Em Negociação':
+                    case 'Documentação Pendente':
                         statusIndicatorClass = 'yellow';
                         break;
                     case 'Rejeitado':
                         statusIndicatorClass = 'red';
                         break;
-                    case 'Em Processamento':
-                    case 'Em Separação':
-                    case 'Em Conferência':
-                    case 'Em Rota de Entrega':
+                    case 'Em Produção':
+                    case 'Saída do Porto de Embarque (ATD)':
+                    case 'Em Separação': // Colômbia
+                    case 'Em Conferência': // Colômbia
+                    case 'Em Rota de Entrega': // Colômbia
                         statusIndicatorClass = 'blue';
                         break;
                     case 'Cancelado':
@@ -2289,15 +2314,18 @@
 
         // --- Lógica de Tracking ---
         const hongKongTrackingFlow = [
-            { name: 'Pendente', class: 'pending' },
-            { name: 'Em Negociação', class: 'negotiation' },
-            { name: 'Aguardando Aprovação', class: 'waiting-approval' },
-            { name: 'Aprovado', class: 'approved' },
-            { name: 'Carga Pronta', class: 'ready-cargo' },
-            { name: 'Carga Em rota de Entrega', class: 'in-transit' },
-            { name: 'Carga Entregue', class: 'delivered' },
-            { name: 'Rejeitado', class: 'rejected', isFinal: true },
-            { name: 'Cancelado', class: 'cancelled', isFinal: true }
+            { name: 'Pendente', class: 'pending', description: 'Pedido criado, aguardando Compras Internacionais iniciar o processo.' },
+            { name: 'Em Negociação', class: 'negotiation', description: 'Pedido enviado ao fornecedor, aguardando negociação' },
+            { name: 'Aguardando Aprovação', class: 'waiting-approval', description: 'Pedido recebido, Aguardando aprovação da Gerencia' },
+            { name: 'Aprovado', class: 'approved', description: 'Pedido Aprovado (via retorno da Gerência)' }, // Outcome of approval
+            { name: 'Em Produção', class: 'production', description: 'Pedido Aprovado, em produção pelo fornecedor' },
+            { name: 'Carga Pronta', class: 'ready-cargo', description: 'Mercadoria pronta para embarque' },
+            { name: 'Saída do Porto de Embarque (ATD)', class: 'atd', description: 'Pedido embarcado' },
+            { name: 'Documentação Pendente', class: 'pending-doc', description: 'Providenciando documentação de embarque (CI, PL, TELEX RELEASE, COO, Serial Numbers, conforme necessidade do cliente)' },
+            { name: 'Documentação OK', class: 'doc-ok', description: 'Toda documentação de embarque ok, processo finalizado no DIMPEX' },
+            { name: 'Chegada no Porto de Destino (ATA)', class: 'ata', description: 'Navio atracado no porto de destino', isFinal: true }, // Terminal successful state
+            { name: 'Rejeitado', class: 'rejected', description: 'Pedido Rejeitado', isFinal: true }, // Terminal failure state
+            { name: 'Cancelado', class: 'cancelled', description: 'Pedido Cancelado', isFinal: true } // Terminal failure state
         ];
 
         const colombiaTrackingFlow = [
@@ -2305,7 +2333,7 @@
             { name: 'Em Separação', class: 'separation' },
             { name: 'Em Conferência', class: 'conference' },
             { name: 'Em Rota de Entrega', class: 'in-transit' },
-            { name: 'Entregue', class: 'delivered' },
+            { name: 'Entregue', class: 'delivered', isFinal: true }, // Entregue é o final do fluxo Colômbia
             { name: 'Aprovado', class: 'approved' }, // Aprovado pode ser pós-entrega, se o ERP aprova o faturamento
             { name: 'Rejeitado', class: 'rejected', isFinal: true },
             { name: 'Cancelado', class: 'cancelled', isFinal: true }
@@ -2325,48 +2353,71 @@
                 return;
             }
 
-            const currentStatusIndex = flow.findIndex(step => step.name === order.status);
+            // Encontra o índice do status atual no fluxo, ignorando os status finais (Rejeitado, Cancelado)
+            // se o fluxo linear principal ainda não os atingiu.
+            let currentStatusIndex = flow.findIndex(step => step.name === order.status);
+
+            // Se o status atual for um estado final (Rejeitado/Cancelado), garanta que ele seja o único 'active'
+            // e todos os anteriores sejam 'completed' no display.
+            const isTerminalStatus = ['Rejeitado', 'Cancelado'].includes(order.status);
+            if (isTerminalStatus) {
+                // Find the index of the terminal status in the flow
+                currentStatusIndex = flow.findIndex(step => step.name === order.status);
+            } else {
+                // For non-terminal statuses, ensure terminal statuses are not marked as 'completed' prematurely
+                const terminalStepsInFlow = flow.filter(step => step.isFinal);
+                // If the current status is *before* any terminal status in the conceptual flow,
+                // don't mark terminal statuses as completed.
+                if (currentStatusIndex !== -1) {
+                     const firstTerminalIndex = flow.findIndex(step => step.isFinal);
+                     if (firstTerminalIndex !== -1 && currentStatusIndex > firstTerminalIndex) {
+                        // If current status is after the conceptual "start" of terminal states,
+                        // re-adjust currentStatusIndex to represent the linear progress correctly.
+                        // This logic is complex for multiple branches, but for now, assumes linear then branches.
+                        // For a simple linear flow with terminal branches at the end, the initial find is usually fine.
+                     }
+                }
+            }
+
+
             let trackingHtml = '<div class="tracking-steps">';
 
             flow.forEach((step, index) => {
                 let stepClass = '';
-                let circleContent = ''; // Conteúdo do círculo (vazio ou ícone)
+                let circleContent = '';
 
-                // Lógica de destaque e cor para o status atual
-                if (index === currentStatusIndex) {
-                    stepClass = 'active';
-                    // Adiciona classes de cor específicas para o status ATIVO
-                    if (step.class) {
-                         stepClass += ` ${step.class}`; // Adiciona a classe de cor personalizada (e.g., 'negotiation', 'approved')
-                    }
-                } else if (index < currentStatusIndex) {
-                    // Status que já foram concluídos
-                    stepClass = 'completed';
-                    if (step.class) { // Adiciona a classe de cor personalizada para passos concluídos
-                        stepClass += ` ${step.class}`;
+                if (isTerminalStatus) {
+                    // If it's a terminal status, mark previous steps as completed, the terminal step as active, and others as future.
+                    if (index < currentStatusIndex) {
+                        stepClass = 'completed';
+                    } else if (index === currentStatusIndex) {
+                        stepClass = 'active';
+                    } else {
+                        stepClass = 'future';
                     }
                 } else {
-                    // Status futuros (ainda não alcançados)
-                    stepClass = 'future'; // Adicione uma classe para estilos futuros, se necessário
+                    // For non-terminal statuses, normal linear progression
+                    if (index < currentStatusIndex) {
+                        stepClass = 'completed';
+                    } else if (index === currentStatusIndex) {
+                        stepClass = 'active';
+                    } else {
+                        stepClass = 'future';
+                    }
                 }
-
-                // Casos especiais para status "Rejeitado" e "Cancelado"
-                if ((step.name === 'Rejeitado' || step.name === 'Cancelado') && index === currentStatusIndex) {
-                    stepClass = `active ${step.class}`; // Garante que fiquem vermelhos se forem o status atual
-                } else if ((step.name === 'Rejeitado' || step.name === 'Cancelado') && index < currentStatusIndex) {
-                     // Se Rejeitado/Cancelado já passou, mas o status atual NÃO é um status final (ex: Rejeitado -> Carga Pronta), eles ainda ficam vermelhos
-                    if (flow[currentStatusIndex].isFinal === false) { // Se o status ATUAL NÃO é um status final
-                         stepClass = `completed ${step.class}`; // Considera-se concluído (em termos de ter passado)
-                    } else { // Se o status ATUAL é outro status final (ex: Rejeitado -> Cancelado)
-                         stepClass = `completed ${step.class}`; // Marca como concluído (passou por ele)
+                
+                // Apply the specific color class if the step is completed or active
+                if (stepClass === 'completed' || stepClass === 'active') {
+                    if (step.class) {
+                        stepClass += ` ${step.class}`;
                     }
                 }
 
-                // Conteúdo do círculo (opcional, pode ser um número ou um ícone de "check")
-                if (stepClass.includes('completed') && !step.isFinal) { // Adiciona checkmark para concluídos não-finais
-                    circleContent = '&#10003;'; // Checkmark Unicode
-                } else if (index === currentStatusIndex) { // Para o status atual
-                    circleContent = (index + 1).toString(); // Número do passo
+                // Circle content
+                if (stepClass.includes('completed')) { // If the step is completed
+                    circleContent = '&#10003;'; // Checkmark
+                } else if (stepClass.includes('active')) { // If it's the active step
+                    circleContent = (index + 1).toString(); // Step number
                 }
 
                 trackingHtml += `
@@ -3082,8 +3133,12 @@
             // Atualiza o status correspondente no array 'orders'
             const orderIndex = orders.findIndex(o => o.orderId === currentViewingPO.id);
             if (orderIndex !== -1) {
-                // Atualiza o status principal do pedido com base na decisão de Renato
-                orders[orderIndex].status = currentViewingPO.overallApprovalStatus; // Status principal recebe o status de aprovação Renato
+                // Se aprovado, o status na Central de Pedidos segue o fluxo de Hong Kong
+                if (currentViewingPO.overallApprovalStatus === 'Aprovado') {
+                    orders[orderIndex].status = 'Em Produção'; // Próximo passo após aprovação
+                } else {
+                    orders[orderIndex].status = currentViewingPO.overallApprovalStatus; // Mantém Rejeitado ou Em Negociação
+                }
                 orders[orderIndex].lastUpdateDate = new Date().toLocaleDateString('pt-BR');
             }
 
@@ -3491,7 +3546,8 @@
                     | -------------------------------------------------- |
                     | ID | DESCRIÇÃO           | QTD | VALOR UNIT | TOTAL |
                     |----|---------------------|-----|------------|-------|
-                    ${productsInNfePdf}
+                    | 001| Produto Colômbia A  | 10  | R$ 100,00  | R$ 1000,00 |
+                    | 002| Produto Colômbia B  | 5   | R$ 100,00  | R$ 500,00  |
                     |--------------------------------------------------|
                     | VALOR TOTAL:                                R$ ${totalNfeValue.replace('.', ',')} |
                     ----------------------------------------------------
