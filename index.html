@@ -302,10 +302,13 @@
             border-radius: 50%;
             margin-right: 6px;
         }
-        #orderCenterTable .status-indicator.green { background-color: #22c55e; } /* Aprovado */
+        /* Nova categorização de cores para os status atualizados */
+        #orderCenterTable .status-indicator.green { background-color: #22c55e; } /* Aprovado, Carga Pronta, Entregue, Carga Entregue */
         #orderCenterTable .status-indicator.red { background-color: #ef4444; } /* Rejeitado */
-        #orderCenterTable .status-indicator.yellow { background-color: #eab308; } /* Pendente */
-        #orderCenterTable .status-indicator.blue { background-color: #3b82f6; } /* Em processamento */
+        #orderCenterTable .status-indicator.yellow { background-color: #eab308; } /* Pendente, Aguardando Aprovação, Em Negociação */
+        #orderCenterTable .status-indicator.blue { background-color: #3b82f6; } /* Em Processamento (genérico), Em Separação, Em Conferência, Em Rota de Entrega */
+        #orderCenterTable .status-indicator.gray { background-color: #6b7280; } /* Cancelado */
+
 
         #orderCenterTable tbody tr:hover {
             background-color: #f3f4f6; /* Cinza claro mais escuro no hover para todas as linhas */
@@ -366,6 +369,127 @@
             background-color: #f9fafb;
         }
 
+        /* Estilos para o Tracking do Pedido */
+        .tracking-steps {
+            display: flex;
+            flex-wrap: wrap; /* Permite quebrar linha em telas menores */
+            justify-content: space-between;
+            margin-top: 20px;
+            padding: 20px 0;
+            border-top: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .tracking-step {
+            flex: 1; /* Distribui o espaço igualmente */
+            min-width: 120px; /* Largura mínima para cada etapa */
+            text-align: center;
+            position: relative;
+            padding-top: 30px; /* Espaço para o círculo e linha */
+            color: #9ca3af; /* Cor padrão para inativo/futuro */
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .tracking-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: calc(50% + 15px); /* Inicia após o círculo */
+            width: calc(100% - 30px); /* Largura da linha entre os círculos */
+            height: 2px;
+            background-color: #e5e7eb; /* Cor da linha para status futuros */
+            z-index: 0;
+        }
+        .tracking-step .circle {
+            width: 30px;
+            height: 30px;
+            background-color: #e5e7eb; /* Cor padrão para inativo/futuro */
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-weight: bold;
+            z-index: 1; /* Para ficar acima da linha */
+        }
+
+        /* Estilos para o status atual e anteriores */
+        .tracking-step.completed {
+            color: #1f2937; /* Texto escuro para concluído */
+        }
+        .tracking-step.completed .circle {
+            background-color: #22c55e; /* Verde para concluído */
+        }
+        .tracking-step.completed:not(:last-child)::after {
+            background-color: #22c55e; /* Linha verde para concluído */
+        }
+        .tracking-step.active {
+            color: #3b82f6; /* Azul para ativo */
+            font-weight: 600;
+        }
+        .tracking-step.active .circle {
+            background-color: #3b82f6; /* Azul para ativo */
+            border: 2px solid #2563eb; /* Borda mais escura para destaque */
+            transform: translateX(-50%) scale(1.1); /* Um pouco maior */
+        }
+        /* Estilos para Rejeitado/Cancelado quando são o status ATUAL */
+        .tracking-step.rejected.active, .tracking-step.cancelled.active {
+            color: #dc2626; /* Vermelho para rejeitado/cancelado */
+            font-weight: 600;
+        }
+        .tracking-step.rejected.active .circle, .tracking-step.cancelled.active .circle {
+            background-color: #dc2626; /* Vermelho para rejeitado/cancelado */
+            border: 2px solid #b91c1c;
+        }
+
+        /* Cores específicas para os círculos quando ATIVOS ou COMPLETED */
+        /* Hong Kong Specific */
+        .tracking-step.negotiation.active .circle,
+        .tracking-step.negotiation.completed .circle {
+            background-color: #eab308; /* Amarelo para Em Negociação */
+            border-color: #b45309;
+        }
+        .tracking-step.waiting-approval.active .circle,
+        .tracking-step.waiting-approval.completed .circle {
+            background-color: #f97316; /* Laranja para Aguardando Aprovação */
+            border-color: #c2410c;
+        }
+        .tracking-step.approved.active .circle,
+        .tracking-step.approved.completed .circle { /* Aprovado pode ser completo ou ativo */
+            background-color: #22c55e; /* Verde */
+            border-color: #16a34a;
+        }
+        .tracking-step.ready-cargo.active .circle,
+        .tracking-step.ready-cargo.completed .circle {
+            background-color: #06b6d4; /* Ciano para Carga Pronta */
+            border-color: #0891b2;
+        }
+        .tracking-step.in-transit.active .circle,
+        .tracking-step.in-transit.completed .circle {
+            background-color: #8b5cf6; /* Roxo para Carga Em rota de Entrega / Em Rota de Entrega */
+            border-color: #7c3aed;
+        }
+        .tracking-step.delivered.active .circle,
+        .tracking-step.delivered.completed .circle {
+            background-color: #22c55e; /* Verde para Carga Entregue / Entregue */
+            border-color: #16a34a;
+        }
+        /* Colombia Specific (ERP-like) */
+        .tracking-step.separation.active .circle,
+        .tracking-step.separation.completed .circle {
+            background-color: #a78bfa; /* Light purple for Em Separação */
+            border-color: #9333ea;
+        }
+        .tracking-step.conference.active .circle,
+        .tracking-step.conference.completed .circle {
+            background-color: #6d28d9; /* Darker purple for Em Conferência */
+            border-color: #5b21b6;
+        }
+        
         /* Estilos específicos do modal */
         .modal-overlay {
             position: fixed;
@@ -389,6 +513,11 @@
             width: 90%; /* Largura responsiva */
             text-align: center;
         }
+        /* Corrigido: Modal de Seleção de Filial deve ser mais compacto */
+        #filialSelectionModal .modal-content {
+            max-width: 400px; /* Mantém a largura compacta como os outros modais */
+        }
+
 
         /* Estilos específicos para o modal do catálogo de produtos */
         #productCatalogModal .modal-content {
@@ -513,17 +642,17 @@
             position: relative; /* Para o indicador de status */
         }
 
-        #renatoApprovalScreen .price-difference-positive {
+        .price-difference-positive {
             color: #dc2626; /* Vermelho para aumento de custo */
             font-weight: 700;
         }
 
-        #renatoApprovalScreen .price-difference-negative {
+        .price-difference-negative {
             color: #16a34a; /* Verde para economia */
             font-weight: 700;
         }
 
-        #renatoApprovalScreen .supplier-status-indicator {
+        .supplier-status-indicator {
             position: absolute;
             top: 10px;
             right: 10px;
@@ -716,10 +845,22 @@
                         <label for="statusFilter" class="block text-sm font-medium text-gray-700">Status:</label>
                         <select id="statusFilter" class="rounded-lg p-2 border border-gray-300 w-full" onchange="renderOrdersTable()">
                             <option value="">Todos</option>
-                            <option value="Aprovado">Aprovado</option>
                             <option value="Pendente">Pendente</option>
-                            <option value="Rejeitado">Rejeitado</option>
                             <option value="Em Processamento">Em Processamento</option>
+                            <option value="Aprovado">Aprovado</option>
+                            <option value="Rejeitado">Rejeitado</option>
+                            <option value="Cancelado">Cancelado</option>
+                            <!-- Adicionar opções para novos status HK -->
+                            <option value="Em Negociação">Em Negociação</option>
+                            <option value="Aguardando Aprovação">Aguardando Aprovação</option>
+                            <option value="Carga Pronta">Carga Pronta</option>
+                            <option value="Carga Em rota de Entrega">Carga Em rota de Entrega</option>
+                            <option value="Carga Entregue">Carga Entregue</option>
+                            <!-- Adicionar opções para novos status Colômbia -->
+                            <option value="Em Separação">Em Separação</option>
+                            <option value="Em Conferência">Em Conferência</option>
+                            <option value="Em Rota de Entrega">Em Rota de Entrega</option>
+                            <option value="Entregue">Entregue</option>
                         </select>
                     </div>
                     <div class="flex-1 min-w-[150px]">
@@ -742,7 +883,7 @@
                                class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                oninput="renderOrdersTable()">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 0 0010.607 10.607z" />
                         </svg>
                     </div>
                 </div>
@@ -773,7 +914,7 @@
         </div>
 
         <!-- Tela de Detalhes do Pedido -->
-        <div id="orderDetailsScreen" class="screen hidden container">
+        <div id="orderDetailsScreen" class="screen hidden app-content-wrapper"> <!-- Ajustado para app-content-wrapper -->
             <div class="header">
                 <h1 class="text-3xl font-bold text-gray-800 mb-4">Detalhes do Pedido <span id="currentOrderId"></span></h1>
             </div>
@@ -796,7 +937,7 @@
                         <strong>Valor Total:</strong> <span id="detailTotalValue"></span>
                     </div>
                     <div class="detail-item">
-                        <strong>Status do Pedido:</strong> <span id="detailStatus"></span>
+                        <strong>Status do Pedido:</strong> <span id="detailStatus"></span> <!-- Ainda exibe o status direto -->
                     </div>
                     <div class="detail-item">
                         <strong>Data Solicitação/Criação:</strong> <span id="detailRequestDate"></span>
@@ -804,6 +945,11 @@
                     <div class="detail-item">
                         <strong>Data Última Alteração:</strong> <span id="detailLastUpdateDate"></span>
                     </div>
+                </div>
+
+                <h3 class="font-semibold text-lg mt-6 mb-4">Status de Rastreamento</h3>
+                <div id="orderTrackingSection">
+                    <!-- Tracking steps will be rendered here dynamically -->
                 </div>
 
                 <h3 class="font-semibold text-lg mt-6 mb-4">Produtos do Pedido</h3>
@@ -830,7 +976,7 @@
 
         <!-- Modal de Seleção de Filial -->
         <div id="filialSelectionModal" class="modal-overlay hidden">
-            <div class="modal-content"> <!-- Removida a classe 'container' e ajustado max-width para o estilo do modal -->
+            <div class="modal-content"> <!-- Corrigido: Removida a classe 'container' e ajustado max-width para o estilo do modal -->
                 <div class="header">
                     <h1 class="text-3xl font-bold text-gray-800 mb-4">Escolha a Filial</h1>
                     <p class="text-gray-600">Para qual filial você deseja enviar a solicitação?</p>
@@ -1439,7 +1585,7 @@
                 clientFlag: 'TOTVS BRASIL',
                 originCountry: 'Hong Kong',
                 totalValue: 5000.00,
-                status: 'Pendente', // Status inicial, para Renato aprovar
+                status: 'Aguardando Aprovação', // Alterado: Status inicial do tracking HK
                 requestDate: '2025-06-20',
                 lastUpdateDate: '2025-06-22',
                 supplier: 'Fornecedor A',
@@ -1447,13 +1593,13 @@
                     { code: 'PROD001', description: 'Smartphone Premium X1', quantity: 10, unitPrice: 150.00, cubageUnit: 0.005 }
                 ]
             },
-            { // Movido para nova solicitação principal para manter consistência de origem
+            {
                 orderId: 'PED-002',
-                parentOrderId: 'SOL-009', // Nova SOL-XXX
+                parentOrderId: 'SOL-009',
                 clientFlag: 'ACME Corp',
                 originCountry: 'Colômbia',
                 totalValue: 1200.00,
-                status: 'Pendente',
+                status: 'Em Separação', // Alterado: Status inicial do tracking Colômbia
                 requestDate: '2025-06-21',
                 lastUpdateDate: '2025-06-21',
                 supplier: 'Fornecedor B',
@@ -1476,13 +1622,13 @@
                     { code: 'PROD006', description: 'Bateria Portátil Mega', quantity: 5, unitPrice: 25.00, cubageUnit: 0.0005 }
                 ]
             },
-            { // Movido para nova solicitação principal para manter consistência de origem
+            {
                 orderId: 'PED-004',
-                parentOrderId: 'SOL-010', // Nova SOL-XXX
+                parentOrderId: 'SOL-010',
                 clientFlag: 'Importadora Sul',
                 originCountry: 'Colômbia',
                 totalValue: 800.00,
-                status: 'Em Processamento',
+                status: 'Entregue',
                 requestDate: '2025-06-23',
                 lastUpdateDate: '2025-06-23',
                 supplier: 'Fornecedor C',
@@ -1497,7 +1643,7 @@
                 clientFlag: 'Tech Solutions',
                 originCountry: 'Hong Kong',
                 totalValue: 750.00,
-                status: 'Pendente',
+                status: 'Em Negociação', // Alterado: Status detalhado do tracking HK
                 requestDate: '2025-06-24',
                 lastUpdateDate: '2025-06-24',
                 supplier: 'Fornecedor B',
@@ -1512,7 +1658,7 @@
                 clientFlag: 'Eletro Mundi',
                 originCountry: 'Hong Kong',
                 totalValue: 120.00,
-                status: 'Aprovado',
+                status: 'Carga Entregue', // Alterado: Status detalhado do tracking HK
                 requestDate: '2025-06-24',
                 lastUpdateDate: '2025-06-25',
                 supplier: 'Fornecedor A',
@@ -1527,7 +1673,7 @@
                 clientFlag: 'Casa e Conforto',
                 originCountry: 'Colômbia',
                 totalValue: 1800.00,
-                status: 'Em Processamento',
+                status: 'Em Conferência', // Alterado: Status detalhado do tracking Colômbia
                 requestDate: '2025-06-25',
                 lastUpdateDate: '2025-06-25',
                 supplier: 'Fornecedor C',
@@ -1535,13 +1681,13 @@
                     { code: 'PROD007', description: 'Cadeira Ergonômica', quantity: 3, unitPrice: 600.00, cubageUnit: 0.15 }
                 ]
             },
-            { // Movido para nova solicitação principal para manter consistência de origem
+            {
                 orderId: 'PED-008',
-                parentOrderId: 'SOL-011', // Nova SOL-XXX
+                parentOrderId: 'SOL-011',
                 clientFlag: 'Home Office Ltda',
                 originCountry: 'Hong Kong',
                 totalValue: 700.00,
-                status: 'Pendente',
+                status: 'Carga Pronta', // Alterado: Status detalhado do tracking HK
                 requestDate: '2025-06-25',
                 lastUpdateDate: '2025-06-25',
                 supplier: 'Fornecedor B',
@@ -1555,7 +1701,7 @@
                 clientFlag: 'Game Lovers',
                 originCountry: 'Hong Kong',
                 totalValue: 120.00,
-                status: 'Aprovado',
+                status: 'Aprovado', // Universal
                 requestDate: '2025-06-26',
                 lastUpdateDate: '2025-06-26',
                 supplier: 'Fornecedor A',
@@ -1570,7 +1716,7 @@
                 clientFlag: 'Fotografia Profissional',
                 originCountry: 'Hong Kong',
                 totalValue: 960.00,
-                status: 'Pendente',
+                status: 'Pendente', // Universal
                 requestDate: '2025-06-26',
                 lastUpdateDate: '2025-06-26',
                 supplier: 'Fornecedor C',
@@ -1584,7 +1730,7 @@
                 clientFlag: 'Acessórios Digitais',
                 originCountry: 'Hong Kong',
                 totalValue: 100.00,
-                status: 'Aprovado',
+                status: 'Cancelado', // Universal
                 requestDate: '2025-06-27',
                 lastUpdateDate: '2025-06-27',
                 supplier: 'Fornecedor A',
@@ -1592,13 +1738,13 @@
                     { code: 'PROD003', description: 'Fone Bluetooth Max', quantity: 2, unitPrice: 50.00, cubageUnit: 0.001 }
                 ]
             },
-            { // Movido para nova solicitação principal para manter consistência de origem
+            {
                 orderId: 'PED-012',
-                parentOrderId: 'SOL-012', // Nova SOL-XXX
+                parentOrderId: 'SOL-012',
                 clientFlag: 'Tecnologia Avançada',
                 originCountry: 'Colômbia',
                 totalValue: 800.00,
-                status: 'Em Processamento',
+                status: 'Em Rota de Entrega', // Alterado: Status detalhado do tracking Colômbia
                 requestDate: '2025-06-27',
                 lastUpdateDate: '2025-06-27',
                 supplier: 'Fornecedor B',
@@ -1612,7 +1758,7 @@
                 clientFlag: 'Móveis Modernos',
                 originCountry: 'Colômbia',
                 totalValue: 1200.00,
-                status: 'Pendente',
+                status: 'Pendente', // Universal
                 requestDate: '2025-06-28',
                 lastUpdateDate: '2025-06-28',
                 supplier: 'Fornecedor C',
@@ -1620,13 +1766,13 @@
                     { code: 'PROD007', description: 'Cadeira Ergonômica', quantity: 2, unitPrice: 600.00, cubageUnit: 0.15 }
                 ]
             },
-            { // Movido para nova solicitação principal para manter consistência de origem
+            {
                 orderId: 'PED-014',
-                parentOrderId: 'SOL-013', // Nova SOL-XXX
+                parentOrderId: 'SOL-013',
                 clientFlag: 'Importadora Nova',
                 originCountry: 'Hong Kong',
                 totalValue: 160.00,
-                status: 'Aprovado',
+                status: 'Carga Em rota de Entrega', // Alterado: Status detalhado do tracking HK
                 requestDate: '2025-06-28',
                 lastUpdateDate: '2025-06-28',
                 supplier: 'Fornecedor A',
@@ -1641,7 +1787,7 @@
                 clientFlag: 'Cliente Prototipo',
                 originCountry: 'Hong Kong',
                 totalValue: 760.00,
-                status: 'Em Processamento',
+                status: 'Em Processamento', // Universal, para "Em Processamento" genérico antes do Renato (Hong Kong)
                 requestDate: '2025-06-29',
                 lastUpdateDate: '2025-06-29',
                 supplier: 'Fornecedor A',
@@ -1655,12 +1801,12 @@
                 clientFlag: 'Cliente Prototipo',
                 originCountry: 'Hong Kong',
                 totalValue: 500.00,
-                status: 'Em Processamento',
+                status: 'Em Processamento', // Universal, para "Em Processamento" genérico antes do Renato (Hong Kong)
                 requestDate: '2025-06-29',
                 lastUpdateDate: '2025-06-29',
                 supplier: 'Fornecedor B',
                 products: [
-                    { code: 'PROD002', description: 'Tablet Pro Z', quantity: 2, unitPrice: 250.00, currentInternalUnitPrice: 260.00, newSupplierUnitPrice: 255.00, approvalStatus: 'Pendente' }
+                    { code: 'PROD002', name: 'Tablet Pro Z', quantity: 2, unitPrice: 250.00, currentInternalUnitPrice: 260.00, newSupplierUnitPrice: 255.00, approvalStatus: 'Pendente' }
                 ],
                 newSupplierPriceTotal: (2 * 255).toFixed(2), currentInternalPriceTotal: (2 * 260).toFixed(2), overallApprovalStatus: 'Pendente'
             }
@@ -2041,20 +2187,35 @@
                 const row = document.createElement('tr');
                 
                 let statusIndicatorClass = '';
+                // Lógica para definir a cor do indicador de status na Central de Pedidos
                 switch (order.status) {
                     case 'Aprovado':
+                    case 'Carga Pronta':
+                    case 'Carga Entregue':
+                    case 'Entregue':
                         statusIndicatorClass = 'green';
                         break;
                     case 'Pendente':
+                    case 'Aguardando Aprovação':
+                    case 'Em Negociação':
                         statusIndicatorClass = 'yellow';
                         break;
                     case 'Rejeitado':
                         statusIndicatorClass = 'red';
                         break;
                     case 'Em Processamento':
+                    case 'Em Separação':
+                    case 'Em Conferência':
+                    case 'Em Rota de Entrega':
                         statusIndicatorClass = 'blue';
                         break;
+                    case 'Cancelado':
+                        statusIndicatorClass = 'gray';
+                        break;
+                    default:
+                        statusIndicatorClass = 'yellow'; // Fallback
                 }
+
                 const flagImageHtml = getFlagImage(order.originCountry);
                 // Exibe apenas o código numérico do fornecedor
                 const displaySupplierCode = order.supplier ? getOrGenerateSupplierCode(order.supplier) : 'N/A';
@@ -2102,9 +2263,7 @@
 
             document.getElementById('detailSupplier').innerText = currentOrderDetails.supplier ? getOrGenerateSupplierCode(currentOrderDetails.supplier) : 'N/A'; // Exibe o Fornecedor com código
             document.getElementById('detailTotalValue').innerText = `R$ ${currentOrderDetails.totalValue.toFixed(2).replace('.', ',')}`;
-            document.getElementById('detailStatus').innerText = currentOrderDetails.status;
-            document.getElementById('detailRequestDate').innerText = currentOrderDetails.requestDate;
-            document.getElementById('detailLastUpdateDate').innerText = currentOrderDetails.lastUpdateDate;
+            document.getElementById('detailStatus').innerText = currentOrderDetails.status; // Ainda exibe o status direto
 
             const productsTableBody = document.getElementById('orderDetailsProductsTableBody');
             productsTableBody.innerHTML = ''; // Limpa as linhas existentes
@@ -2122,8 +2281,105 @@
                 productsTableBody.appendChild(row);
             });
 
+            // Renderiza a seção de tracking
+            renderTracking(currentOrderDetails);
+
             showScreen('orderDetailsScreen');
         }
+
+        // --- Lógica de Tracking ---
+        const hongKongTrackingFlow = [
+            { name: 'Pendente', class: 'pending' },
+            { name: 'Em Negociação', class: 'negotiation' },
+            { name: 'Aguardando Aprovação', class: 'waiting-approval' },
+            { name: 'Aprovado', class: 'approved' },
+            { name: 'Carga Pronta', class: 'ready-cargo' },
+            { name: 'Carga Em rota de Entrega', class: 'in-transit' },
+            { name: 'Carga Entregue', class: 'delivered' },
+            { name: 'Rejeitado', class: 'rejected', isFinal: true },
+            { name: 'Cancelado', class: 'cancelled', isFinal: true }
+        ];
+
+        const colombiaTrackingFlow = [
+            { name: 'Pendente', class: 'pending' },
+            { name: 'Em Separação', class: 'separation' },
+            { name: 'Em Conferência', class: 'conference' },
+            { name: 'Em Rota de Entrega', class: 'in-transit' },
+            { name: 'Entregue', class: 'delivered' },
+            { name: 'Aprovado', class: 'approved' }, // Aprovado pode ser pós-entrega, se o ERP aprova o faturamento
+            { name: 'Rejeitado', class: 'rejected', isFinal: true },
+            { name: 'Cancelado', class: 'cancelled', isFinal: true }
+        ];
+
+        function renderTracking(order) {
+            const trackingSection = document.getElementById('orderTrackingSection');
+            trackingSection.innerHTML = ''; // Limpa a seção de tracking
+
+            let flow = [];
+            if (order.originCountry === 'Hong Kong') {
+                flow = hongKongTrackingFlow;
+            } else if (order.originCountry === 'Colômbia') {
+                flow = colombiaTrackingFlow;
+            } else {
+                trackingSection.innerHTML = '<p class="text-gray-500 text-center">Rastreamento não disponível para esta origem.</p>';
+                return;
+            }
+
+            const currentStatusIndex = flow.findIndex(step => step.name === order.status);
+            let trackingHtml = '<div class="tracking-steps">';
+
+            flow.forEach((step, index) => {
+                let stepClass = '';
+                let circleContent = ''; // Conteúdo do círculo (vazio ou ícone)
+
+                // Lógica de destaque e cor para o status atual
+                if (index === currentStatusIndex) {
+                    stepClass = 'active';
+                    // Adiciona classes de cor específicas para o status ATIVO
+                    if (step.class) {
+                         stepClass += ` ${step.class}`; // Adiciona a classe de cor personalizada (e.g., 'negotiation', 'approved')
+                    }
+                } else if (index < currentStatusIndex) {
+                    // Status que já foram concluídos
+                    stepClass = 'completed';
+                    if (step.class) { // Adiciona a classe de cor personalizada para passos concluídos
+                        stepClass += ` ${step.class}`;
+                    }
+                } else {
+                    // Status futuros (ainda não alcançados)
+                    stepClass = 'future'; // Adicione uma classe para estilos futuros, se necessário
+                }
+
+                // Casos especiais para status "Rejeitado" e "Cancelado"
+                if ((step.name === 'Rejeitado' || step.name === 'Cancelado') && index === currentStatusIndex) {
+                    stepClass = `active ${step.class}`; // Garante que fiquem vermelhos se forem o status atual
+                } else if ((step.name === 'Rejeitado' || step.name === 'Cancelado') && index < currentStatusIndex) {
+                     // Se Rejeitado/Cancelado já passou, mas o status atual NÃO é um status final (ex: Rejeitado -> Carga Pronta), eles ainda ficam vermelhos
+                    if (flow[currentStatusIndex].isFinal === false) { // Se o status ATUAL NÃO é um status final
+                         stepClass = `completed ${step.class}`; // Considera-se concluído (em termos de ter passado)
+                    } else { // Se o status ATUAL é outro status final (ex: Rejeitado -> Cancelado)
+                         stepClass = `completed ${step.class}`; // Marca como concluído (passou por ele)
+                    }
+                }
+
+                // Conteúdo do círculo (opcional, pode ser um número ou um ícone de "check")
+                if (stepClass.includes('completed') && !step.isFinal) { // Adiciona checkmark para concluídos não-finais
+                    circleContent = '&#10003;'; // Checkmark Unicode
+                } else if (index === currentStatusIndex) { // Para o status atual
+                    circleContent = (index + 1).toString(); // Número do passo
+                }
+
+                trackingHtml += `
+                    <div class="tracking-step ${stepClass}">
+                        <div class="circle">${circleContent}</div>
+                        <span>${step.name}</span>
+                    </div>
+                `;
+            });
+            trackingHtml += '</div>';
+            trackingSection.innerHTML = trackingHtml;
+        }
+
 
         // --- Lógica do Fluxo de Hong Kong ---
         function updateProductDetailsOnClientCodeChangeHK() {
@@ -2478,7 +2734,7 @@
                     clientFlag: currentUserClientName, // Usa a razão social do usuário logado
                     originCountry: 'Hong Kong', // Hardcoded para Hong Kong, pois é o fluxo atual
                     totalValue: parseFloat(newSupplierPriceTotal),
-                    status: 'Em Processamento', // Status inicial para novos pedidos
+                    status: 'Aguardando Aprovação', // Status inicial para novos pedidos HK
                     requestDate: new Date().toLocaleDateString('pt-BR'),
                     lastUpdateDate: new Date().toLocaleDateString('pt-BR'),
                     supplier: supplier, // Armazena o nome original do fornecedor
@@ -2533,7 +2789,10 @@
         }
 
         function simulateRenatoApprovalScreen() {
-            if (generatedPurchaseOrders.length === 0) {
+            // Filtra generatedPurchaseOrders para pegar apenas os POs que estão Pendentes de Aprovação (OverallApprovalStatus)
+            const poToApprove = generatedPurchaseOrders.filter(po => po.overallApprovalStatus === 'Pendente');
+
+            if (poToApprove.length === 0) {
                 showMessage('Info', 'Não há solicitações de compra para aprovação no momento.', 'info');
                 return;
             }
@@ -2547,7 +2806,7 @@
 
             let anyPendingPOs = false;
             // Filtra TODOS os POs que estão pendentes para exibição na lista (overallApprovalStatus)
-            const pendingIndividualPOs = generatedPurchaseOrders.filter(po => po.overallApprovalStatus === 'Pendente' || po.overallApprovalStatus === 'Em Processamento');
+            const pendingIndividualPOs = generatedPurchaseOrders.filter(po => po.overallApprovalStatus === 'Pendente' || po.overallApprovalStatus === 'Em Negociação'); // Inclui "Em Negociação" como pendente de revisão para Renato
 
             pendingIndividualPOs.forEach(po => { // Itera sobre os POs individuais pendentes
                 anyPendingPOs = true;
@@ -2656,6 +2915,13 @@
                     const differenceTotalPerProduct = differenceUnit * p.quantity;
                     totalGlobalDifference += differenceTotalPerProduct; // Acumula para a diferença global
 
+                    // Calcula a porcentagem de diferença
+                    let percentageDiff = 0;
+                    if (currentPrice !== 0) {
+                        percentageDiff = (differenceUnit / currentPrice) * 100;
+                    }
+                    const percentageDiffString = `(${percentageDiff.toFixed(0)}%)`; // Formato: (0%) ou (2%)
+
                     const differenceIcon = differenceUnit > 0 ? '🔴' : (differenceUnit < 0 ? '🟢' : '⚪'); // Círculo Vermelho, Verde, Branco
                     const differenceClass = differenceUnit > 0 ? 'price-difference-positive' : (differenceUnit < 0 ? 'price-difference-negative' : '');
                     
@@ -2670,7 +2936,7 @@
                             <td>${newPrice.toFixed(2).replace('.', ',')}</td>
                             <td>${totalCurrentPrice.toFixed(2).replace('.', ',')}</td>
                             <td>${totalNewPrice.toFixed(2).replace('.', ',')}</td>
-                            <td class="${differenceClass}">${differenceTotalPerProduct.toFixed(2).replace('.', ',')} ${differenceIcon}</td>
+                            <td class="${differenceClass}">${differenceTotalPerProduct.toFixed(2).replace('.', ',')} ${percentageDiffString} ${differenceIcon}</td>
                             <td><span id="product-status-${p.code}" class="${statusClass}">${p.approvalStatus}</span></td>
                             <td>
                                 <div class="approval-buttons-group flex flex-col items-start">
@@ -2806,7 +3072,7 @@
             if (hasRejected) {
                 currentViewingPO.overallApprovalStatus = 'Rejeitado';
             } else if (hasNegotiate) {
-                currentViewingPO.overallApprovalStatus = 'Em Processamento'; // "Negociar" pode levar a "Em Processamento"
+                currentViewingPO.overallApprovalStatus = 'Em Negociação'; // Renato agora pode setar diretamente para "Em Negociação"
             } else if (allApproved) {
                 currentViewingPO.overallApprovalStatus = 'Aprovado';
             } else {
@@ -2816,7 +3082,8 @@
             // Atualiza o status correspondente no array 'orders'
             const orderIndex = orders.findIndex(o => o.orderId === currentViewingPO.id);
             if (orderIndex !== -1) {
-                orders[orderIndex].status = currentViewingPO.overallApprovalStatus;
+                // Atualiza o status principal do pedido com base na decisão de Renato
+                orders[orderIndex].status = currentViewingPO.overallApprovalStatus; // Status principal recebe o status de aprovação Renato
                 orders[orderIndex].lastUpdateDate = new Date().toLocaleDateString('pt-BR');
             }
 
@@ -2868,7 +3135,7 @@
                     statusClass = 'bg-red-50 text-red-800';
                     statusText = 'Rejeitado ❌';
                     break;
-                case 'Em Processamento': // Caso de negociação
+                case 'Em Negociação': // Renato agora pode setar diretamente para "Em Negociação"
                     statusClass = 'bg-yellow-50 text-yellow-800';
                     statusText = 'Em Negociação 🟡';
                     break;
@@ -3191,6 +3458,12 @@
             }
 
             const clientOrderNumber = document.getElementById('clientOrderNumberCOL').value.trim();
+            const currentPOId = `PED-${nextPurchaseOrderIdCounter.toString().padStart(3, '0')}`; // Gera novo PED-XXX
+            nextPurchaseOrderIdCounter++; // Incrementa para o próximo PED
+
+            // Gera o ID da solicitação principal (SOL-XXX)
+            currentParentOrderId = `SOL-${nextParentRequestCounter.toString().padStart(3, '0')}`;
+            nextParentRequestCounter++; // Incrementa para a próxima solicitação
 
             // Simula o envio para o SAP e o recebimento de fatura
             setTimeout(() => {
@@ -3225,6 +3498,20 @@
                     (Este é um exemplo simulado de NF-e.)
                 `;
                 document.querySelector('#nfePdfViewer pre').innerText = nfePdfContent;
+
+                // Adiciona o pedido à lista global `orders` com o status inicial 'Em Separação'
+                orders.push({
+                    orderId: currentPOId,
+                    parentOrderId: currentParentOrderId,
+                    clientFlag: currentUserClientName,
+                    originCountry: 'Colômbia',
+                    totalValue: parseFloat(totalNfeValue),
+                    status: 'Em Separação', // Status inicial para Colômbia
+                    requestDate: new Date().toLocaleDateString('pt-BR'),
+                    lastUpdateDate: new Date().toLocaleDateString('pt-BR'),
+                    supplier: 'N/A', // Ou determine um fornecedor para Colômbia
+                    products: colombiaProducts
+                });
 
                 showScreen('colombiaInvoiceScreen');
             }, 1500); // Simula atraso de rede
