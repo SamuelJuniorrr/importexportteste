@@ -111,6 +111,16 @@
             display: flex;
             align-items: center;
         }
+        /* Specific style for editable input in purchasing order details */
+        #purchasingOrderDetailsScreen input[type="number"] {
+            background-color: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 8px 12px;
+            width: 120px; /* Adjust width as needed */
+            text-align: right;
+        }
+
 
         .btn {
             padding: 10px 20px;
@@ -277,7 +287,8 @@
         /* Estilos para a Tela da Central de Pedidos (baseado na Central de Tarefas) */
         #orderCenterScreen, #hongKongSummaryScreen, #renatoApprovalScreen,
         #hongKongFormScreen, #colombiaFormScreen, #orderDetailsScreen,
-        #purchaseOrderScreen, #hongKongFinalScreen, #colombiaInvoiceScreen {
+        #purchaseOrderScreen, #hongKongFinalScreen, #colombiaInvoiceScreen,
+        #purchasingCenterScreen, #purchasingOrderDetailsScreen { /* Added new purchasing screens */
             display: flex;
             flex-direction: column;
             width: 100%;
@@ -289,23 +300,23 @@
             overflow: auto; /* Allows internal scrolling if content exceeds screen height */
         }
 
-        #orderCenterScreen .header { /* Usar o estilo de cabeçalho geral */
+        #orderCenterScreen .header, #purchasingCenterScreen .header { /* Usar o estilo de cabeçalho geral */
             padding-top: 20px;
             margin-bottom: 16px;
         }
-        #orderCenterScreen .btn-primary {
+        #orderCenterScreen .btn-primary, #purchasingCenterScreen .btn-primary {
             padding: 8px 16px;
             border-radius: 8px;
         }
-        #orders-table-container { /* Aplicar estilo semelhante à tela de resumo */
+        #orders-table-container, #purchasing-tables-container { /* Aplicar estilo semelhante à tela de resumo */
             flex-grow: 1; /* Permite que a tabela ocupe o espaço restante */
             overflow-x: auto; /* Adiciona scroll horizontal apenas à tabela se necessário */
         }
-        #orderCenterTable {
+        #orderCenterTable, #negotiationTable, #renatoActionsTable {
             width: 100%; /* Garante que a tabela use toda a largura disponível */
             min-width: 1100px; /* Define uma largura mínima para evitar encolhimento excessivo */
         }
-        #orderCenterTable .status-indicator {
+        #orderCenterTable .status-indicator, #negotiationTable .status-indicator, #renatoActionsTable .status-indicator {
             display: inline-block;
             width: 8px;
             height: 8px;
@@ -313,69 +324,74 @@
             margin-right: 6px;
         }
         /* Nova categorização de cores para os status atualizados */
-        #orderCenterTable .status-indicator.green { background-color: #22c55e; } /* Aprovado, Carga Pronta, Entregue, Carga Entregue, Documentação OK, Chegada no Porto */
-        #orderCenterTable .status-indicator.red { background-color: #ef4444; } /* Rejeitado */
-        #orderCenterTable .status-indicator.yellow { background-color: #eab308; } /* Pendente, Aguardando Aprovação, Em Negociação, Documentação Pendente */
-        #orderCenterTable .status-indicator.blue { background-color: #3b82f6; } /* Em Processamento (genérico), Em Separação, Em Conferência, Em Rota de Entrega, Em Produção, Saída do Porto */
-        #orderCenterTable .status-indicator.gray { background-color: #6b7280; } /* Cancelado */
+        #orderCenterTable .status-indicator.green, #negotiationTable .status-indicator.green, #renatoActionsTable .status-indicator.green { background-color: #22c55e; } /* Aprovado, Carga Pronta, Entregue, Carga Entregue, Documentação OK, Chegada no Porto */
+        #orderCenterTable .status-indicator.red, #negotiationTable .status-indicator.red, #renatoActionsTable .status-indicator.red { background-color: #ef4444; } /* Rejeitado */
+        #orderCenterTable .status-indicator.yellow, #negotiationTable .status-indicator.yellow, #renatoActionsTable .status-indicator.yellow { background-color: #eab308; } /* Pendente, Aguardando Aprovação, Em Negociação, Documentação Pendente */
+        #orderCenterTable .status-indicator.blue, #negotiationTable .status-indicator.blue, #renatoActionsTable .status-indicator.blue { background-color: #3b82f6; } /* Em Processamento (genérico), Em Separação, Em Conferência, Em Rota de Entrega, Em Produção, Saída do Porto */
+        #orderCenterTable .status-indicator.gray, #negotiationTable .status-indicator.gray, #renatoActionsTable .status-indicator.gray { background-color: #6b7280; } /* Cancelado */
+        #orderCenterTable .status-indicator.purple, #negotiationTable .status-indicator.purple, #renatoActionsTable .status-indicator.purple { background-color: #8b5cf6; } /* Negociado (new status) */
 
 
-        #orderCenterTable tbody tr:hover {
+        #orderCenterTable tbody tr:hover, #negotiationTable tbody tr:hover, #renatoActionsTable tbody tr:hover {
             background-color: #f3f4f6; /* Cinza claro mais escuro no hover para todas as linhas */
         }
         /* Estilo para número de pedido clicável */
-        #orderCenterTable tbody tr td a.order-link {
+        #orderCenterTable tbody tr td a.order-link, #negotiationTable tbody tr td a.order-link, #renatoActionsTable tbody tr td a.order-link {
             color: #3b82f6;
             text-decoration: underline;
             cursor: pointer;
         }
-        #orderCenterTable tbody tr td a.order-link:hover {
+        #orderCenterTable tbody tr td a.order-link:hover, #negotiationTable tbody tr td a.order-link:hover, #renatoActionsTable tbody tr td a.order-link:hover {
             color: #2563eb;
         }
         /* Estilo da imagem da bandeira */
         .flag-icon {
-            width: 24px; /* Ajustar tamanho conforme necessário */
+            width: 20px; /* Adjusted size for icon */
             height: auto;
             border-radius: 2px; /* Cantos ligeiramente arredondados para bandeiras */
             vertical-align: middle; /* Alinhar com o texto */
-            margin-right: 0px; /* Margem direita removida, pois há apenas a bandeira */
+            margin-right: 8px; /* Adicionado margem direita para separar do texto ou de outros elementos */
             box-shadow: 0 0 2px rgba(0,0,0,0.2); /* Sombra sutil para bandeiras */
         }
 
         /* Tela de Detalhes do Pedido */
-        #orderDetailsScreen .detail-item {
+        #orderDetailsScreen .detail-item, #purchasingOrderDetailsScreen .detail-item {
             padding: 10px 0;
             border-bottom: 1px dashed #e5e7eb;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        #orderDetailsScreen .detail-item:last-child {
+        #orderDetailsScreen .detail-item:last-child, #purchasingOrderDetailsScreen .detail-item:last-child {
             border-bottom: none;
         }
-        #orderDetailsScreen .detail-item strong {
+        #orderDetailsScreen .detail-item strong, #purchasingOrderDetailsScreen .detail-item strong {
             color: #4b5563;
         }
-        #orderDetailsScreen .detail-item span {
+        #orderDetailsScreen .detail-item span, #purchasingOrderDetailsScreen .detail-item span {
             color: #1f2937;
         }
-        #orderDetailsScreen .product-details-table {
+        #orderDetailsScreen .product-details-table, #purchasingOrderDetailsScreen .product-details-table {
             width: 100%;
             margin-top: 20px;
             border-collapse: collapse;
         }
         #orderDetailsScreen .product-details-table th,
-        #orderDetailsScreen .product-details-table td {
+        #orderDetailsScreen .product-details-table td,
+        #purchasingOrderDetailsScreen .product-details-table th,
+        #purchasingOrderDetailsScreen .product-details-table td {
             border: 1px solid #e5e7eb;
             padding: 8px 12px;
             text-align: left;
         }
-        #orderDetailsScreen .product-details-table th {
+        #orderDetailsScreen .product-details-table th,
+        #purchasingOrderDetailsScreen .product-details-table th {
             background-color: #f9fafb;
             font-weight: 600;
             color: #374151;
         }
-        #orderDetailsScreen .product-details-table tr:nth-child(even) {
+        #orderDetailsScreen .product-details-table tr:nth-child(even),
+        #purchasingOrderDetailsScreen .product-details-table tr:nth-child(even) {
             background-color: #f9fafb;
         }
 
@@ -604,7 +620,9 @@
             position: absolute;
             right: 12px;
             cursor: pointer;
-            color: #9ca3af;
+            stroke: #6b7280; /* Explicitly setting the stroke color */
+            width: 1.25rem; /* Equivalent to w-5 */
+            height: 1.25rem; /* Equivalent to h-5 */
         }
         .add-product-message {
             margin-top: 10px;
@@ -633,7 +651,7 @@
             margin-bottom: 16px;
         }
         /* Estilos específicos para a tela de Aprovação do Renato */
-        #renatoApprovalScreen .content-area {
+        #renatoApprovalScreen .content-area, #purchasingCenterScreen .content-area {
             background-color: #ffffff; /* Fundo branco para o conteúdo principal */
             border-radius: 12px;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -761,11 +779,20 @@
         }
 
         /* Estilos para os botões de aprovação/negociação/rejeição */
+        .approval-buttons-group {
+            display: flex; /* Use flexbox for horizontal layout */
+            flex-direction: row; /* Arrange items in a row */
+            gap: 4px; /* Space between buttons */
+            justify-content: flex-start; /* Alinha os botões ao início (esquerda) */
+            flex-wrap: nowrap; /* Impede quebra de linha por padrão, força o mesmo tamanho */
+        }
         .approval-buttons-group .btn-sm {
             padding: 4px 8px;
             font-size: 0.75rem; /* Menor para caber na tabela */
             border-radius: 4px;
-            margin: 2px; /* Pequena margem entre os botões */
+            flex: 1; /* Make buttons take equal width */
+            max-width: 80px; /* Define uma largura máxima para cada botão */
+            text-align: center;
         }
         .approval-buttons-group .btn-approve {
             background-color: #22c55e; /* Verde */
@@ -831,7 +858,7 @@
                     </div>
                     <div class="login-input-group">
                         <!-- Ícone de Cadeado -->
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 0 0 1 10 4v4"/></svg>
                         <input type="password" id="password" placeholder="Senha">
                     </div>
                     <button onclick="login()" class="btn btn-primary w-full mt-6">ACESSAR</button>
@@ -873,6 +900,7 @@
                             <option value="Em Conferência">Em Conferência</option>
                             <option value="Em Rota de Entrega">Em Rota de Entrega</option>
                             <option value="Entregue">Entregue</option>
+                            <option value="Negociado">Negociado</option> <!-- New status for Compras -->
                         </select>
                     </div>
                     <div class="flex-1 min-w-[150px]">
@@ -1052,7 +1080,7 @@
                             <svg class="collapsible-icon w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </div>
                         <div id="copyPasteContentHK" class="collapsible-content hidden">
-                            <p class="mb-4 text-gray-600">Cole os códigos de produto e quantidades (um por linha, ex: COD1,5):</p>
+                            <p class="mb-4 text-gray-600">Cole os códigos de produto e quantidades (um por linha, ex: `CODIGO_CLIENTE,CODIGO_PRODUTO,QUANTIDADE` ou `CODIGO_UNICO,QUANTIDADE`):</p>
                             <textarea id="pasteCodesHK" rows="5" class="w-full p-2 border rounded-lg mb-4"></textarea>
                             <button onclick="processPastedCodes('hongkong')" class="btn btn-primary w-full">Adicionar Códigos</button>
                         </div>
@@ -1065,7 +1093,7 @@
                             <div class="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
                                 <img src="https://placehold.co/100x100/e0f2fe/0c4a6e?text=c%C3%B3digo+comercial" alt="Passo 1" class="mx-auto mb-4">
                                 <p class="font-semibold text-lg mb-2">Passo 1</p>
-                                <p class="text-gray-600">Faça o download do modelo de planilha. Abra a planilha no seu computador e preencha com o código comercial e a quantidade do produto desejado. Máximo de 50 linhas de produtos por pedido.</p>
+                                <p class="text-gray-600">Faça o download do modelo de planilha. Abra a planilha no seu computador e preencha com o código do produto do cliente e o código do produto (opcional) e a quantidade desejada. Máximo de 50 linhas de produtos por pedido.</p>
                                 <button onclick="downloadSpreadsheetModel()" class="text-blue-600 hover:underline mt-2 inline-block">Modelo de Planilha</button>
                             </div>
                             <div class="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
@@ -1094,7 +1122,7 @@
                                     <input type="text" id="clientProductCodeHK" placeholder="Cód Cliente"
                                         oninput="updateProductDetailsOnClientCodeChangeHK()"
                                         class="rounded-lg p-2 border border-gray-300 w-full focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <svg onclick="openProductCatalogModal('hongkong')" class="search-icon w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <svg onclick="openProductCatalogModal('hongkong')" class="search-icon w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#6b7280">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                                     </svg>
                                 </div>
@@ -1120,7 +1148,7 @@
                             <div class="col-span-1">
                                 <label for="productValueHK" class="block text-sm font-medium text-gray-700">Valor Unit.:</label>
                                 <div id="productValueHK" class="p-2 border border-gray-300 rounded-lg bg-gray-100 min-h-[42px] flex items-center text-gray-600">
-                                    R$ 0,00
+                                    $ 0,00
                                 </div>
                             </div>
                             <div class="col-span-1">
@@ -1179,8 +1207,11 @@
             </div>
             <div class="mt-6 text-center text-gray-600">
                 <p>Aguardando negociação de Compras Internacionais e aprovação do Renato.</p>
-                <button onclick="simulateRenatoApprovalScreen()" class="btn btn-primary mt-4">Simular Aprovação do Renato</button>
+                <!-- Ocultar este botão se o usuário for 'client' -->
+                <button onclick="simulateRenatoApprovalScreen()" class="btn btn-primary mt-4" id="simulateRenatoBtn">Simular Aprovação do Renato</button>
             </div>
+            <!-- Botão adicionado para retornar à Central de Pedidos -->
+            <button onclick="backToOrderCenter()" class="btn btn-secondary w-full mt-6">Voltar para Central de Pedidos</button>
         </div>
 
         <div id="renatoApprovalScreen" class="screen hidden">
@@ -1303,7 +1334,7 @@
                             <svg class="collapsible-icon w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </div>
                         <div id="copyPasteContentCOL" class="collapsible-content hidden">
-                            <p class="mb-4 text-gray-600">Cole os códigos de produto e quantidades (um por linha, ex: COD1,5):</p>
+                            <p class="mb-4 text-gray-600">Cole os códigos de produto e quantidades (um por linha, ex: `CODIGO_CLIENTE,CODIGO_PRODUTO,QUANTIDADE` ou `CODIGO_UNICO,QUANTIDADE`):</p>
                             <textarea id="pasteCodesCOL" rows="5" class="w-full p-2 border rounded-lg mb-4"></textarea>
                             <button onclick="processPastedCodes('colombia')" class="btn btn-primary w-full">Adicionar Códigos</button>
                         </div>
@@ -1316,7 +1347,7 @@
                             <div class="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
                                 <img src="https://placehold.co/100x100/e0f2fe/0c4a6e?text=c%C3%B3digo+comercial" alt="Passo 1" class="mx-auto mb-4">
                                 <p class="font-semibold text-lg mb-2">Passo 1</p>
-                                <p class="text-gray-600">Faça o download do modelo de planilha. Abra a planilha no seu computador e preencha com o código comercial e a quantidade do produto desejado. Máximo de 50 linhas de produtos por pedido.</p>
+                                <p class="text-gray-600">Faça o download do modelo de planilha. Abra a planilha no seu computador e preencha com o código do produto do cliente e o código do produto (opcional) e a quantidade desejada. Máximo de 50 linhas de produtos por pedido.</p>
                                 <button onclick="downloadSpreadsheetModel()" class="text-blue-600 hover:underline mt-2 inline-block">Modelo de Planilha</button>
                             </div>
                             <div class="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
@@ -1345,7 +1376,7 @@
                                     <input type="text" id="clientProductCodeCOL" placeholder="Cód Cliente"
                                         oninput="updateProductDetailsOnClientCodeChangeCOL()"
                                         class="rounded-lg p-2 border border-gray-300 w-full focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <svg onclick="openProductCatalogModal('colombia')" class="search-icon w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <svg onclick="openProductCatalogModal('colombia')" class="search-icon w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#6b7280">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                                     </svg>
                                 </div>
@@ -1370,7 +1401,7 @@
                             <div class="col-span-1">
                                 <label for="valorUnitCOLDisplay" class="block text-sm font-medium text-gray-700">Valor Unit.:</label>
                                 <div id="valorUnitCOLDisplay" class="p-2 border border-gray-300 rounded-lg bg-gray-100 min-h-[42px] flex items-center text-gray-600">
-                                    R$ 0,00
+                                    $ 0,00
                                 </div>
                             </div>
                             <div class="col-span-1">
@@ -1409,40 +1440,128 @@
             <div class="message-box">
                 <p class="font-semibold">Nota Fiscal Eletrônica (NF-e) gerada com sucesso!</p>
                 <p>Número da NF-e: <span id="nfeNumber">NF-20250624-001</span></p>
-                <p>Valor Total: <span id="nfeValue">R$ 0,00</span></p>
+                <p>Valor Total: <span id="nfeValue">$ 0,00</span></p>
                 <p class="mt-4">
                     <a href="#" onclick="showNfePdf()" class="text-blue-600 hover:underline">Visualizar PDF da NF-e</a>
                 </p>
             </div>
             <div id="nfePdfViewer" class="hidden mt-6 bg-gray-100 p-4 rounded-lg border border-gray-200">
                 <p class="text-gray-700">Simulação de PDF da Nota Fiscal:</p>
-                <pre class="bg-white p-4 rounded-md border border-gray-300 text-sm overflow-auto max-h-96 mt-2">
-                    ----------------------------------------------------
-                    |                NOTA FISCAL ELETRÔNICA            |
-                    | Nº: NF-20250624-001                                |
-                    | Data de Emissão: 24/06/2025                        |
-                    | ${clientOrderNumber ? `Seu Pedido: ${clientOrderNumber}`.padEnd(50, ' ') + `|\n` : '' }
-                    |                                                    |
-                    | REMETENTE: EMPRESA XYZ DO BRASIL                   |
-                    | CNPJ: 00.000.000/0001-00                           |
-                    | ENDEREÇO: RUA EXEMPLO, 123 - SÃO PAULO/SP          |
-                    |                                                    |
-                    | DESTINATÁRIO: CLIENTE INTERNACIONAL COLÔMBIA       |
-                    | ENDEREÇO: CALLE 45, 7-30 - BOGOTÁ/COLÔMBIA         |
-                    |                                                    |
-                    | PRODUTOS:                                          |
-                    | -------------------------------------------------- |
-                    | ID | DESCRIÇÃO           | QTD | VALOR UNIT | TOTAL |
-                    |----|---------------------|-----|------------|-------|
-                    | 001| Produto Colômbia A  | 10  | R$ 100,00  | R$ 1000,00 |
-                    | 002| Produto Colômbia B  | 5   | R$ 100,00  | R$ 500,00  |
-                    |--------------------------------------------------|
-                    | VALOR TOTAL:                                R$ ${totalNfeValue.replace('.', ',')} |
-                    ----------------------------------------------------
-                    (Este é um exemplo simulado de NF-e.)
+                <pre id="nfePdfContent" class="bg-white p-4 rounded-md border border-gray-300 text-sm overflow-auto max-h-96 mt-2">
+                    <!-- NFE content will be dynamically updated -->
                 </pre>
             </div>
             <button onclick="restartFlow()" class="btn btn-primary w-full mt-6">Iniciar Nova Solicitação</button>
+        </div>
+
+        <!-- NEW: Purchasing Center Screen -->
+        <div id="purchasingCenterScreen" class="screen hidden"> 
+            <div class="app-content-wrapper content-area">
+                <div class="header flex justify-between items-center">
+                    <h1 class="text-3xl font-bold text-gray-800">Central de Compras</h1>
+                </div>
+
+                <div class="tab-buttons" id="purchasingTabButtons">
+                    <button class="tab-button active" onclick="switchPurchasingTab('awaitingNegotiation')">Aguardando Negociação</button>
+                    <button class="tab-button" onclick="switchPurchasingTab('renatoActions')">Aguardando Aprovação</button>
+                </div>
+
+                <div id="awaitingNegotiationTab" class="tab-content">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Pedidos Aguardando Negociação</h2>
+                    <div class="overflow-x-auto">
+                        <table id="negotiationTable" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Id Solicitação Principal</th>
+                                    <th>Nº Pedido</th>
+                                    <th>Fornecedor</th>
+                                    <th>Valor Estimado</th>
+                                    <th>Data Criação</th>
+                                    <th>Status</th>
+                                    <th>Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Orders awaiting negotiation will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="renatoActionsTab" class="tab-content hidden">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Aguardando Aprovação</h2>
+                    <div class="overflow-x-auto">
+                        <table id="renatoActionsTable" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Id Solicitação Principal</th>
+                                    <th>Nº Pedido</th>
+                                    <th>Fornecedor</th>
+                                    <th>Valor Estimado</th>
+                                    <th>Data Última Alteração</th>
+                                    <th>Status</th>
+                                    <th>Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Orders with Renato's actions will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <button onclick="logout()" class="btn btn-secondary w-full mt-6">Sair (Logout)</button>
+            </div>
+        </div>
+
+        <!-- NEW: Purchasing Order Details Screen -->
+        <div id="purchasingOrderDetailsScreen" class="screen hidden app-content-wrapper">
+            <div class="header">
+                <h1 class="text-3xl font-bold text-gray-800 mb-4">Detalhes do Pedido de Compra <span id="purchasingCurrentOrderId"></span></h1>
+            </div>
+            <div class="bg-gray-50 p-6 rounded-lg border border-gray-200 mb-6">
+                <h3 class="font-semibold text-lg mb-4">Informações Gerais</h3>
+                <div class="space-y-2">
+                    <div class="detail-item">
+                        <strong>Nº Pedido:</strong> <span id="purchasingDetailOrderId"></span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>ID Principal:</strong> <span id="purchasingDetailParentOrderId"></span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Fornecedor:</strong> <span id="purchasingDetailSupplier"></span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Status Atual:</strong> <span id="purchasingDetailStatus"></span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Data Criação:</strong> <span id="purchasingDetailDate"></span>
+                    </div>
+                </div>
+
+                <h3 class="font-semibold text-lg mt-6 mb-4">Produtos do Pedido</h3>
+                <div class="table-container border border-gray-200 rounded-lg overflow-hidden">
+                    <table class="product-details-table">
+                        <thead>
+                            <tr>
+                                <th>Código Produto</th>
+                                <th>Descrição</th>
+                                <th>Qtd.</th>
+                                <th>Valor Unit. Interno</th>
+                                <th>Valor Unit. Fornecedor (Atual)</th>
+                                <th>Novo Valor Unit.</th>
+                                <th>Status Aprovação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="purchasingOrderProductsTableBody">
+                            <!-- Product details with editable new value input will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="flex flex-col md:flex-row gap-4 mt-6">
+                <button onclick="backToPurchasingCenter()" class="btn btn-secondary flex-1">Voltar para Central de Compras</button>
+                <button onclick="savePurchasingNegotiation()" class="btn btn-primary flex-1">Salvar Negociação</button>
+            </div>
         </div>
 
         <!-- Caixa de Mensagem Genérica (para alertas, confirmações) -->
@@ -1485,6 +1604,8 @@
         let selectedFilial = '';
         let hongKongProducts = []; // Atua como o "carrinho" para Hong Kong
         let colombiaProducts = [];
+        // Variável global para definir a função do usuário. 'client' ou 'admin'
+        let userRole = 'guest'; // Padrão: 'guest' (convidado), pode ser 'client', 'admin', 'compras'
         let generatedPurchaseOrders = [ // Armazena detalhes de MÚLTIPLAS POs simuladas
             {
                 parentOrderId: 'SOL-001', id: 'PED-001', supplier: 'Fornecedor A', supplierCode: '22', date: '2025-06-20',
@@ -1542,6 +1663,9 @@
 
         // Variável para armazenar os POs atualmente exibidos na visualização de aprovação detalhada
         let currentViewingPO = null; // Agora armazena o OBJETO PO completo que está sendo visualizado
+
+        // Variável para armazenar o PO sendo editado na tela de Compras
+        let currentPurchasingPO = null;
 
         // --- Constantes para Capacidades de Contêiner (em m³) ---
         const MAX_CUBAGE_20HC = 37.4;
@@ -1805,7 +1929,7 @@
                 lastUpdateDate: '2025-06-29',
                 supplier: 'Fornecedor A',
                 products: [
-                    { code: 'PROD001', description: 'Smartphone Premium X1', quantity: 5, unitPrice: 150.00, currentInternalUnitPrice: 158.00, newSupplierUnitPrice: 152.00, approvalStatus: 'Pendente' }
+                    { code: 'PROD001', name: 'Smartphone Premium X1', quantity: 5, unitPrice: 150.00, currentInternalUnitPrice: 158.00, newSupplierUnitPrice: 152.00, approvalStatus: 'Pendente' }
                 ]
             },
             {
@@ -1833,6 +1957,16 @@
             });
             document.getElementById(screenId).classList.remove('hidden');
             currentScreen = screenId;
+
+            // Ocultar/Mostrar o botão "Simular Aprovação do Renato" com base na função do usuário
+            const simulateRenatoBtn = document.getElementById('simulateRenatoBtn');
+            if (simulateRenatoBtn) {
+                if (userRole === 'client') {
+                    simulateRenatoBtn.classList.add('hidden');
+                } else {
+                    simulateRenatoBtn.classList.remove('hidden');
+                }
+            }
         }
 
         function showMessage(title, content, type = 'info', onConfirm = null, onCancel = null) {
@@ -1883,8 +2017,9 @@
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
-            // Validação de login: apenas "prototipo/prototipo" é válido
+            // Validação de login: "prototipo/prototipo" é o usuário cliente
             if (username === 'prototipo' && password === 'prototipo') {
+                userRole = 'client'; // Define a função do usuário como 'client'
                 showScreen('orderCenterScreen');
                 // Garante que nextParentRequestCounter e nextPurchaseOrderIdCounter sejam inicializados com base nos dados existentes
                 // Encontra o ID SOL-XXX máximo
@@ -1904,9 +2039,14 @@
                 populateSupplierFilter(); // Popula o filtro de fornecedores após o login
                 populateOriginCountryFilter(); // Popula o filtro de países de origem após o login
                 renderOrdersTable(); // Renderiza a tabela de pedidos após o login
-            } else {
+            } else if (username === 'compras' && password === 'compras') {
+                userRole = 'compras'; // Define a função do usuário como 'compras'
+                showScreen('purchasingCenterScreen');
+                renderPurchasingCenterTables(); // Renderiza as tabelas da Central de Compras
+            }
+            else {
                 // Mensagem genérica para login incorreto
-                showMessage('Erro de Login', 'Usuário ou senha inválidos.', 'error');
+                showMessage('Erro de Login', 'Utilizador ou palavra-passe inválidos.', 'error');
             }
         }
 
@@ -1931,7 +2071,7 @@
                 document.getElementById('productDescriptionDisplayCOL').innerText = '--';
                 document.getElementById('productStockCOL').innerText = '--';
                 document.getElementById('productQuantityCOL').value = '1';
-                document.getElementById('valorUnitCOLDisplay').innerText = 'R$ 0,00';
+                document.getElementById('valorUnitCOLDisplay').innerText = '$ 0,00';
                 document.getElementById('clientOrderNumberCOL').value = ''; // Limpar número do pedido do cliente
                 switchTab('colombia', 'easy'); // Define a aba inicial como "Fácil"
             } else if (filial === 'hongkong') {
@@ -1943,7 +2083,7 @@
                 document.getElementById('mappedProductCodeDisplayHK').innerText = '--';
                 document.getElementById('productDescriptionDisplayHK').innerText = '--';
                 document.getElementById('productQuantityHK').value = '1';
-                document.getElementById('productValueHK').innerText = 'R$ 0,00';
+                document.getElementById('productValueHK').innerText = '$ 0,00';
                 document.getElementById('totalM3DisplayHK').innerText = '0.00 m³';
                 document.getElementById('moqLiveFeedbackHK').innerText = '';
                 document.getElementById('clientOrderNumberHK').value = ''; // Limpar número do pedido do cliente
@@ -1984,6 +2124,32 @@
             }
         }
 
+        // Function to switch tabs in Purchasing Center
+        function switchPurchasingTab(tabType) {
+            const awaitingNegotiationTab = document.getElementById('awaitingNegotiationTab');
+            const renatoActionsTab = document.getElementById('renatoActionsTab');
+            const tabButtonsContainer = document.getElementById('purchasingTabButtons');
+
+            // Hide all tab contents
+            awaitingNegotiationTab.classList.add('hidden');
+            renatoActionsTab.classList.add('hidden');
+
+            // Remove active class from all tab buttons
+            Array.from(tabButtonsContainer.children).forEach(button => {
+                button.classList.remove('active');
+            });
+
+            // Show selected tab content and add active class to button
+            if (tabType === 'awaitingNegotiation') {
+                awaitingNegotiationTab.classList.remove('hidden');
+                tabButtonsContainer.children[0].classList.add('active');
+            } else if (tabType === 'renatoActions') {
+                renatoActionsTab.classList.remove('hidden');
+                tabButtonsContainer.children[1].classList.add('active');
+            }
+            renderPurchasingCenterTables(); // Re-render tables after switching tabs
+        }
+
         // Função para voltar para a Central de Pedidos a partir da seleção de filial ou formulários
         function backToOrderCenter() {
             showScreen('orderCenterScreen');
@@ -2009,6 +2175,11 @@
             renderHongKongProductList(); // Re-renderizar a lista do carrinho
         }
 
+        function backToPurchasingCenter() {
+            currentPurchasingPO = null; // Clear the currently viewed PO
+            showScreen('purchasingCenterScreen');
+            renderPurchasingCenterTables();
+        }
 
         // Função de Logout
         function logout() {
@@ -2016,6 +2187,7 @@
             selectedFilial = '';
             hongKongProducts = [];
             colombiaProducts = [];
+            userRole = 'guest'; // Redefine a função do usuário para 'guest'
             // Limpar generatedPurchaseOrders completamente
             generatedPurchaseOrders = [
                 {
@@ -2061,6 +2233,7 @@
             simulatedSupplierOrders = {}; // Limpar os pedidos por fornecedor
             currentOrderDetails = null;
             currentViewingPO = null; // Reiniciar o PO em visualização
+            currentPurchasingPO = null; // Reiniciar o PO de Compras
             
             // Re-initialize counters based on the original data + new generated orders
             const maxSolId = orders.reduce((max, order) => {
@@ -2085,7 +2258,7 @@
             if (document.getElementById('mappedProductCodeDisplayHK')) document.getElementById('mappedProductCodeDisplayHK').innerText = '--';
             if (document.getElementById('productDescriptionDisplayHK')) document.getElementById('productDescriptionDisplayHK').innerText = '--';
             if (document.getElementById('productQuantityHK')) document.getElementById('productQuantityHK').value = '1';
-            if (document.getElementById('productValueHK')) document.getElementById('productValueHK').innerText = 'R$ 0,00';
+            if (document.getElementById('productValueHK')) document.getElementById('productValueHK').innerText = '$ 0,00';
             if (document.getElementById('totalM3DisplayHK')) document.getElementById('totalM3DisplayHK').innerText = '0.00 m³';
             if (document.getElementById('moqLiveFeedbackHK')) document.getElementById('moqLiveFeedbackHK').innerText = '';
             if (document.getElementById('addProductMessageHK')) document.getElementById('addProductMessageHK').classList.add('hidden');
@@ -2101,7 +2274,7 @@
             if (document.getElementById('productDescriptionDisplayCOL')) document.getElementById('productDescriptionDisplayCOL').innerText = '--';
             if (document.getElementById('productStockCOL')) document.getElementById('productStockCOL').innerText = '--';
             if (document.getElementById('productQuantityCOL')) document.getElementById('productQuantityCOL').value = '1';
-            if (document.getElementById('valorUnitCOLDisplay')) document.getElementById('valorUnitCOLDisplay').innerText = 'R$ 0,00';
+            if (document.getElementById('valorUnitCOLDisplay')) document.getElementById('valorUnitCOLDisplay').innerText = '$ 0,00';
             if (document.getElementById('addProductMessageCOL')) document.getElementById('addProductMessageCOL').classList.add('hidden');
             if (document.getElementById('clientOrderNumberCOL')) document.getElementById('clientOrderNumberCOL').value = '';
             if (document.getElementById('pasteCodesCOL')) document.getElementById('pasteCodesCOL').value = ''; // Limpa textarea do Pedido Fácil
@@ -2180,7 +2353,7 @@
                         // Usando a bandeira da China como um placeholder para Hong Kong
                         return '<img src="https://e7.pngegg.com/pngimages/630/750/png-clipart-flag-of-china-association-of-southeast-asian-nations-national-flag-asean%E3%81%AE%E7%B4%8B%E7%AB%A0-china-orange-world-thumbnail.png" alt="Bandeira de Hong Kong" class="flag-icon">';
                     default:
-                        return '<span>🚩</span>'; // Bandeira padrão para países desconhecidos
+                        return '<span class="flag-icon">🚩</span>'; // Bandeira padrão para países desconhecidos
                 }
             };
 
@@ -2216,6 +2389,7 @@
                     case 'Documentação OK':
                     case 'Chegada no Porto de Destino (ATA)':
                     case 'Entregue': // Colômbia
+                    case 'Negociado': // New status for Compras
                         statusIndicatorClass = 'green';
                         break;
                     case 'Pendente':
@@ -2242,8 +2416,10 @@
                 }
 
                 const flagImageHtml = getFlagImage(order.originCountry);
-                // Exibe apenas o código numérico do fornecedor
-                const displaySupplierCode = order.supplier ? getOrGenerateSupplierCode(order.supplier) : 'N/A';
+                // Exibe apenas o código numérico do fornecedor para usuários cliente
+                const displaySupplierInfo = userRole === 'client' && order.supplier
+                    ? getOrGenerateSupplierCode(order.supplier)
+                    : (order.supplier || 'N/A');
 
 
                 row.innerHTML = `
@@ -2251,8 +2427,8 @@
                     <td><a href="#" class="order-link" onclick="viewOrderDetails('${order.orderId}')">${order.orderId}</a></td> <!-- Link agora no Nº Pedido -->
                     <td>${flagImageHtml}</td>
                     <td>${order.originCountry}</td>
-                    <td>${displaySupplierCode}</td> <!-- Exibe apenas o código do fornecedor -->
-                    <td>R$ ${order.totalValue.toFixed(2).replace('.', ',')}</td>
+                    <td>${displaySupplierInfo}</td> <!-- Exibe apenas o código do fornecedor para cliente -->
+                    <td>$ ${order.totalValue.toFixed(2).replace('.', ',')}</td>
                     <td><span class="status-indicator ${statusIndicatorClass}"></span>${order.status}</td>
                     <td>${order.requestDate}</td>
                     <td>${order.lastUpdateDate}</td>
@@ -2280,14 +2456,20 @@
                     case 'hong kong':
                         return '<img src="https://e7.pngegg.com/pngimages/630/750/png-clipart-flag-of-china-association-of-southeast-asian-nations-national-flag-asean%E3%81%AE%E7%B4%8B%E7%AB%A0-china-orange-world-thumbnail.png" alt="Bandeira de Hong Kong" class="flag-icon inline-block mr-2">';
                     default:
-                        return '<span class="mr-2">🚩</span>'; // Bandeira padrão
+                        return '<span class="mr-2 flag-icon">🚩</span>'; // Bandeira padrão
                 }
             };
             document.getElementById('detailOriginDisplay').innerHTML = `${getFlagImageForDetails(currentOrderDetails.originCountry)}${currentOrderDetails.originCountry}`;
 
 
-            document.getElementById('detailSupplier').innerText = currentOrderDetails.supplier ? getOrGenerateSupplierCode(currentOrderDetails.supplier) : 'N/A'; // Exibe o Fornecedor com código
-            document.getElementById('detailTotalValue').innerText = `R$ ${currentOrderDetails.totalValue.toFixed(2).replace('.', ',')}`;
+            // Exibe apenas o código do fornecedor para usuários cliente
+            const detailSupplierElement = document.getElementById('detailSupplier');
+            detailSupplierElement.innerText = userRole === 'client' && currentOrderDetails.supplier
+                ? getOrGenerateSupplierCode(currentOrderDetails.supplier)
+                : (currentOrderDetails.supplier || 'N/A');
+
+
+            document.getElementById('detailTotalValue').innerText = `$ ${currentOrderDetails.totalValue.toFixed(2).replace('.', ',')}`;
             document.getElementById('detailStatus').innerText = currentOrderDetails.status; // Ainda exibe o status direto
 
             const productsTableBody = document.getElementById('orderDetailsProductsTableBody');
@@ -2300,8 +2482,8 @@
                     <td>${product.code}</td>
                     <td>${product.description}</td>
                     <td>${product.quantity}</td>
-                    <td>R$ ${product.unitPrice.toFixed(2).replace('.', ',')}</td>
-                    <td>R$ ${itemTotalPrice.replace('.', ',')}</td>
+                    <td>$ ${product.unitPrice.toFixed(2).replace('.', ',')}</td>
+                    <td>$ ${itemTotalPrice.replace('.', ',')}</td>
                 `;
                 productsTableBody.appendChild(row);
             });
@@ -2425,7 +2607,7 @@
             // Reseta os campos de exibição
             mappedProductCodeDisplay.innerText = '--';
             productDescriptionDisplay.innerText = '--';
-            productValueDisplay.innerText = 'R$ 0,00';
+            productValueDisplay.innerText = '$ 0,00';
             totalM3Display.innerText = '0.00 m³';
             moqLiveFeedbackDiv.innerText = '';
             moqLiveFeedbackDiv.className = 'text-xs mt-1';
@@ -2438,7 +2620,7 @@
                 mappedProductCodeDisplay.innerText = productCode; // Exibe o código PROD
                 productDescriptionDisplay.innerText = `${productInfo.description}`;
                 productDescriptionDisplay.style.color = '#374151';
-                productValueDisplay.innerText = `R$ ${productInfo.tableValue.toFixed(2).replace('.', ',')}`;
+                productValueDisplay.innerText = `$ ${productInfo.tableValue.toFixed(2).replace('.', ',')}`;
                 
                 calculateTotalM3HK();
                 checkMoqLiveHK();
@@ -2551,7 +2733,7 @@
             document.getElementById('mappedProductCodeDisplayHK').innerText = '--';
             document.getElementById('productDescriptionDisplayHK').innerText = '--';
             document.getElementById('productQuantityHK').value = '1';
-            document.getElementById('productValueHK').innerText = 'R$ 0,00';
+            document.getElementById('productValueHK').innerText = '$ 0,00';
             document.getElementById('totalM3DisplayHK').innerText = '0.00 m³';
             document.getElementById('moqLiveFeedbackHK').innerText = '';
         }
@@ -2587,16 +2769,21 @@
                                 </thead>
                                 <tbody>`;
             hongKongProducts.forEach((product, index) => {
+                // Para usuários 'client', exiba apenas o código do fornecedor
+                const displaySupplierInfo = userRole === 'client' && product.supplier
+                    ? getOrGenerateSupplierCode(product.supplier)
+                    : (product.supplier || 'N/A');
+
                 tableHtml += `
                     <tr>
                         <td>${product.clientCode}</td>
                         <td>${product.code}</td>
                         <td>${product.name}</td>
                         <td>${product.quantity}</td>
-                        <td>R$ ${parseFloat(product.tableValue).toFixed(2).replace('.', ',')}</td>
-                        <td>R$ ${parseFloat(product.totalValue).toFixed(2).replace('.', ',')}</td>
+                        <td>$ ${parseFloat(product.tableValue).toFixed(2).replace('.', ',')}</td>
+                        <td>$ ${parseFloat(product.totalValue).toFixed(2).replace('.', ',')}</td>
                         <td>${parseFloat(product.totalM3).toFixed(2).replace('.', ',')} m³</td>
-                        <td>${product.supplier || 'N/A'}</td> <!-- Exibe o fornecedor -->
+                        <td>${displaySupplierInfo}</td> <!-- Exibe apenas o código do fornecedor para cliente -->
                         <td><button onclick="removeProductHK(${index})" class="text-red-500 hover:text-red-700 font-bold text-sm">Remover</button></td>
                     </tr>
                 `;
@@ -2673,8 +2860,13 @@
                     const percent20HC = ((totalCubagemForSupplier / MAX_CUBAGE_20HC) * 100).toFixed(2);
                     const percent40HC = ((totalCubagemForSupplier / MAX_CUBAGE_40HC) * 100).toFixed(2);
 
+                    // Exiba apenas o código do fornecedor para usuários 'client'
+                    const displaySupplierTitle = userRole === 'client'
+                        ? `Fornecedor: ${getOrGenerateSupplierCode(supplier)}`
+                        : `${supplier} (Cód: ${getOrGenerateSupplierCode(supplier)})`;
+
                     supplierSplitHTML += `<div class="mb-4 p-2 border rounded-md bg-white">
-                                            <strong>${supplier} (Cód: ${getOrGenerateSupplierCode(supplier)}):</strong>
+                                            <strong>${displaySupplierTitle}:</strong>
                                             <table class="data-table">
                                                 <thead>
                                                     <tr>
@@ -2697,15 +2889,15 @@
                                                         <td>${item.name}</td>
                                                         <td>${item.quantity}</td>
                                                         <td>${item.moq}</td>
-                                                        <td>R$ ${parseFloat(item.tableValue).toFixed(2).replace('.', ',')}</td>
-                                                        <td>R$ ${parseFloat(item.totalValue).toFixed(2).replace('.', ',')}</td>
+                                                        <td>$ ${parseFloat(item.tableValue).toFixed(2).replace('.', ',')}</td>
+                                                        <td>$ ${parseFloat(item.totalValue).toFixed(2).replace('.', ',')}</td>
                                                         <td>${parseFloat(item.totalM3).toFixed(2).replace('.', ',')} m³</td>
                                                     </tr>`;
                     });
                     supplierSplitHTML += `
                                                 </tbody>
                                             </table>
-                                            <p class="mt-4 font-semibold">Subtotal (Valor): R$ ${totalValueForSupplier.toFixed(2).replace('.', ',')}</p>
+                                            <p class="mt-4 font-semibold">Subtotal (Valor): $ ${totalValueForSupplier.toFixed(2).replace('.', ',')}</p>
                                             <h4 class="font-semibold text-gray-700 mt-2 mb-2">Previsão de Cubagem para este fornecedor:</h4>
                                             <p><strong>Subtotal Cubagem:</strong> ${totalCubagemForSupplier.toFixed(2).replace('.', ',')} m³</p>
                                             <ul class="list-disc pl-5">
@@ -2785,9 +2977,14 @@
             const poToDisplayInCurrentRequest = generatedPurchaseOrders.filter(po => po.parentOrderId === currentParentOrderId);
 
             poToDisplayInCurrentRequest.forEach(po => {
+                // Exibe apenas o código do fornecedor para usuários 'client'
+                const displaySupplierTitle = userRole === 'client'
+                    ? `Pedido para ${po.supplierCode}`
+                    : `Pedido para ${po.supplier} (Cód: ${po.supplierCode})`;
+
                 poDetailsHtml += `
                     <div class="mb-6 p-4 border rounded-lg bg-white shadow-sm">
-                        <p class="font-semibold text-lg mb-2">Pedido para ${po.supplier} (Cód: ${po.supplierCode}):</p>
+                        <p class="font-semibold text-lg mb-2">${displaySupplierTitle}:</p>
                         <p><strong>Nº Pedido:</strong> ${po.id}</p>
                         <p><strong>Data de Emissão:</strong> ${po.date}</p>
                         <p class="mt-4 font-semibold">Produtos no Pedido:</p>
@@ -2809,7 +3006,7 @@
                                 `).join('')}
                             </tbody>
                         </table>
-                        <p class="mt-4 font-semibold text-xl">Valor Total Estimado: R$ ${po.newSupplierPriceTotal.replace('.', ',')}</p>
+                        <p class="mt-4 font-semibold text-xl">Valor Total Estimado: $ ${po.newSupplierPriceTotal.replace('.', ',')}</p>
                     </div>
                 `;
             });
@@ -2821,6 +3018,12 @@
         }
 
         function simulateRenatoApprovalScreen() {
+            // Se o usuário é 'client', impede o acesso e mostra uma mensagem.
+            if (userRole === 'client') {
+                showMessage('Acesso Negado', 'Não tem permissão para aceder à tela de aprovação de preços.', 'error');
+                return;
+            }
+
             // Filtra generatedPurchaseOrders para pegar apenas os POs que estão Pendentes de Aprovação (OverallApprovalStatus)
             const poToApprove = generatedPurchaseOrders.filter(po => po.overallApprovalStatus === 'Pendente');
 
@@ -2855,7 +3058,7 @@
                     <td>${po.id}</td> <!-- Exibe o ID do PO individual -->
                     <td>${clientName}</td>
                     <td>${po.supplier}</td>
-                    <td>R$ ${totalValueForPO.toFixed(2).replace('.', ',')}</td>
+                    <td>$ ${totalValueForPO.toFixed(2).replace('.', ',')}</td>
                     <td>${po.date}</td>
                     <td>${lastUpdateDate}</td>
                     <td>
@@ -2930,7 +3133,7 @@
                                 <th>Vlr. Unit. Novo</th>
                                 <th>Total Atual</th>
                                 <th>Novo Total</th>
-                                <th>Dif. (R$)</th>
+                                <th>Dif. ($)</th>
                                 <th>Status</th>
                                 <th>Ação</th>
                             </tr>
@@ -2971,7 +3174,7 @@
                             <td class="${differenceClass}">${differenceTotalPerProduct.toFixed(2).replace('.', ',')} ${percentageDiffString} ${differenceIcon}</td>
                             <td><span id="product-status-${p.code}" class="${statusClass}">${p.approvalStatus}</span></td>
                             <td>
-                                <div class="approval-buttons-group flex flex-col items-start">
+                                <div class="approval-buttons-group">
                                     <button onclick="setProductApprovalStatus('${currentViewingPO.id}', '${p.code}', 'Aprovado')" class="btn btn-sm btn-approve ${p.approvalStatus === 'Aprovado' ? 'selected' : ''}">Aprovar</button>
                                     <button onclick="setProductApprovalStatus('${currentViewingPO.id}', '${p.code}', 'Negociar')" class="btn btn-sm btn-negotiate ${p.approvalStatus === 'Negociar' ? 'selected' : ''}">Negociar</button>
                                     <button onclick="setProductApprovalStatus('${currentViewingPO.id}', '${p.code}', 'Rejeitar')" class="btn btn-sm btn-reject ${p.approvalStatus === 'Rejeitado' ? 'selected' : ''}">Rejeitar</button>
@@ -3001,7 +3204,7 @@
                 const globalDifferenceValueSpan = document.getElementById('globalDifferenceValue');
                 const globalDifferenceClass = totalGlobalDifference > 0 ? 'price-difference-positive' : 'price-difference-negative';
                 const globalDifferenceText = totalGlobalDifference.toFixed(2).replace('.', ',');
-                globalDifferenceValueSpan.innerText = `R$ ${globalDifferenceText}`;
+                globalDifferenceValueSpan.innerText = `$ ${globalDifferenceText}`;
                 globalDifferenceValueSpan.className = globalDifferenceClass;
                 globalDifferenceSummaryDiv.classList.remove('hidden');
 
@@ -3153,13 +3356,13 @@
             const finalMessage = currentViewingPO.overallApprovalStatus === 'Aprovado'
                 ? `O pedido ${currentViewingPO.id} para a solicitação ${currentViewingPO.parentOrderId} foi aprovado. Compras Internacionais enviará a confirmação ao fornecedor e atualizará os preços finais no portal.`
                 : (currentViewingPO.overallApprovalStatus === 'Rejeitado'
-                    ? `Análise concluída para o pedido ${currentViewingPO.id} da solicitação ${currentViewingPO.parentOrderId}. O pedido foi rejeitado. A equipe de Compras Internacionais será notificada para renegociar se necessário.`
-                    : `Análise concluída para o pedido ${currentViewingPO.id} da solicitação ${currentViewingPO.parentOrderId}. Alguns itens estão em negociação. A equipe de Compras Internacionais será notificada para prosseguir.`);
+                    ? `Análise concluída para o pedido ${currentViewingPO.id} da solicitação ${currentViewingPO.parentOrderId}. O pedido foi rejeitado. A equipa de Compras Internacionais será notificada para renegociar se necessário.`
+                    : `Análise concluída para o pedido ${currentViewingPO.id} da solicitação ${currentViewingPO.parentOrderId}. Alguns itens estão em negociação. A equipa de Compras Internacionais será notificada para prosseguir.`);
 
             document.getElementById('hongKongFinalTitle').innerText = finalTitle;
             document.getElementById('hongKongFinalMessage').innerText = finalMessage;
 
-            let finalDetailsHtml = `<p class="font-semibold mb-2">Status do Pedido <strong>${currentViewingPO.id}</strong> (Solicitação Principal: <strong>${currentViewingPO.parentOrderId}</strong>):</p>`;
+            let finalDetailsHtml = `<p class="font-semibold mb-2">Estado do Pedido <strong>${currentViewingPO.id}</strong> (Solicitação Principal: <strong>${currentViewingPO.parentOrderId}</strong>):</p>`;
 
             let statusClass, statusText;
             switch (currentViewingPO.overallApprovalStatus) {
@@ -3180,11 +3383,12 @@
                     statusText = 'Pendente ⏳'; // Deveria ter sido decidido se o botão foi habilitado
             }
 
-            const valueText = currentViewingPO.overallApprovalStatus === 'Aprovado' ? `<p>O valor de aquisição final negociado é de: <span class="font-bold">R$ ${currentViewingPO.newSupplierPriceTotal.replace('.', ',')}</span></p>` : '';
+            const valueText = currentViewingPO.overallApprovalStatus === 'Aprovado' ? `<p>O valor de aquisição final negociado é de: <span class="font-bold">$ ${currentViewingPO.newSupplierPriceTotal.replace('.', ',')}</span></p>` : '';
 
             finalDetailsHtml += `
                 <div class="mb-4 p-3 border rounded-lg ${statusClass}">
-                    <p>Pedido <strong>${currentViewingPO.id}</strong> para ${currentViewingPO.supplier} (Cód: ${currentViewingPO.supplierCode}) foi <strong>${statusText}</strong>.</p>
+                    <p>Pedido <strong>${currentViewingPO.id}</strong> para ${currentViewingPO.supplier} (Cód: ${currentViewingPO.supplierCode}) foi <strong>${statusText}</strong>.</p>`
+            finalDetailsHtml += `
                     ${valueText}
                 </div>
             `;
@@ -3210,7 +3414,7 @@
             productDescriptionDisplay.style.color = '#4b5563';
             productStockDisplay.innerText = '--';
             productStockDisplay.style.color = '#4b5563';
-            valorUnitDisplay.innerText = 'R$ 0,00';
+            valorUnitDisplay.innerText = '$ 0,00';
 
             // Usa o mapa universal para busca de código de cliente para código de produto
             const productCode = universalClientCodeToProductCodeMap[clientProductCodeInput];
@@ -3220,7 +3424,7 @@
                 productCodeDisplay.innerText = productCode; // Exibe o código PROD
                 productDescriptionDisplay.innerText = `${productInfo.description}`;
                 productDescriptionDisplay.style.color = '#374151';
-                valorUnitDisplay.innerText = `R$ ${productInfo.unitPrice.toFixed(2).replace('.', ',')}`;
+                valorUnitDisplay.innerText = `$ ${productInfo.unitPrice.toFixed(2).replace('.', ',')}`;
 
                 if (productInfo.simulatedStock > 0) {
                     productStockDisplay.innerText = 'Sim';
@@ -3285,7 +3489,7 @@
             document.getElementById('productDescriptionDisplayCOL').innerText = '--';
             document.getElementById('productStockCOL').innerText = '--';
             document.getElementById('productQuantityCOL').value = '1';
-            document.getElementById('valorUnitCOLDisplay').innerText = 'R$ 0,00';
+            document.getElementById('valorUnitCOLDisplay').innerText = '$ 0,00';
         }
 
         function removeColombiaProduct(index) {
@@ -3326,8 +3530,8 @@
                         <td>${product.code}</td>
                         <td>${product.name}</td>
                         <td>${product.quantity}</td>
-                        <td>R$ ${parseFloat(product.unitPrice).toFixed(2).replace('.', ',')}</td>
-                        <td>R$ ${parseFloat(product.totalValue).toFixed(2).replace('.', ',')}</td>
+                        <td>$ ${parseFloat(product.unitPrice).toFixed(2).replace('.', ',')}</td>
+                        <td>$ ${parseFloat(product.totalValue).toFixed(2).replace('.', ',')}</td>
                         <td class="${stockColorClass} font-semibold">${stockStatus}</td>
                         <td><button onclick="removeColombiaProduct(${index})" class="text-red-500 hover:text-red-700 font-bold text-sm">Remover</button></td>
                     </tr>
@@ -3337,56 +3541,104 @@
             listDiv.innerHTML += tableHtml;
         }
 
-        // Função para adicionar produtos à lista de produtos de Hong Kong (usada pelos métodos "Fácil")
-        function addProductsToHongKongList(productsToAdd) {
+        // Helper function to process a single line of input (from file or paste)
+        function processInputLine(line) {
+            const parts = line.split(',').map(part => part.trim());
+            const numParts = parts.length;
+
+            let clientCode = null;
+            let productCode = null;
+            let quantity = null;
+            let productInfo = null;
+
+            if (numParts === 2) {
+                const codeOrClientCode = parts[0].toUpperCase();
+                quantity = parseInt(parts[1]);
+
+                // Try to find by clientCode (SKU) first
+                let tempProductCode = universalClientCodeToProductCodeMap[codeOrClientCode];
+                if (tempProductCode) {
+                    productInfo = productDatabase[tempProductCode];
+                    if (productInfo) {
+                        clientCode = codeOrClientCode;
+                        productCode = tempProductCode;
+                    }
+                }
+
+                // If not found by clientCode, try to find by productCode (PROD)
+                if (!productInfo) {
+                    productInfo = productDatabase[codeOrClientCode];
+                    if (productInfo) {
+                        productCode = codeOrClientCode;
+                        clientCode = productInfo.clientCode; // Get SKU from PROD info
+                    }
+                }
+
+            } else if (numParts === 3) {
+                clientCode = parts[0].toUpperCase();
+                productCode = parts[1].toUpperCase();
+                quantity = parseInt(parts[2]);
+
+                productInfo = productDatabase[productCode];
+                // Validate consistency: if productInfo exists, ensure clientCode matches
+                if (productInfo && productInfo.clientCode.toUpperCase() !== clientCode) {
+                    productInfo = null; // Inconsistent, treat as not found
+                }
+            }
+
+            if (productInfo && !isNaN(quantity) && quantity > 0) {
+                return { clientCode, productCode, quantity, productInfo };
+            }
+            return null; // Invalid line
+        }
+
+        // Function to add products to Hong Kong list (used by "Easy" methods)
+        function addProductsToHongKongList(productsData) {
             let productsAddedCount = 0;
             let productsFailedCount = 0;
             let totalMoqIssues = 0;
 
-            productsToAdd.forEach(productData => {
-                const clientProductCode = productData.clientCode.trim().toUpperCase();
-                const productCode = universalClientCodeToProductCodeMap[clientProductCode];
-                const quantity = parseInt(productData.quantity);
-                const productInfo = productDatabase[productCode];
+            productsData.forEach(item => {
+                const productInfo = productDatabase[item.productCode]; // Lookup using productCode (PROD)
 
                 if (!productInfo) {
-                    console.error(`Produto com Cód Cliente "${clientProductCode}" não encontrado.`);
+                    console.error(`Produto com Cód Produto "${item.productCode}" não encontrado.`);
                     productsFailedCount++;
                     return;
                 }
-                if (isNaN(quantity) || quantity <= 0) {
-                    console.error(`Quantidade inválida para o produto "${clientProductCode}".`);
+                if (isNaN(item.quantity) || item.quantity <= 0) {
+                    console.error(`Quantidade inválida para o produto "${item.clientCode || item.productCode}".`);
                     productsFailedCount++;
                     return;
                 }
-                if (quantity < productInfo.moq) {
-                    console.warn(`Produto "${productInfo.description}" (Qtd: ${quantity}) abaixo do MOQ mínimo (${productInfo.moq}). Será cancelado.`);
+                if (item.quantity < productInfo.moq) {
+                    console.warn(`Produto "${productInfo.description}" (Qtd: ${item.quantity}) abaixo do MOQ mínimo (${productInfo.moq}). Será cancelado.`);
                     totalMoqIssues++;
-                    // Não adiciona produtos que não atendem ao MOQ
+                    // Do not add products that do not meet MOQ
                     return; 
                 }
 
-                const totalM3 = (productInfo.cubageUnit * quantity).toFixed(2);
-                const totalValue = (productInfo.tableValue * quantity).toFixed(2);
+                const totalM3 = (productInfo.cubageUnit * item.quantity).toFixed(2);
+                const totalValue = (productInfo.tableValue * item.quantity).toFixed(2);
 
-                const existingProductIndex = hongKongProducts.findIndex(p => p.code === productCode);
+                const existingProductIndex = hongKongProducts.findIndex(p => p.code === item.productCode);
                 if (existingProductIndex > -1) {
-                    hongKongProducts[existingProductIndex].quantity += quantity;
+                    hongKongProducts[existingProductIndex].quantity += item.quantity;
                     hongKongProducts[existingProductIndex].totalM3 = (parseFloat(hongKongProducts[existingProductIndex].totalM3) + parseFloat(totalM3)).toFixed(2);
                     hongKongProducts[existingProductIndex].totalValue = (parseFloat(hongKongProducts[existingProductIndex].totalValue) + parseFloat(totalValue)).toFixed(2);
                 } else {
                     hongKongProducts.push({
-                        clientCode: clientProductCode,
-                        code: productCode,
+                        clientCode: item.clientCode || productInfo.clientCode, // Use provided clientCode or from productInfo
+                        code: item.productCode, // This is the PROD code
                         name: productInfo.description,
-                        quantity: quantity,
+                        quantity: item.quantity,
                         moq: productInfo.moq,
-                        unitPrice: productInfo.unitPrice,
-                        tableValue: productInfo.tableValue,
+                        unitPrice: productInfo.unitPrice, // This is the acquisition unit price
+                        tableValue: productInfo.tableValue, // This is the table price for display
                         cubageUnit: productInfo.cubageUnit,
                         totalM3: totalM3,
                         totalValue: totalValue,
-                        supplier: productInfo.supplier // Adiciona o fornecedor do produto
+                        supplier: productInfo.supplier // Add product supplier
                     });
                 }
                 productsAddedCount++;
@@ -3415,47 +3667,44 @@
             displayAddProductMessage(message, type, 'hongkong');
         }
 
-        // Função para adicionar produtos à lista de produtos da Colômbia (usada pelos métodos "Fácil")
-        function addProductsToColombiaList(productsToAdd) {
+        // Function to add products to Colombia list (used by "Easy" methods)
+        function addProductsToColombiaList(productsData) {
             let productsAddedCount = 0;
             let productsFailedCount = 0;
             let totalStockIssues = 0;
 
-            productsToAdd.forEach(productData => {
-                const clientProductCode = productData.clientCode.trim().toUpperCase();
-                const productCode = universalClientCodeToProductCodeMap[clientProductCode];
-                const quantity = parseInt(productData.quantity);
-                const productInfo = productDatabase[productCode];
+            productsData.forEach(item => {
+                const productInfo = productDatabase[item.productCode]; // Lookup using productCode (PROD)
 
                 if (!productInfo) {
-                    console.error(`Produto com Cód Cliente "${clientProductCode}" não encontrado.`);
+                    console.error(`Produto com Cód Produto "${item.productCode}" não encontrado.`);
                     productsFailedCount++;
                     return;
                 }
-                if (isNaN(quantity) || quantity <= 0) {
-                    console.error(`Quantidade inválida para o produto "${clientProductCode}".`);
+                if (isNaN(item.quantity) || item.quantity <= 0) {
+                    console.error(`Quantidade inválida para o produto "${item.clientCode || item.productCode}".`);
                     productsFailedCount++;
                     return;
                 }
                 if (productInfo.simulatedStock === 0) {
                     console.warn(`Produto "${productInfo.description}" sem estoque. Não adicionado.`);
                     totalStockIssues++;
-                    // Não adiciona produtos sem estoque
+                    // Do not add products without stock
                     return; 
                 }
 
-                const totalValue = (productInfo.unitPrice * quantity).toFixed(2);
+                const totalValue = (productInfo.unitPrice * item.quantity).toFixed(2);
 
-                const existingProductIndex = colombiaProducts.findIndex(p => p.code === productCode);
+                const existingProductIndex = colombiaProducts.findIndex(p => p.code === item.productCode);
                 if (existingProductIndex > -1) {
-                    colombiaProducts[existingProductIndex].quantity += quantity;
+                    colombiaProducts[existingProductIndex].quantity += item.quantity;
                     colombiaProducts[existingProductIndex].totalValue = (parseFloat(colombiaProducts[existingProductIndex].totalValue) + parseFloat(totalValue)).toFixed(2);
                 } else {
                     colombiaProducts.push({
-                        clientCode: clientProductCode,
-                        code: productCode,
+                        clientCode: item.clientCode,
+                        code: item.productCode,
                         name: productInfo.description,
-                        quantity: quantity,
+                        quantity: item.quantity,
                         unitPrice: productInfo.unitPrice,
                         simulatedStock: productInfo.simulatedStock, // Carrega informações de estoque para exibição, se necessário posteriormente
                         totalValue: totalValue
@@ -3505,16 +3754,21 @@
             setTimeout(() => {
                 // Gera um valor total simulado para NF-e com base nos produtos da Colômbia
                 const totalNfeValue = colombiaProducts.reduce((sum, p) => sum + parseFloat(p.totalValue), 0).toFixed(2);
-                document.getElementById('nfeValue').innerText = `R$ ${totalNfeValue.replace('.', ',')}`;
+                document.getElementById('nfeValue').innerText = `$ ${totalNfeValue.replace('.', ',')}`;
 
-                // Atualiza o conteúdo do PDF da NF-e com os produtos reais
-                let productsInNfePdf = colombiaProducts.map((p, idx) => `| ${String(idx + 1).padStart(2, '0')}| ${p.name.padEnd(17)}| ${String(p.quantity).padEnd(3)} | R$ ${parseFloat(p.unitPrice).toFixed(2).padEnd(10).replace('.', ',')}| R$ ${parseFloat(p.totalValue).toFixed(2).padEnd(6).replace('.', ',')} |`).join('\n');
+                // Recalculate products for PDF display (ensure they are current)
+                let productsForNfe = colombiaProducts.map((p, idx) => {
+                    const totalProductValue = (p.quantity * p.unitPrice).toFixed(2);
+                    return `| ${String(idx + 1).padStart(2, '0')}| ${p.name.padEnd(17)}| ${String(p.quantity).padEnd(3)} | $ ${p.unitPrice.toFixed(2).padEnd(10).replace('.', ',')}| $ ${totalProductValue.padEnd(6).replace('.', ',')} |`;
+                }).join('\n');
+
+
                 let nfePdfContent = `
                     ----------------------------------------------------
                     |                NOTA FISCAL ELETRÔNICA            |
                     | Nº: NF-20250624-001                                |
                     | Data de Emissão: 24/06/2025                        |
-                    | ${clientOrderNumber ? `Seu Pedido: ${clientOrderNumber}`.padEnd(50, ' ') + `|\n` : '' }
+                    ${clientOrderNumber ? `| Seu Pedido: ${clientOrderNumber}`.padEnd(51, ' ') + `|\n` : '' }
                     |                                                    |
                     | REMETENTE: EMPRESA XYZ DO BRASIL                   |
                     | CNPJ: 00.000.000/0001-00                           |
@@ -3527,14 +3781,14 @@
                     | -------------------------------------------------- |
                     | ID | DESCRIÇÃO           | QTD | VALOR UNIT | TOTAL |
                     |----|---------------------|-----|------------|-------|
-                    | 001| Produto Colômbia A  | 10  | R$ 100,00  | R$ 1000,00 |
-                    | 002| Produto Colômbia B  | 5   | R$ 100,00  | R$ 500,00  |
+                    ${productsForNfe}
                     |--------------------------------------------------|
-                    | VALOR TOTAL:                                R$ ${totalNfeValue.replace('.', ',')} |
+                    | VALOR TOTAL:                                $ ${totalNfeValue.replace('.', ',')} |
                     ----------------------------------------------------
                     (Este é um exemplo simulado de NF-e.)
                 `;
-                document.querySelector('#nfePdfViewer pre').innerText = nfePdfContent;
+                document.getElementById('nfePdfContent').innerText = nfePdfContent;
+
 
                 // Adiciona o pedido à lista global `orders` com o status inicial 'Em Separação'
                 orders.push({
@@ -3610,7 +3864,7 @@
                 const displayClientCode = product.clientCode || 'N/A';
                 const displayProductCode = product.code || 'N/A';
                 tableHtml += `
-                    <tr onclick="selectProductFromCatalog(productDatabase['${product.code}'])">
+                    <tr onclick="selectProductFromCatalog({ clientCode: '${displayClientCode}', code: '${displayProductCode}' })">
                         <td class="product-code-display">${displayClientCode}</td>
                         <td class="product-code-display">${displayProductCode}</td>
                         <td class="product-description-display">${product.description}</td>
@@ -3622,30 +3876,34 @@
             listDiv.innerHTML = tableHtml;
         }
 
-        function selectProductFromCatalog(product) {
+        function selectProductFromCatalog(productSelected) { // Changed parameter name
             if (currentProductCatalogFilial === 'hongkong') {
-                // Se o modal de catálogo foi aberto a partir do "Pedido Fácil", adiciona diretamente
-                // Se foi aberto a partir do "Pedido Manual", preenche o campo de input
+                // If modal opened from "Easy Order" tab, add directly
                 if (document.getElementById('hongKongEasyOrderTab').classList.contains('active')) {
-                    addProductsToHongKongList([{ clientCode: product.clientCode, quantity: 1 }]); // Adiciona 1 como default
-                } else {
-                    document.getElementById('clientProductCodeHK').value = product.clientCode || '';
+                    // Pass the identified clientCode and productCode
+                    addProductsToHongKongList([{ clientCode: productSelected.clientCode, productCode: productSelected.code, quantity: 1 }]); // Add 1 as default
+                } else { // Manual Order tab
+                    document.getElementById('clientProductCodeHK').value = productSelected.clientCode || '';
+                    // Since productCode is now explicitly available from selectProductFromCatalog, update the mapped display
+                    document.getElementById('mappedProductCodeDisplayHK').innerText = productSelected.code || '--';
                     updateProductDetailsOnClientCodeChangeHK(); 
                 }
             } else if (currentProductCatalogFilial === 'colombia') {
-                // Se o modal de catálogo foi aberto a partir do "Pedido Fácil", adiciona diretamente
-                // Se foi aberto a partir do "Pedido Manual", preenche o campo de input
+                // If modal opened from "Easy Order" tab, add directly
                 if (document.getElementById('colombiaEasyOrderTab').classList.contains('active')) {
-                    addProductsToColombiaList([{ clientCode: product.clientCode, quantity: 1 }]); // Adiciona 1 como default
-                } else {
-                    document.getElementById('clientProductCodeCOL').value = product.clientCode || '';
+                    // Pass the identified clientCode and productCode
+                    addProductsToColombiaList([{ clientCode: productSelected.clientCode, productCode: productSelected.code, quantity: 1 }]); // Add 1 as default
+                } else { // Manual Order tab
+                    document.getElementById('clientProductCodeCOL').value = productSelected.clientCode || '';
+                    // Update mapped product code display for Colombia as well
+                    document.getElementById('productCodeCOLDisplay').innerText = productSelected.code || '--';
                     updateProductDetailsOnClientCodeChangeCOL();
                 }
             }
             closeProductCatalogModal();
         }
 
-        // Função para alternar o conteúdo de seções colapsáveis
+        // Function to toggle collapsible sections
         function toggleCollapsible(headerElement, contentId) {
             const contentElement = document.getElementById(contentId);
             const icon = headerElement.querySelector('.collapsible-icon');
@@ -3659,7 +3917,7 @@
             }
         }
 
-        // Funções para "Pedido Fácil"
+        // Functions for "Easy Order"
         function displayFileName(fileInputId, displaySpanId) {
             const fileInput = document.getElementById(fileInputId);
             const fileNameDisplay = document.getElementById(displaySpanId);
@@ -3682,21 +3940,23 @@
             const reader = new FileReader();
             reader.onload = (e) => {
                 const csvContent = e.target.result;
-                const lines = csvContent.split('\n').filter(line => line.trim() !== ''); // Remove linhas vazias
+                const lines = csvContent.split('\n').filter(line => line.trim() !== ''); // Remove empty lines
 
                 if (lines.length === 0) {
                     displayAddProductMessage('O arquivo CSV está vazio ou não contém dados válidos.', 'error', filial);
                     return;
                 }
 
-                // Assume que a primeira linha é o cabeçalho e ignora
                 const productsData = [];
+                let invalidLines = 0;
+                // Skip header row
                 for (let i = 1; i < lines.length; i++) {
-                    const [clientCode, quantity] = lines[i].split(',').map(item => item.trim());
-                    if (clientCode && quantity && !isNaN(parseInt(quantity))) {
-                        productsData.push({ clientCode, quantity: parseInt(quantity) });
+                    const productData = processInputLine(lines[i]);
+                    if (productData) {
+                        productsData.push(productData);
                     } else {
-                        console.warn(`Linha inválida no CSV: "${lines[i]}"`);
+                        invalidLines++;
+                        console.warn(`Linha inválida no CSV ou produto não encontrado/inconsistente: "${lines[i]}"`);
                     }
                 }
 
@@ -3706,7 +3966,7 @@
                     addProductsToColombiaList(productsData);
                 }
                 
-                // Limpa o input de arquivo e o nome exibido após o upload
+                // Clear the file input and display name after upload
                 fileInput.value = '';
                 displayFileName(fileInput.id, filial === 'hongkong' ? 'fileNameDisplayHK' : 'fileNameDisplayCOL');
             };
@@ -3722,17 +3982,19 @@
             const lines = codesString.split('\n').filter(line => line.trim() !== '');
 
             if (lines.length === 0) {
-                displayAddProductMessage('Nenhum código para processar. Cole os códigos no formato "CODIGO,QUANTIDADE".', 'error', filial);
+                displayAddProductMessage('Nenhum código para processar. Cole os códigos no formato "CODIGO_CLIENTE,CODIGO_PRODUTO,QUANTIDADE" ou "CODIGO_UNICO,QUANTIDADE".', 'error', filial);
                 return;
             }
 
             const productsData = [];
+            let invalidLines = 0;
             lines.forEach(line => {
-                const [clientCode, quantity] = line.split(',').map(item => item.trim());
-                if (clientCode && quantity && !isNaN(parseInt(quantity))) {
-                    productsData.push({ clientCode, quantity: parseInt(quantity) });
+                const productData = processInputLine(line);
+                if (productData) {
+                    productsData.push(productData);
                 } else {
-                    console.warn(`Formato de linha inválido: "${line}"`);
+                    invalidLines++;
+                    console.warn(`Formato de linha inválido ou produto não encontrado/inconsistente: "${line}"`);
                 }
             });
 
@@ -3742,13 +4004,13 @@
                 addProductsToColombiaList(productsData);
             }
 
-            // Limpar a textarea após o processamento
+            // Clear the textarea after processing
             document.getElementById(textareaId).value = '';
         }
 
         function downloadSpreadsheetModel() {
-            // Simula o download de um arquivo CSV
-            const csvContent = "data:text/csv;charset=utf-8,CodigoComercial,Quantidade\nSKU-001,10\nSKU-002,5";
+            // Updated CSV content to reflect new accepted formats
+            const csvContent = "data:text/csv;charset=utf-8,CodigoCliente,CodigoProduto,Quantidade\nSKU-001,PROD001,10\n,PROD002,5\nSKU-003,,20";
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
@@ -3759,6 +4021,180 @@
             showMessage('Download', 'O download do modelo de planilha foi iniciado.', 'info');
         }
 
+        // --- NEW: Compras Screen Logic ---
+        function renderPurchasingCenterTables() {
+            const negotiationTbody = document.querySelector('#negotiationTable tbody');
+            const renatoActionsTbody = document.querySelector('#renatoActionsTable tbody');
+            negotiationTbody.innerHTML = '';
+            renatoActionsTbody.innerHTML = '';
+
+            // Filter for "Aguardando Negociação" (Overall status is 'Pendente')
+            const awaitingNegotiationPOs = generatedPurchaseOrders.filter(po => po.overallApprovalStatus === 'Pendente');
+            
+            if (awaitingNegotiationPOs.length === 0) {
+                negotiationTbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-gray-500">Nenhum pedido aguardando negociação no momento.</td></tr>`;
+            } else {
+                awaitingNegotiationPOs.forEach(po => {
+                    const row = document.createElement('tr');
+                    const displaySupplierInfo = getOrGenerateSupplierCode(po.supplier); // Always show code for Compras
+                    const orderInMainList = orders.find(o => o.orderId === po.id);
+                    const lastUpdateDate = orderInMainList ? orderInMainList.lastUpdateDate : po.date; // Use order's lastUpdateDate if available
+
+                    let statusIndicatorClass = '';
+                    switch (po.overallApprovalStatus) {
+                        case 'Pendente':
+                            statusIndicatorClass = 'yellow';
+                            break;
+                        default:
+                            statusIndicatorClass = 'gray'; // Should not happen for this filter
+                    }
+
+                    row.innerHTML = `
+                        <td>${po.parentOrderId ? po.parentOrderId : 'N/A'}</td>
+                        <td>${po.id}</td>
+                        <td>${displaySupplierInfo}</td>
+                        <td>$ ${parseFloat(po.newSupplierPriceTotal).toFixed(2).replace('.', ',')}</td>
+                        <td>${po.date}</td>
+                        <td><span class="status-indicator ${statusIndicatorClass}"></span>${po.overallApprovalStatus}</td>
+                        <td>
+                            <button onclick="viewPurchasingOrderDetails('${po.id}')" class="btn btn-primary btn-sm">Detalhes</button>
+                        </td>
+                    `;
+                    negotiationTbody.appendChild(row);
+                });
+            }
+
+            // Filter for "Ações do Renato" (Overall status is 'Aprovado', 'Rejeitado', or 'Em Negociação')
+            const renatoActionsPOs = generatedPurchaseOrders.filter(po => 
+                po.overallApprovalStatus === 'Aprovado' || 
+                po.overallApprovalStatus === 'Rejeitado' || 
+                po.overallApprovalStatus === 'Em Negociação'
+            );
+
+            if (renatoActionsPOs.length === 0) {
+                renatoActionsTbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-gray-500">Nenhum pedido com ações de Aprovação pendente no momento.</td></tr>`;
+            } else {
+                renatoActionsPOs.forEach(po => {
+                    const row = document.createElement('tr');
+                    const displaySupplierInfo = getOrGenerateSupplierCode(po.supplier);
+                    const orderInMainList = orders.find(o => o.orderId === po.id);
+                    const lastUpdateDate = orderInMainList ? orderInMainList.lastUpdateDate : po.date;
+
+                    let statusIndicatorClass = '';
+                    switch (po.overallApprovalStatus) {
+                        case 'Aprovado':
+                            statusIndicatorClass = 'green';
+                            break;
+                        case 'Rejeitado':
+                            statusIndicatorClass = 'red';
+                            break;
+                        case 'Em Negociação':
+                            statusIndicatorClass = 'yellow';
+                            break;
+                        default:
+                            statusIndicatorClass = 'gray';
+                    }
+
+                    row.innerHTML = `
+                        <td>${po.parentOrderId ? po.parentOrderId : 'N/A'}</td>
+                        <td>${po.id}</td>
+                        <td>${displaySupplierInfo}</td>
+                        <td>$ ${parseFloat(po.newSupplierPriceTotal).toFixed(2).replace('.', ',')}</td>
+                        <td>${lastUpdateDate}</td>
+                        <td><span class="status-indicator ${statusIndicatorClass}"></span>${po.overallApprovalStatus}</td>
+                        <td>
+                            <button onclick="viewPurchasingOrderDetails('${po.id}')" class="btn btn-primary btn-sm">Detalhes</button>
+                        </td>
+                    `;
+                    renatoActionsTbody.appendChild(row);
+                });
+            }
+        }
+
+        function viewPurchasingOrderDetails(poId) {
+            currentPurchasingPO = generatedPurchaseOrders.find(po => po.id === poId);
+
+            if (!currentPurchasingPO) {
+                showMessage('Erro', 'Detalhes do pedido de compra não encontrados.', 'error');
+                return;
+            }
+
+            document.getElementById('purchasingCurrentOrderId').innerText = currentPurchasingPO.id;
+            document.getElementById('purchasingDetailOrderId').innerText = currentPurchasingPO.id;
+            document.getElementById('purchasingDetailParentOrderId').innerText = currentPurchasingPO.parentOrderId || 'N/A';
+            document.getElementById('purchasingDetailSupplier').innerText = `${currentPurchasingPO.supplier} (Cód: ${currentPurchasingPO.supplierCode})`;
+            document.getElementById('purchasingDetailStatus').innerText = currentPurchasingPO.overallApprovalStatus;
+            document.getElementById('purchasingDetailDate').innerText = currentPurchasingPO.date;
+
+            const productsTableBody = document.getElementById('purchasingOrderProductsTableBody');
+            productsTableBody.innerHTML = '';
+
+            currentPurchasingPO.products.forEach(product => {
+                const row = document.createElement('tr');
+                const initialNewPrice = parseFloat(product.newSupplierUnitPrice).toFixed(2);
+                const currentInternalPrice = parseFloat(product.currentInternalUnitPrice).toFixed(2);
+
+                row.innerHTML = `
+                    <td>${product.code}</td>
+                    <td>${product.name}</td>
+                    <td>${product.quantity}</td>
+                    <td>$ ${currentInternalPrice.replace('.', ',')}</td>
+                    <td>$ ${initialNewPrice.replace('.', ',')}</td>
+                    <td>
+                        <input type="number" id="negotiated-price-${product.code}" 
+                               value="${initialNewPrice}" step="0.01" min="0" 
+                               class="product-negotiated-price-input p-2 border rounded-lg w-full text-right"
+                               data-product-code="${product.code}">
+                    </td>
+                    <td><span class="product-approval-status ${product.approvalStatus}">${product.approvalStatus}</span></td>
+                `;
+                productsTableBody.appendChild(row);
+            });
+
+            showScreen('purchasingOrderDetailsScreen');
+        }
+
+        function savePurchasingNegotiation() {
+            if (!currentPurchasingPO) {
+                showMessage('Erro', 'Nenhum pedido para salvar negociação.', 'error');
+                return;
+            }
+
+            let newTotalValueForPO = 0;
+            let negotiationSuccessful = true; // Assume sucesso inicialmente
+
+            currentPurchasingPO.products.forEach(product => {
+                const inputElement = document.getElementById(`negotiated-price-${product.code}`);
+                if (inputElement) {
+                    const negotiatedPrice = parseFloat(inputElement.value);
+                    if (isNaN(negotiatedPrice) || negotiatedPrice < 0) {
+                        showMessage('Erro', `Valor inválido para o produto ${product.name}. Por favor, insira um número positivo.`, 'error');
+                        negotiationSuccessful = false;
+                        return; // Stop processing if an invalid value is found
+                    }
+                    product.newSupplierUnitPrice = negotiatedPrice; // Update the negotiated price in the PO
+                    newTotalValueForPO += negotiatedPrice * product.quantity;
+                }
+            });
+
+            if (!negotiationSuccessful) {
+                return; // Exit if any negotiation failed
+            }
+
+            currentPurchasingPO.newSupplierPriceTotal = newTotalValueForPO.toFixed(2);
+            currentPurchasingPO.overallApprovalStatus = 'Negociado'; // New status for purchasing
+
+            // Update the corresponding order in the main `orders` array
+            const orderIndex = orders.findIndex(o => o.orderId === currentPurchasingPO.id);
+            if (orderIndex !== -1) {
+                orders[orderIndex].totalValue = parseFloat(currentPurchasingPO.newSupplierPriceTotal);
+                orders[orderIndex].status = 'Negociado'; // Update main order status
+                orders[orderIndex].lastUpdateDate = new Date().toLocaleDateString('pt-BR');
+            }
+
+            showMessage('Sucesso', `Negociação para o pedido ${currentPurchasingPO.id} salva com sucesso!`, 'success');
+            backToPurchasingCenter(); // Return to the purchasing center
+        }
 
         // --- Carregamento Inicial da Tela ---
         document.addEventListener('DOMContentLoaded', () => {
