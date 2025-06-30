@@ -2027,6 +2027,12 @@
                 showScreen('purchasingCenterScreen');
                 switchPurchasingTab('novasSolicitacoes'); // Default to "Novas Solicitações"
             }
+             else if (username === 'gestor' && password === 'gestor') {
+                console.log("Login como 'compras' bem-sucedido.");
+                userRole = 'compras'; // Define a função do usuário como 'compras'
+                showScreen('renatoApprovalScreen');
+                switchPurchasingTab('novasSolicitacoes'); // Default to "Novas Solicitações"
+            }
             else {
                 console.log("Tentativa de login falhou. Usuário ou senha inválidos.");
                 // Mensagem genérica para login incorreto
