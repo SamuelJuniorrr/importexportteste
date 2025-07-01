@@ -843,6 +843,18 @@
 </head>
 <body>
     <div id="app" class="w-full"> <!-- Removed min-h-screen here as body now handles it -->
+        
+                 <div class="flex justify-end mt-8">
+    <button onclick="showScreenInfo()" title="Informações da Tela"
+        class="text-blue-600 hover:text-blue-800 flex items-center gap-2"
+        style="background: none; border: none; padding: 0;">
+        <svg xmlns="http://www.w3.org/2000/svg" class="inline-block align-middle" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#3b82f6" stroke-width="2">
+            <circle cx="12" cy="12" r="10" stroke="#3b82f6" stroke-width="2" fill="#e0f2fe"/>
+            <line x1="12" y1="8" x2="12" y2="12" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="12" cy="16" r="1" fill="#3b82f6"/>
+        </svg>
+    </button>
+</div>
         <!-- Tela de Login -->
         <div id="loginScreen" class="screen">
             <div class="login-card"> <!-- Removido a classe 'container' daqui para usar o estilo mais específico do .login-card -->
@@ -876,6 +888,7 @@
                         Nova Solicitação
                     </button>
                 </div>
+        
 
                 <!-- Seção de Filtro -->
                 <div class="flex flex-wrap items-end gap-3 mb-4"> <!-- Use flex-wrap for responsiveness -->
@@ -953,7 +966,6 @@
                 <button onclick="logout()" class="btn btn-secondary w-full mt-6">Sair (Logout)</button>
             </div>
         </div>
-
         <!-- Tela de Detalhes do Pedido -->
         <div id="orderDetailsScreen" class="screen hidden app-content-wrapper"> <!-- Ajustado para app-content-wrapper -->
             <div class="header">
@@ -1739,6 +1751,35 @@
             }
             return supplierCodeMap[supplierName];
         }
+
+function showScreenInfo() {
+    let info = '';
+    switch (currentScreen) {
+        case 'orderCenterScreen':
+            info = 'Central de Pedidos: Visualize todos os pedidos realizados, filtre por status, fornecedor e país de origem, acesse detalhes e inicie novas solicitações.';
+            break;
+        case 'orderDetailsScreen':
+            info = 'Detalhes do Pedido: Veja todas as informações do pedido selecionado, incluindo produtos, valores, status e rastreamento.';
+            break;
+        case 'hongKongFormScreen':
+            info = 'Solicitação de Compra Hong Kong: Crie uma nova solicitação de compra para Hong Kong, adicionando produtos manualmente ou por planilha.';
+            break;
+        case 'colombiaFormScreen':
+            info = 'Solicitação de Compra Colômbia: Crie uma nova solicitação de compra para Colômbia, adicionando produtos manualmente ou por planilha.';
+            break;
+        case 'renatoApprovalScreen':
+            info = 'Aprovação de Preços - Gerencial: Aprove, negocie ou rejeite preços de pedidos enviados pelo time de compras, analisando as diferenças de preço.';
+            break;
+        case 'purchasingCenterScreen':
+            info = 'Central de Compras: Área para o time de compras visualizar, negociar e aprovar solicitações recebidas dos clientes.';
+            break;
+        // Adicione outros cases conforme necessário
+        default:
+            info = 'Esta tela faz parte do fluxo do portal. Para mais informações, consulte o manual ou o suporte.';
+    }
+    showMessage('Informações da Tela', info, 'info');
+}
+
 
         function updateTotalValueHK() {
     const clientProductCode = document.getElementById('clientProductCodeHK').value.trim().toUpperCase();
