@@ -1653,7 +1653,7 @@
 
         <!-- Caixa de Mensagem Genérica (para alertas, confirmações) -->
         <div id="messageModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4">
-            <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-sm">
+            <div class="bg-white p-8 rounded-lg shadow-xl w-full" style="max-width:700px;">
                 <h3 id="messageModalTitle" class="text-xl font-bold text-gray-800 mb-4"></h3>
                 <p id="messageModalContent" class="text-gray-700 mb-6"></p>
                 <div class="flex justify-end gap-3">
@@ -1756,30 +1756,185 @@ function showScreenInfo() {
     let info = '';
     switch (currentScreen) {
         case 'orderCenterScreen':
-            info = 'Central de Pedidos: Visualize todos os pedidos realizados, filtre por status, fornecedor e país de origem, acesse detalhes e inicie novas solicitações.';
+            info = `
+<h2 style="font-size:1.3rem; font-weight:bold; margin-bottom:10px;">📂 Central de Pedidos</h2>
+<p>Bem-vindo à <b>Central de Pedidos</b>! Aqui você pode gerenciar e acompanhar todas as solicitações do início ao fim.</p>
+<hr style="margin:16px 0;">
+<h3 style="font-size:1.1rem; font-weight:bold;">🔍 Busca e Filtros</h3>
+<ul style="margin-bottom:10px;">
+  <li>Filtre pedidos por <b>Status</b>, <b>Fornecedor</b> (código), <b>País de Origem</b> ou <b>Cliente</b>.</li>
+  <li>Utilize a busca rápida por número do pedido, ID principal ou nome do cliente.</li>
+</ul>
+<h3 style="font-size:1.1rem; font-weight:bold;">📋 Visualização dos Pedidos</h3>
+<ul style="margin-bottom:10px;">
+  <li>Veja todos os pedidos em uma tabela detalhada.</li>
+  <li>Clique no número do pedido para acessar os detalhes completos.</li>
+</ul>
+<h3 style="font-size:1.1rem; font-weight:bold;">🆕 Nova Solicitação</h3>
+<ul style="margin-bottom:10px;">
+  <li>Clique em <b>Nova Solicitação</b> para iniciar um novo pedido, escolhendo a filial de destino (<b>Hong Kong</b> ou <b>Colômbia</b>).</li>
+</ul>
+<h3 style="font-size:1.1rem; font-weight:bold;">🟢 Dicas Visuais</h3>
+<ul>
+  <li><b>Cores dos status:</b> 
+    <span style="color:#16a34a;">🟢 Aprovado</span> | 
+    <span style="color:#eab308;">🟡 Pendente</span> | 
+    <span style="color:#dc2626;">🔴 Rejeitado</span> | 
+    <span style="color:#3b82f6;">🔵 Em andamento</span> | 
+    <span style="color:#6b7280;">⚪ Cancelado</span>
+  </li>
+  <li><b>Ícones de bandeira:</b> Indicam o país de origem do pedido.</li>
+</ul>
+<hr style="margin:16px 0;">
+<p style="font-size:0.95rem;">Se precisar de ajuda, clique novamente neste ícone ou consulte o manual do usuário.</p>
+`;
             break;
+
         case 'orderDetailsScreen':
-            info = 'Detalhes do Pedido: Veja todas as informações do pedido selecionado, incluindo produtos, valores, status e rastreamento.';
+            info = `
+<h2 style="font-size:1.3rem; font-weight:bold; margin-bottom:10px;">📄 Detalhes do Pedido</h2>
+<p>Veja todas as informações detalhadas do pedido selecionado:</p>
+<hr style="margin:16px 0;">
+<ul style="margin-bottom:10px;">
+  <li><b>Dados Gerais:</b> Número do pedido, ID principal, origem, fornecedor, valores e datas.</li>
+  <li><b>Status do Pedido:</b> Acompanhe o andamento por meio do rastreamento visual com etapas e cores.</li>
+  <li><b>Produtos:</b> Lista completa de itens, quantidades e valores.</li>
+  <li><b>Ações:</b> Utilize o botão para voltar à Central de Pedidos.</li>
+</ul>
+<hr style="margin:16px 0;">
+<p style="font-size:0.95rem;"><b>Dica:</b> O rastreamento mostra cada etapa do fluxo logístico do pedido.</p>
+`;
             break;
+
         case 'hongKongFormScreen':
-            info = 'Solicitação de Compra Hong Kong: Crie uma nova solicitação de compra para Hong Kong, adicionando produtos manualmente ou por planilha.';
+            info = `
+<h2 style="font-size:1.3rem; font-weight:bold; margin-bottom:10px;">🇭🇰 Solicitação de Compra Hong Kong</h2>
+<p>Crie uma nova solicitação de compra para Hong Kong:</p>
+<hr style="margin:16px 0;">
+<ul style="margin-bottom:10px;">
+  <li><b>Pedido Fácil:</b> Adicione produtos rapidamente via upload de planilha ou colando códigos.</li>
+  <li><b>Pedido Manual:</b> Insira produtos individualmente, consultando o catálogo se necessário.</li>
+  <li><b>Validação:</b> O sistema valida automaticamente a quantidade mínima de compra (MOQ) por produto.</li>
+  <li><b>Resumo:</b> Veja a divisão dos produtos por fornecedor antes de enviar.</li>
+</ul>
+<hr style="margin:16px 0;">
+<p style="font-size:0.95rem;"><b>Dica:</b> Use o modelo de planilha para facilitar o preenchimento em massa!</p>
+`;
             break;
+
         case 'colombiaFormScreen':
-            info = 'Solicitação de Compra Colômbia: Crie uma nova solicitação de compra para Colômbia, adicionando produtos manualmente ou por planilha.';
+            info = `
+<h2 style="font-size:1.3rem; font-weight:bold; margin-bottom:10px;">🇨🇴 Solicitação de Compra Colômbia</h2>
+<p>Crie uma nova solicitação de compra para Colômbia:</p>
+<hr style="margin:16px 0;">
+<ul style="margin-bottom:10px;">
+  <li><b>Pedido Fácil:</b> Adicione produtos via planilha ou colando códigos.</li>
+  <li><b>Pedido Manual:</b> Insira produtos individualmente, consultando o catálogo se necessário.</li>
+  <li><b>Validação:</b> O sistema verifica o estoque disponível para cada produto.</li>
+  <li><b>Resumo:</b> Confira os produtos adicionados antes de enviar a solicitação para o SAP.</li>
+</ul>
+<hr style="margin:16px 0;">
+<p style="font-size:0.95rem;"><b>Dica:</b> Produtos sem estoque não podem ser adicionados ao pedido.</p>
+`;
             break;
+
         case 'renatoApprovalScreen':
-            info = 'Aprovação de Preços - Gerencial: Aprove, negocie ou rejeite preços de pedidos enviados pelo time de compras, analisando as diferenças de preço.';
+            info = `
+<h2 style="font-size:1.3rem; font-weight:bold; margin-bottom:10px;">👔 Aprovação de Preços - Gerencial</h2>
+<p>Nesta tela, a gerência pode:</p>
+<hr style="margin:16px 0;">
+<ul style="margin-bottom:10px;">
+  <li><b>Analisar pedidos pendentes</b> enviados pelo time de compras.</li>
+  <li><b>Comparar preços</b> entre valores internos e valores negociados com fornecedores.</li>
+  <li><b>Aprovar, negociar ou rejeitar</b> cada produto individualmente.</li>
+  <li><b>Finalizar a aprovação</b> para liberar o andamento do pedido.</li>
+</ul>
+<hr style="margin:16px 0;">
+<p style="font-size:0.95rem;"><b>Dica:</b> Use os botões de ação para definir o status de cada item antes de finalizar.</p>
+`;
             break;
+
         case 'purchasingCenterScreen':
-            info = 'Central de Compras: Área para o time de compras visualizar, negociar e aprovar solicitações recebidas dos clientes.';
+            info = `
+<h2 style="font-size:1.3rem; font-weight:bold; margin-bottom:10px;">🛒 Central de Compras</h2>
+<p>Área exclusiva para o time de compras:</p>
+<hr style="margin:16px 0;">
+<ul style="margin-bottom:10px;">
+  <li><b>Visualize solicitações</b> recebidas dos clientes.</li>
+  <li><b>Negocie preços</b> com fornecedores e registre as condições negociadas.</li>
+  <li><b>Solicite aprovação gerencial</b> para pedidos negociados.</li>
+  <li><b>Acompanhe o status</b> dos pedidos em todas as etapas do fluxo de compras.</li>
+</ul>
+<hr style="margin:16px 0;">
+<p style="font-size:0.95rem;"><b>Dica:</b> Utilize as abas para navegar entre solicitações, negociações e aprovações.</p>
+`;
             break;
-        // Adicione outros cases conforme necessário
+
+        case 'purchasingOrderDetailsScreen':
+            info = `
+<h2 style="font-size:1.3rem; font-weight:bold; margin-bottom:10px;">📑 Detalhes do Pedido de Compra</h2>
+<p>Aqui você pode:</p>
+<hr style="margin:16px 0;">
+<ul style="margin-bottom:10px;">
+  <li>Visualizar todos os produtos do pedido, quantidades e valores.</li>
+  <li>Editar o valor negociado com o fornecedor (se permitido).</li>
+  <li>Salvar negociações, solicitar aprovação ou finalizar o processo.</li>
+</ul>
+<hr style="margin:16px 0;">
+<p style="font-size:0.95rem;"><b>Dica:</b> Altere os valores unitários negociados diretamente na tabela, se necessário.</p>
+`;
+            break;
+
+        case 'hongKongSummaryScreen':
+            info = `
+<h2 style="font-size:1.3rem; font-weight:bold; margin-bottom:10px;">📊 Resumo da Solicitação - Hong Kong</h2>
+<p>Veja a divisão dos produtos por fornecedor (POs) e a validação de MOQ:</p>
+<hr style="margin:16px 0;">
+<ul style="margin-bottom:10px;">
+  <li>Analise o custo total por fornecedor.</li>
+  <li>Veja a diferença entre o custo interno e o negociado.</li>
+  <li>Confira os produtos e status antes de salvar a solicitação.</li>
+</ul>
+<hr style="margin:16px 0;">
+<p style="font-size:0.95rem;"><b>Dica:</b> Se algum item não atender ao MOQ, ajuste antes de prosseguir.</p>
+`;
+            break;
+
+        case 'purchaseOrderScreen':
+            info = `
+<h2 style="font-size:1.3rem; font-weight:bold; margin-bottom:10px;">✅ Solicitação Gerada</h2>
+<p>Sua solicitação foi gerada e enviada para Compras Internacionais.</p>
+<hr style="margin:16px 0;">
+<ul style="margin-bottom:10px;">
+  <li>Veja os detalhes da PO (Purchase Order).</li>
+  <li>Aguarde a negociação e aprovação do gestor.</li>
+  <li>Utilize o botão para voltar à Central de Pedidos.</li>
+</ul>
+<hr style="margin:16px 0;">
+<p style="font-size:0.95rem;"><b>Dica:</b> Acompanhe o status do pedido na Central de Pedidos.</p>
+`;
+            break;
+
+        case 'colombiaInvoiceScreen':
+            info = `
+<h2 style="font-size:1.3rem; font-weight:bold; margin-bottom:10px;">🧾 Faturamento e Nota Fiscal - Colômbia</h2>
+<p>Seu pedido foi faturado e a Nota Fiscal está disponível.</p>
+<hr style="margin:16px 0;">
+<ul style="margin-bottom:10px;">
+  <li>Visualize o número e valor da NF-e.</li>
+  <li>Baixe ou visualize o PDF da nota fiscal.</li>
+  <li>Inicie uma nova solicitação, se desejar.</li>
+</ul>
+<hr style="margin:16px 0;">
+<p style="font-size:0.95rem;"><b>Dica:</b> Guarde o número da NF-e para futuras consultas.</p>
+`;
+            break;
+
         default:
-            info = 'Esta tela faz parte do fluxo do portal. Para mais informações, consulte o manual ou o suporte.';
+            info = '<p>Esta tela faz parte do fluxo do portal. Para mais informações, consulte o manual ou o suporte.</p>';
     }
     showMessage('Informações da Tela', info, 'info');
 }
-
 
         function updateTotalValueHK() {
     const clientProductCode = document.getElementById('clientProductCodeHK').value.trim().toUpperCase();
@@ -2014,8 +2169,7 @@ function showScreenInfo() {
         function showMessage(title, content, type = 'info', onConfirm = null, onCancel = null) {
             const modal = document.getElementById('messageModal');
             document.getElementById('messageModalTitle').innerText = title;
-            document.getElementById('messageModalContent').innerText = content;
-
+            document.getElementById('messageModalContent').innerHTML = content;
             const confirmBtn = document.getElementById('messageModalConfirmBtn');
             const cancelBtn = document.getElementById('messageModalCancelBtn');
             const closeBtn = document.getElementById('messageModalCloseBtn');
@@ -4062,7 +4216,7 @@ function renderSupplierApprovalCards() {
                                         <button class="btn btn-sm btn-negotiate ${p.approvalStatus === 'Negociar' ? 'selected' : ''}"
                                                 onclick="setProductApprovalStatus('${po.id}', '${p.code}', 'Negociar')">Negociar</button>
                                         <button class="btn btn-sm btn-reject ${p.approvalStatus === 'Rejeitado' ? 'selected' : ''}"
-                                                onclick="setProductApprovalStatus('${po.id}', '${p.code}', 'Rejeitar')">Rejeitar</button>
+                                                onclick="setProductApprovalStatus('${po.id}', '${p.code}', 'Rejeitado')">Rejeitar</button>
                                     </div>
                                 </td>
                             </tr>
