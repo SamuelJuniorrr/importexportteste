@@ -20,7 +20,7 @@
             display: flex;
             justify-content: center;
             align-items: flex-start; /* Align to start, not center vertically, to allow natural flow and scrolling */
-            padding: 20px; /* Padding around the content */
+            padding: 1px; /* Padding around the content */
             box-sizing: border-box; /* Include padding in height/width */
             overflow-y: auto; /* Allow body to scroll if content exceeds viewport */
         }
@@ -36,7 +36,7 @@
         /* Novo wrapper para conteúdo principal de telas maiores */
         .app-content-wrapper {
             background-color: #ffffff;
-            border-radius: 12px;
+            border-radius: 10px;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             padding: 32px;
             max-width: 2400px; /* Mais largo para as telas principais, conforme solicitado */
@@ -241,7 +241,7 @@
             text-align: center;
         }
         .login-logo img {
-            max-width: 220px;
+            max-width: 240px;
             display: inline-block;
             margin: 0 auto;
         }
@@ -3540,55 +3540,60 @@ function showScreenInfo() {
                 valorTotalDisplay.innerText = 'R$ 0,00';            }        }
 
 
-        function addProductCOL() {
-            const clientProductCode = document.getElementById('clientProductCodeCOL').value.trim().toUpperCase();
-            const productCode = universalClientCodeToProductCodeMap[clientProductCode];
-            const quantity = parseInt(document.getElementById('productQuantityCOL').value);
-            const productInfo = productDatabase[productCode];
+function addProductCOL() {
+    const clientProductCode = document.getElementById('clientProductCodeCOL').value.trim().toUpperCase();
+    const productCode = universalClientCodeToProductCodeMap[clientProductCode];
+    const quantity = parseInt(document.getElementById('productQuantityCOL').value);
+    const productInfo = productDatabase[productCode];
 
-            if (!productInfo) {
-                displayAddProductMessage('Erro: Código de produto cliente inválido.', 'error', 'colombia');
-                return;
-            }
+    if (!productInfo) {
+        displayAddProductMessage('Erro: Código de produto cliente inválido.', 'error', 'colombia');
+        return;
+    }
 
-            if (isNaN(quantity) || quantity <= 0) {
-                displayAddProductMessage('Erro: Por favor, insira uma quantidade válida para o produto.', 'error', 'colombia');
-                return;
-            }
+    // NOVA REGRA: Não permitir adicionar produtos sem estoque
+    if (!productInfo.simulatedStock || productInfo.simulatedStock <= 0) {
+        displayAddProductMessage('Erro: Este produto não possui estoque disponível e não pode ser adicionado.', 'error', 'colombia');
+        return;
+    }
 
+    if (isNaN(quantity) || quantity <= 0) {
+        displayAddProductMessage('Erro: Por favor, insira uma quantidade válida para o produto.', 'error', 'colombia');
+        return;
+    }
 
-            const totalValue = (productInfo.tableValue * quantity).toFixed(2);
+    const totalValue = (productInfo.tableValue * quantity).toFixed(2);
 
-            const existingProductIndex = colombiaProducts.findIndex(p => p.code === productCode);
-            if (existingProductIndex > -1) {
-                colombiaProducts[existingProductIndex].quantity += quantity;
-                colombiaProducts[existingProductIndex].totalValue = (parseFloat(colombiaProducts[existingProductIndex].totalValue) + parseFloat(totalValue)).toFixed(2);
-                displayAddProductMessage(`Quantidade de "${productInfo.description}" atualizada para ${colombiaProducts[existingProductIndex].quantity}.`, 'success', 'colombia');
-            } else {
-                colombiaProducts.push({
-                    clientCode: clientProductCode,
-                    code: productCode,
-                    name: productInfo.description,
-                    quantity: quantity,
-                    unitPrice: productInfo.unitPrice,
-                    tableValue: productInfo.tableValue,
-                    simulatedStock: productInfo.simulatedStock,
-                    totalValue: totalValue,
-                    supplier: productInfo.supplier // Adiciona o fornecedor do produto
-                });
-                displayAddProductMessage(`"${productInfo.description}" adicionado com sucesso.`, 'success', 'colombia');
-            }
+    const existingProductIndex = colombiaProducts.findIndex(p => p.code === productCode);
+    if (existingProductIndex > -1) {
+        colombiaProducts[existingProductIndex].quantity += quantity;
+        colombiaProducts[existingProductIndex].totalValue = (parseFloat(colombiaProducts[existingProductIndex].totalValue) + parseFloat(totalValue)).toFixed(2);
+        displayAddProductMessage(`Quantidade de "${productInfo.description}" atualizada para ${colombiaProducts[existingProductIndex].quantity}.`, 'success', 'colombia');
+    } else {
+        colombiaProducts.push({
+            clientCode: clientProductCode,
+            code: productCode,
+            name: productInfo.description,
+            quantity: quantity,
+            unitPrice: productInfo.unitPrice,
+            tableValue: productInfo.tableValue,
+            simulatedStock: productInfo.simulatedStock,
+            totalValue: totalValue,
+            supplier: productInfo.supplier // Adiciona o fornecedor do produto
+        });
+        displayAddProductMessage(`"${productInfo.description}" adicionado com sucesso.`, 'success', 'colombia');
+    }
 
-            renderColombiaProductList();
-            // Limpa os campos de entrada após adicionar
-            document.getElementById('clientProductCodeCOL').value = '';
-            document.getElementById('productCodeCOLDisplay').innerText = '--';
-            document.getElementById('productDescriptionDisplayCOL').innerText = '--';
-            document.getElementById('productStockCOL').innerText = '--';
-            document.getElementById('productStockCOL').style.color = '';
-            document.getElementById('productQuantityCOL').value = '1';
-            document.getElementById('valorUnitCOLDisplay').innerText = 'R$ 0,00';
-        }
+    renderColombiaProductList();
+    // Limpa os campos de entrada após adicionar
+    document.getElementById('clientProductCodeCOL').value = '';
+    document.getElementById('productCodeCOLDisplay').innerText = '--';
+    document.getElementById('productDescriptionDisplayCOL').innerText = '--';
+    document.getElementById('productStockCOL').innerText = '--';
+    document.getElementById('productStockCOL').style.color = '';
+    document.getElementById('productQuantityCOL').value = '1';
+    document.getElementById('valorUnitCOLDisplay').innerText = 'R$ 0,00';
+}
 
         function removeProductCOL(index) {
             colombiaProducts.splice(index, 1);
@@ -4216,7 +4221,7 @@ function renderSupplierApprovalCards() {
                                         <button class="btn btn-sm btn-negotiate ${p.approvalStatus === 'Negociar' ? 'selected' : ''}"
                                                 onclick="setProductApprovalStatus('${po.id}', '${p.code}', 'Negociar')">Negociar</button>
                                         <button class="btn btn-sm btn-reject ${p.approvalStatus === 'Rejeitado' ? 'selected' : ''}"
-                                                onclick="setProductApprovalStatus('${po.id}', '${p.code}', 'Rejeitado')">Rejeitar</button>
+                                                onclick="setProductApprovalStatus('${po.id}', '${p.code}', 'Rejeitar')">Rejeitar</button>
                                     </div>
                                 </td>
                             </tr>
