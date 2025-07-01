@@ -2023,8 +2023,8 @@
             console.log("Senha:", password);
 
             // Validação de login: "prototipo/prototipo" é o usuário cliente
-            if (username === 'prototipo' && password === 'prototipo') {
-                console.log("Login como 'prototipo' bem-sucedido.");
+            if (username === 'cliente' && password === 'cliente') {
+                console.log("Login como 'cliente' bem-sucedido.");
                 userRole = 'client'; // Define a função do usuário como 'client'
                 showScreen('orderCenterScreen');
                 // Garante que nextParentRequestCounter e nextPurchaseOrderIdCounter sejam inicializados com base nos dados existentes
@@ -3892,21 +3892,30 @@ listDiv.innerHTML += tableHtml;
         }
 
 
-        function viewDetailedApproval(poId) {
-            currentViewingPO = generatedPurchaseOrders.find(po => po.id === poId);
-            if (!currentViewingPO) {
-                showMessage('Erro', 'Detalhes do pedido de compra não encontrados.', 'error');
-                return;
-            }
+                function viewDetailedApproval(poId) {
+                    // Mostra a tela de loading
+                    document.getElementById('analysisLoadingScreen').classList.remove('hidden');
 
-            document.getElementById('currentDetailedParentOrderIdDisplay').innerText = currentViewingPO.parentOrderId || currentViewingPO.id;
-            document.getElementById('pendingOrdersList').classList.add('hidden');
-            document.getElementById('detailedApprovalView').classList.remove('hidden');
+                    // Simula o cálculo (exemplo: 2 segundos)
+                    setTimeout(() => {
+                        document.getElementById('analysisLoadingScreen').classList.add('hidden');
 
-            renderSupplierApprovalCards();
-            updateGlobalDifferenceSummary();
-            checkApprovalButtonsState();
-        }
+                        // --- CÓDIGO ORIGINAL DA FUNÇÃO ABAIXO ---
+                        currentViewingPO = generatedPurchaseOrders.find(po => po.id === poId);
+                        if (!currentViewingPO) {
+                            showMessage('Erro', 'Detalhes do pedido de compra não encontrados.', 'error');
+                            return;
+                        }
+
+                        document.getElementById('currentDetailedParentOrderIdDisplay').innerText = currentViewingPO.parentOrderId || currentViewingPO.id;
+                        document.getElementById('pendingOrdersList').classList.add('hidden');
+                        document.getElementById('detailedApprovalView').classList.remove('hidden');
+
+                        renderSupplierApprovalCards();
+                        updateGlobalDifferenceSummary();
+                        checkApprovalButtonsState();
+                    }, 2000); // 2000ms = 2 segundos
+                }
 
         function backToPendingOrdersList() {
             document.getElementById('detailedApprovalView').classList.add('hidden');
@@ -3914,96 +3923,116 @@ listDiv.innerHTML += tableHtml;
             renderPendingRenatoApprovalList(); // Re-render the list to reflect any changes
         }
 
-        function renderSupplierApprovalCards() {
-            const cardsDiv = document.getElementById('supplierApprovalCards');
-            cardsDiv.innerHTML = '';
+function renderSupplierApprovalCards() {
+    const cardsDiv = document.getElementById('supplierApprovalCards');
+    cardsDiv.innerHTML = '';
 
-            // This function now expects currentViewingPO to be a single PO object
-            const po = currentViewingPO;
-            const card = document.createElement('div');
-            card.className = 'supplier-summary-card';
+    // This function now expects currentViewingPO to be a single PO object
+    const po = currentViewingPO;
+    const card = document.createElement('div');
+    card.className = 'supplier-summary-card';
 
-            const totalExternalCost = parseFloat(po.newSupplierPriceTotal);
-            const totalInternalCost = parseFloat(po.currentInternalPriceTotal);
-            const absoluteDifference = totalExternalCost - totalInternalCost;
-            const percentageDifference = ((totalInternalCost === 0) ? 0 : (absoluteDifference / totalInternalCost) * 100).toFixed(2); // Avoid division by zero
-            
-            let differenceClass = '';
-            let differenceText = '';
+    const totalExternalCost = parseFloat(po.newSupplierPriceTotal);
+    const totalInternalCost = parseFloat(po.currentInternalPriceTotal);
+    const absoluteDifference = totalExternalCost - totalInternalCost;
+    const percentageDifference = ((totalInternalCost === 0) ? 0 : (absoluteDifference / totalInternalCost) * 100).toFixed(2); // Avoid division by zero
+    
+    let differenceClass = '';
+    let differenceText = '';
 
-            if (absoluteDifference > 0) {
-                differenceClass = 'price-difference-positive';
-                differenceText = `(+R$ ${absoluteDifference.toFixed(2).replace('.', ',')} / +${percentageDifference}%)`;
-            } else if (absoluteDifference < 0) {
-                differenceClass = 'price-difference-negative';
-                differenceText = `(-R$ ${Math.abs(absoluteDifference).toFixed(2).replace('.', ',')} / ${percentageDifference}%)`;
-            } else {
-                differenceClass = '';
-                differenceText = '(Sem diferença)';
-            }
+    if (absoluteDifference > 0) {
+        differenceClass = 'price-difference-positive';
+        differenceText = `(+R$ ${absoluteDifference.toFixed(2).replace('.', ',')} / +${percentageDifference}%)`;
+    } else if (absoluteDifference < 0) {
+        differenceClass = 'price-difference-negative';
+        differenceText = `(-R$ ${Math.abs(absoluteDifference).toFixed(2).replace('.', ',')} / ${percentageDifference}%)`;
+    } else {
+        differenceClass = '';
+        differenceText = '(Sem diferença)';
+    }
 
-            // Determine overall status indicator for the card
-            let cardStatusEmoji = '';
-            if (po.overallApprovalStatus === 'Aguardando Aprovação') {
-                cardStatusEmoji = '🟡'; // Pending
-            } else if (po.overallApprovalStatus === 'Aprovado') {
-                cardStatusEmoji = '🟢'; // Approved
-            } else if (po.overallApprovalStatus === 'Rejeitado') {
-                cardStatusEmoji = '🔴'; // Rejected
-            } else if (po.overallApprovalStatus === 'Negociado') {
-                cardStatusEmoji = '🟣'; // Negotiated (Compras is still working)
-            } else if (po.overallApprovalStatus === 'Finalizado') {
-                 cardStatusEmoji = '✅'; // Finalizado
-            }
+    // Determine overall status indicator for the card
+    let cardStatusEmoji = '';
+    if (po.overallApprovalStatus === 'Aguardando Aprovação') {
+        cardStatusEmoji = '🟡'; // Pending
+    } else if (po.overallApprovalStatus === 'Aprovado') {
+        cardStatusEmoji = '🟢'; // Approved
+    } else if (po.overallApprovalStatus === 'Rejeitado') {
+        cardStatusEmoji = '🔴'; // Rejected
+    } else if (po.overallApprovalStatus === 'Negociado') {
+        cardStatusEmoji = '🟣'; // Negotiated (Compras is still working)
+    } else if (po.overallApprovalStatus === 'Finalizado') {
+        cardStatusEmoji = '✅'; // Finalizado
+    }
 
-            card.innerHTML = `
-                <span class="supplier-status-indicator">${cardStatusEmoji}</span>
-                <h3 class="font-semibold text-lg mb-2">PO Nº ${po.id} para Fornecedor: <span class="text-blue-700">${po.supplierCode} - ${po.supplier}</span></h3>
-                <p class="text-gray-600 mb-1">ID Solicitação Principal: <strong>${po.parentOrderId}</strong></p>
-                <p class="text-gray-600 mb-1">Data Geração: ${po.date}</p>
-                <p class="text-gray-600 mb-1">Valor Total Custo Fornecedor (Estimado): <strong>R$ ${totalExternalCost.toFixed(2).replace('.', ',')}</strong></p>
-                <p class="text-gray-600 mb-4">Valor Total Custo Interno (Estimado): <strong>R$ ${totalInternalCost.toFixed(2).replace('.', ',')}</strong> <span class="${differenceClass}">${differenceText}</span></p>
-                <h4 class="font-semibold text-md mb-2">Detalhes dos Produtos:</h4>
-                <div class="overflow-x-auto">
-                    <table class="data-table">
-                        <thead>
+    card.innerHTML = `
+        <span class="supplier-status-indicator">${cardStatusEmoji}</span>
+        <h3 class="font-semibold text-lg mb-2">PO Nº ${po.id} para Fornecedor: <span class="text-blue-700">${po.supplierCode} - ${po.supplier}</span></h3>
+        <p class="text-gray-600 mb-1">ID Solicitação Principal: <strong>${po.parentOrderId}</strong></p>
+        <p class="text-gray-600 mb-1">Data Geração: ${po.date}</p>
+        <p class="text-gray-600 mb-1">Valor Total Custo Fornecedor (Estimado): <strong>R$ ${totalExternalCost.toFixed(2).replace('.', ',')}</strong></p>
+        <p class="text-gray-600 mb-4">Valor Total Custo Interno (Estimado): <strong>R$ ${totalInternalCost.toFixed(2).replace('.', ',')}</strong> <span class="${differenceClass}">${differenceText}</span></p>
+        <h4 class="font-semibold text-md mb-2">Detalhes dos Produtos:</h4>
+        <div class="overflow-x-auto">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Cód Produto</th>
+                        <th>Descrição</th>
+                        <th>Qtd.</th>
+                        <th>Valor Unit. Interno</th>
+                        <th>Valor Unit. Fornecedor</th>
+                        <th>Dif</th>
+                        <th>Valor Total Interno</th>
+                        <th>Valor Total Fornecedor</th>
+                        <th>Status Aprovação</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${po.products.map((p, pIndex) => {
+                        const diff = parseFloat(p.newSupplierUnitPrice) - parseFloat(p.currentInternalUnitPrice);
+                        const percent = parseFloat(p.currentInternalUnitPrice) === 0
+                            ? 0
+                            : (diff / parseFloat(p.currentInternalUnitPrice)) * 100;
+                        const diffClass = diff > 0 ? 'price-difference-positive' : (diff < 0 ? 'price-difference-negative' : '');
+                        const diffText = diff > 0
+                            ? `+R$ ${diff.toFixed(2).replace('.', ',')} (+${percent.toFixed(2)}%)`
+                            : diff < 0
+                                ? `-R$ ${Math.abs(diff).toFixed(2).replace('.', ',')} (${percent.toFixed(2)}%)`
+                                : 'R$ 0,00 (0,00%)';
+                        const totalInterno = parseFloat(p.currentInternalUnitPrice) * p.quantity;
+                        const totalFornecedor = parseFloat(p.newSupplierUnitPrice) * p.quantity;
+                        return `
                             <tr>
-                                <th>Cód Produto</th>
-                                <th>Descrição</th>
-                                <th>Qtd.</th>
-                                <th>Valor Unit. Interno</th>
-                                <th>Valor Unit. Fornecedor</th>
-                                <th>Status Aprovação</th>
-                                <th>Ação</th>
+                                <td>${p.code}</td>
+                                <td>${p.name}</td>
+                                <td>${p.quantity}</td>
+                                <td>R$ ${parseFloat(p.currentInternalUnitPrice).toFixed(2).replace('.', ',')}</td>
+                                <td>R$ ${parseFloat(p.newSupplierUnitPrice).toFixed(2).replace('.', ',')}</td>
+                                <td><span class="${diffClass}">${diffText}</span></td>
+                                <td>R$ ${totalInterno.toFixed(2).replace('.', ',')}</td>
+                                <td>R$ ${totalFornecedor.toFixed(2).replace('.', ',')}</td>
+                                <td class="product-approval-status ${p.approvalStatus}">${p.approvalStatus}</td>
+                                <td>
+                                    <div class="approval-buttons-group">
+                                        <button class="btn btn-sm btn-approve ${p.approvalStatus === 'Aprovado' ? 'selected' : ''}"
+                                                onclick="setProductApprovalStatus('${po.id}', '${p.code}', 'Aprovado')">Aprovar</button>
+                                        <button class="btn btn-sm btn-negotiate ${p.approvalStatus === 'Negociar' ? 'selected' : ''}"
+                                                onclick="setProductApprovalStatus('${po.id}', '${p.code}', 'Negociar')">Negociar</button>
+                                        <button class="btn btn-sm btn-reject ${p.approvalStatus === 'Rejeitado' ? 'selected' : ''}"
+                                                onclick="setProductApprovalStatus('${po.id}', '${p.code}', 'Rejeitar')">Rejeitar</button>
+                                    </div>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            ${po.products.map((p, pIndex) => `
-                                <tr>
-                                    <td>${p.code}</td>
-                                    <td>${p.name}</td>
-                                    <td>${p.quantity}</td>
-                                    <td>R$ ${parseFloat(p.currentInternalUnitPrice).toFixed(2).replace('.', ',')}</td>
-                                    <td>R$ ${parseFloat(p.newSupplierUnitPrice).toFixed(2).replace('.', ',')}</td>
-                                    <td class="product-approval-status ${p.approvalStatus}">${p.approvalStatus}</td>
-                                    <td>
-                                        <div class="approval-buttons-group">
-                                            <button class="btn btn-sm btn-approve ${p.approvalStatus === 'Aprovado' ? 'selected' : ''}"
-                                                    onclick="setProductApprovalStatus('${po.id}', '${p.code}', 'Aprovado')">Aprovar</button>
-                                            <button class="btn btn-sm btn-negotiate ${p.approvalStatus === 'Negociar' ? 'selected' : ''}"
-                                                    onclick="setProductApprovalStatus('${po.id}', '${p.code}', 'Negociar')">Negociar</button>
-                                            <button class="btn btn-sm btn-reject ${p.approvalStatus === 'Rejeitado' ? 'selected' : ''}"
-                                                    onclick="setProductApprovalStatus('${po.id}', '${p.code}', 'Rejeitar')">Rejeitar</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-            cardsDiv.appendChild(card);
-        }
+                        `;
+                    }).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+    cardsDiv.appendChild(card);
+}
 
         function setProductApprovalStatus(poId, productCode, status) {
             const po = generatedPurchaseOrders.find(p => p.id === poId);
