@@ -1120,9 +1120,10 @@
                             <div class="col-span-1">
                                 <label for="clientProductCodeHK" class="block text-sm font-medium text-gray-700">Cód Prod Cliente:</label>
                                 <div class="input-with-icon">
-                                    <input type="text" id="clientProductCodeHK" placeholder="Cód Cliente"
-                                        oninput="updateProductDetailsOnClientCodeChangeHK()"
-                                        class="rounded-lg p-2 border border-gray-300 w-full focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <input type="text" id="clientProductCodeHK" placeholder="Cód Cliente"
+                                    oninput="updateProductDetailsOnClientCodeChangeHK(); updateTotalValueHK();"
+                                    class="rounded-lg p-2 border border-gray-300 w-full focus:outline-none focus:ring-2 focus:ring-blue-500">
+
                                     <svg onclick="openProductCatalogModal('hongkong')" class="search-icon w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#6b7280">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                                     </svg>
@@ -1143,21 +1144,27 @@
                             <div class="col-span-1">
                                 <label for="productQuantityHK" class="block text-sm font-medium text-gray-700">Qtd.:</label>
                                 <input type="number" id="productQuantityHK" min="1" value="1"
-                                    oninput="checkMoqLiveHK(); calculateTotalM3HK();"
+                                    oninput="checkMoqLiveHK(); calculateTotalM3HK(); updateTotalValueHK();"
                                     class="rounded-lg p-2 border border-gray-300 w-full text-center focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
-                            <div class="col-span-1">
-                                <label for="productValueHK" class="block text-sm font-medium text-gray-700">Valor Unit.:</label>
-                                <div id="productValueHK" class="p-2 border border-gray-300 rounded-lg bg-gray-100 min-h-[42px] flex items-center text-gray-600">
-                                    R$ 0,00
-                                </div>
-                            </div>
-                            <div class="col-span-1">
-                                <label for="totalM3DisplayHK" class="block text-sm font-medium text-gray-700">M³ Total:</label>
-                                <div id="totalM3DisplayHK" class="p-2 border border-gray-300 rounded-lg bg-gray-100 min-h-[42px] flex items-center text-gray-600">
-                                    0.00 m³
-                                </div>
-                            </div>
+<div class="col-span-1">
+    <label for="productValueHK" class="block text-sm font-medium text-gray-700">Valor Unit.:</label>
+    <div id="productValueHK" class="p-2 border border-gray-300 rounded-lg bg-gray-100 min-h-[42px] flex items-center text-gray-600">
+        R$ 0,00
+    </div>
+</div>
+<div class="col-span-1">
+    <label for="valorTotalHKDisplay" class="block text-sm font-medium text-gray-700">Valor Total:</label>
+    <div id="valorTotalHKDisplay" class="p-2 border border-gray-300 rounded-lg bg-gray-100 min-h-[42px] flex items-center text-gray-600">
+        R$ 0,00
+    </div>
+</div>
+<div class="col-span-1">
+    <label for="totalM3DisplayHK" class="block text-sm font-medium text-gray-700">M³ Total:</label>
+    <div id="totalM3DisplayHK" class="p-2 border border-gray-300 rounded-lg bg-gray-100 min-h-[42px] flex items-center text-gray-600">
+        0.00 m³
+    </div>
+</div>
                             <div class="col-span-full flex justify-end">
                                 <button onclick="addProductHK()" class="btn btn-secondary">Adicionar Produto</button>
                             </div>
@@ -1375,7 +1382,7 @@
                                 <label for="clientProductCodeCOL" class="block text-sm font-medium text-gray-700">Cód Prod Cliente:</label>
                                 <div class="input-with-icon">
                                     <input type="text" id="clientProductCodeCOL" placeholder="Cód Cliente"
-                                        oninput="updateProductDetailsOnClientCodeChangeCOL()"
+                                        oninput="updateProductDetailsOnClientCodeChangeCOL(); updateTotalValueCOL();"
                                         class="rounded-lg p-2 border border-gray-300 w-full focus:outline-none focus:ring-2 focus:ring-blue-500">
                                     <svg onclick="openProductCatalogModal('colombia')" class="search-icon w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#6b7280">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
@@ -1395,16 +1402,22 @@
                                 </div>
                             </div>
                             <div class="col-span-1">
-                                <label for="productQuantityCOL" class="block text-sm font-medium text-gray-700">Qtd.:</label>
-                                <input type="number" id="productQuantityCOL" min="1" value="1"
-                                    class="rounded-lg p-2 border border-gray-300 w-full text-center focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="number" id="productQuantityCOL" min="1" value="1"
+                            oninput="updateTotalValueCOL();"
+                            class="rounded-lg p-2 border border-gray-300 w-full text-center focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
-                            <div class="col-span-1">
-                                <label for="valorUnitCOLDisplay" class="block text-sm font-medium text-gray-700">Valor Unit.:</label>
-                                <div id="valorUnitCOLDisplay" class="p-2 border border-gray-300 rounded-lg bg-gray-100 min-h-[42px] flex items-center text-gray-600">
-                                    R$ 0,00
-                                </div>
-                            </div>
+<div class="col-span-1">
+    <label for="valorUnitCOLDisplay" class="block text-sm font-medium text-gray-700">Valor Unit.:</label>
+    <div id="valorUnitCOLDisplay" class="p-2 border border-gray-300 rounded-lg bg-gray-100 min-h-[42px] flex items-center text-gray-600">
+        R$ 0,00
+    </div>
+</div>
+<div class="col-span-1">
+    <label for="valorTotalCOLDisplay" class="block text-sm font-medium text-gray-700">Valor Total:</label>
+    <div id="valorTotalCOLDisplay" class="p-2 border border-gray-300 rounded-lg bg-gray-100 min-h-[42px] flex items-center text-gray-600">
+        R$ 0,00
+    </div>
+</div>
                             <div class="col-span-1">
                                 <label for="productStockCOL" class="block text-sm font-medium text-gray-700">Estoque:</label>
                                 <div id="productStockCOL" class="p-2 border border-gray-300 rounded-lg bg-gray-100 min-h-[42px] flex items-center font-bold">
@@ -1726,6 +1739,21 @@
             }
             return supplierCodeMap[supplierName];
         }
+
+        function updateTotalValueHK() {
+    const clientProductCode = document.getElementById('clientProductCodeHK').value.trim().toUpperCase();
+    const productCode = universalClientCodeToProductCodeMap[clientProductCode];
+    const productInfo = productDatabase[productCode];
+    const quantity = parseInt(document.getElementById('productQuantityHK').value);
+    const valorTotalDisplay = document.getElementById('valorTotalHKDisplay');
+
+    if (productInfo && !isNaN(quantity) && quantity > 0) {
+        const total = productInfo.tableValue * quantity;
+        valorTotalDisplay.innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+    } else {
+        valorTotalDisplay.innerText = 'R$ 0,00';
+    }
+}
 
         function getSupplierNameFromCode(supplierCode) {
             return supplierNameMap[supplierCode] || supplierCode; // Return code if name not found
@@ -3291,18 +3319,31 @@
                 valorUnitDisplay.innerText = `R$ ${productInfo.tableValue.toFixed(2).replace('.', ',')}`;
 
                 // Altera a cor do estoque com base na quantidade
-                if (productInfo.simulatedStock === 0) {
-                    productStockDisplay.style.color = '#dc2626'; // Vermelho para estoque zero
-                } else if (productInfo.simulatedStock < 10) {
-                    productStockDisplay.style.color = '#eab308'; // Amarelo para estoque baixo
-                } else {
+                if (productInfo.simulatedStock > 0) {
+                    productStockDisplay.innerText = 'Sim';
                     productStockDisplay.style.color = '#16a34a'; // Verde para estoque ok
+                } else {
+                    productStockDisplay.innerText = 'Não';
+                    productStockDisplay.style.color = '#dc2626'; // Vermelho para estoque zero
                 }
             } else {
                 productDescriptionDisplay.innerText = 'Cód Prod Cliente não encontrado.';
                 productDescriptionDisplay.style.color = '#dc2626';
             }
         }
+
+            function updateTotalValueCOL() {
+            const clientProductCode = document.getElementById('clientProductCodeCOL').value.trim().toUpperCase();
+            const productCode = universalClientCodeToProductCodeMap[clientProductCode];
+            const productInfo = productDatabase[productCode];
+            const quantity = parseInt(document.getElementById('productQuantityCOL').value);
+            const valorTotalDisplay = document.getElementById('valorTotalCOLDisplay');
+            if (productInfo && !isNaN(quantity) && quantity > 0) {
+                const total = productInfo.tableValue * quantity;
+                valorTotalDisplay.innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+            } else {
+                valorTotalDisplay.innerText = 'R$ 0,00';            }        }
+
 
         function addProductCOL() {
             const clientProductCode = document.getElementById('clientProductCodeCOL').value.trim().toUpperCase();
@@ -3320,10 +3361,6 @@
                 return;
             }
 
-            if (quantity > productInfo.simulatedStock) {
-                displayAddProductMessage(`Erro: Quantidade (${quantity}) excede o estoque disponível (${productInfo.simulatedStock}).`, 'error', 'colombia');
-                return;
-            }
 
             const totalValue = (productInfo.tableValue * quantity).toFixed(2);
 
@@ -3334,7 +3371,7 @@
                 displayAddProductMessage(`Quantidade de "${productInfo.description}" atualizada para ${colombiaProducts[existingProductIndex].quantity}.`, 'success', 'colombia');
             } else {
                 colombiaProducts.push({
-                    clientCode: clientCode,
+                    clientCode: clientProductCode,
                     code: productCode,
                     name: productInfo.description,
                     quantity: quantity,
@@ -3372,45 +3409,48 @@
                 return;
             }
 
-            let tableHtml = `<table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>Cód Cliente</th>
-                                        <th>Cód Produto</th>
-                                        <th>Descrição</th>
-                                        <th>Qtd. Solicitada</th>
-                                        <th>Estoque</th>
-                                        <th>Valor Unit.</th>
-                                        <th>Valor Total</th>
-                                        <th>Fornecedor</th>
-                                        <th>Ação</th>
-                                    </tr>
-                                </thead>
-                                <tbody>`;
-            colombiaProducts.forEach((product, index) => {
-                // Para usuários 'client', exiba apenas o código do fornecedor
-                const displaySupplierInfo = userRole === 'client' && product.supplier
-                    ? getOrGenerateSupplierCode(product.supplier)
-                    : (product.supplier || 'N/A');
+let tableHtml = `<table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Cód Cliente</th>
+                            <th>Cód Produto</th>
+                            <th>Descrição</th>
+                            <th>Qtd. Solicitada</th>
+                            <th>Estoque</th>
+                            <th>Valor Unit.</th>
+                            <th>Valor Total</th>
+                            <th>Fornecedor</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+colombiaProducts.forEach((product, index) => {
+    // Para usuários 'client', exiba apenas o código do fornecedor
+    const displaySupplierInfo = userRole === 'client' && product.supplier
+        ? getOrGenerateSupplierCode(product.supplier)
+        : (product.supplier || 'N/A');
 
-                tableHtml += `
-                    <tr>
-                        <td>${product.clientCode}</td>
-                        <td>${product.code}</td>
-                        <td>${product.name}</td>
-                        <td>${product.quantity}</td>
-                        <td style="color: ${product.simulatedStock === 0 ? '#dc2626' : (product.simulatedStock < 10 ? '#eab308' : '#16a34a')}; font-weight: bold;">
-                            ${product.simulatedStock}
-                        </td>
-                        <td>R$ ${parseFloat(product.tableValue).toFixed(2).replace('.', ',')}</td>
-                        <td>R$ ${parseFloat(product.totalValue).toFixed(2).replace('.', ',')}</td>
-                        <td>${displaySupplierInfo}</td> <!-- Exibe apenas o código do fornecedor para cliente -->
-                        <td><button onclick="removeProductCOL(${index})" class="text-red-500 hover:text-red-700 font-bold text-sm">Remover</button></td>
-                    </tr>
-                `;
-            });
-            tableHtml += `</tbody></table>`;
-            listDiv.innerHTML += tableHtml;
+    // Novo: Exibir "Sim" ou "Não" para estoque
+    const estoqueSimNao = product.simulatedStock > 0
+        ? '<span style="color:#16a34a;font-weight:bold;">Sim</span>'
+        : '<span style="color:#dc2626;font-weight:bold;">Não</span>';
+
+    tableHtml += `
+        <tr>
+            <td>${product.clientCode}</td>
+            <td>${product.code}</td>
+            <td>${product.name}</td>
+            <td>${product.quantity}</td>
+            <td>${estoqueSimNao}</td>
+            <td>R$ ${parseFloat(product.tableValue).toFixed(2).replace('.', ',')}</td>
+            <td>R$ ${parseFloat(product.totalValue).toFixed(2).replace('.', ',')}</td>
+            <td>${displaySupplierInfo}</td>
+            <td><button onclick="removeProductCOL(${index})" class="text-red-500 hover:text-red-700 font-bold text-sm">Remover</button></td>
+        </tr>
+    `;
+});
+tableHtml += `</tbody></table>`;
+listDiv.innerHTML += tableHtml;
         }
 
         function submitColombiaForm() {
