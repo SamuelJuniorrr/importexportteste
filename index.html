@@ -868,11 +868,16 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                         <input type="text" id="username" placeholder="Usuário">
                     </div>
-                    <div class="login-input-group">
-                        <!-- Ícone de Cadeado -->
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 0 0 1 10 0v4"/></svg>
-                        <input type="password" id="password" placeholder="Senha">
-                    </div>
+<div class="login-input-group">
+    <!-- Novo Ícone de Cadeado -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon-svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+        <line x1="12" y1="16" x2="12" y2="18" />
+    </svg>
+    <input type="password" id="password" placeholder="Senha" class="leading-[normal]">
+</div>
                     <button id="loginButton" class="btn btn-primary w-full mt-6">ACESSAR</button>
                 </div>
                 <a href="#" onclick="showMessage('Funcionalidade: Esqueceu sua senha?', 'Esta é uma funcionalidade simulada.')" class="forgot-password-link">Esqueceu sua senha?</a>
