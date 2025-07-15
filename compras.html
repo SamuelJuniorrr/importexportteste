@@ -25,18 +25,6 @@
         <div class="container">
             <div class="filters">
                 <div class="filter-group">
-                    <label for="poStatusFilter">Status da PO:</label>
-                    <select id="poStatusFilter" onchange="renderPurchasingCenterTables()">
-                        <option value="Todos">Todos</option>
-                        <option value="Pendente">Pendente</option>
-                        <option value="Negociado">Negociado</option>
-                        <option value="Aguardando Aprovação">Aguardando Aprovação</option>
-                        <option value="Aprovado">Aprovado</option>
-                        <option value="Rejeitado">Rejeitado</option>
-                        <option value="Finalizado">Finalizado</option>
-                    </select>
-                </div>
-                <div class="filter-group">
                     <label for="poSupplierFilter">Fornecedor:</label>
                     <select id="poSupplierFilter" onchange="renderPurchasingCenterTables()">
                         <option value="Todos">Todos</option>
@@ -59,24 +47,99 @@
                 </div>
             </div>
 
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID SOLICITAÇÃO PRINCIPAL</th>
-                            <th>Nº PO</th>
-                            <th>FORNECEDOR (CÓDIGO)</th>
-                            <th>PAÍS ORIGEM</th>
-                            <th>VALOR TOTAL (FORNECEDOR)</th>
-                            <th>STATUS DA PO</th>
-                            <th>DATA GERAÇÃO</th>
-                            <th>AÇÃO</th>
-                        </tr>
-                    </thead>
-                    <tbody id="purchasingOrdersTableBody">
-                        <!-- Purchase Orders will be rendered here -->
-                    </tbody>
-                </table>
+            <div class="tab-buttons" id="purchasingTabButtons">
+                <button class="tab-button active" onclick="switchPurchasingTab('newRequests')">Novas Solicitações</button>
+                <button class="tab-button" onclick="switchPurchasingTab('negotiationsInProgress')">Negociações em Andamento</button>
+                <button class="tab-button" onclick="switchPurchasingTab('pendingManagement')">Pendente Gerência</button>
+                <button class="tab-button" onclick="switchPurchasingTab('approvedManagement')">Aprovado Gerência</button>
+            </div>
+
+            <div id="newRequestsTab" class="tab-content active">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID SOLICITAÇÃO PRINCIPAL</th>
+                                <th>Nº PO</th>
+                                <th>FORNECEDOR (CÓDIGO)</th>
+                                <th>PAÍS ORIGEM</th>
+                                <th>VALOR TOTAL (FORNECEDOR)</th>
+                                <th>STATUS DA PO</th>
+                                <th>DATA GERAÇÃO</th>
+                                <th>AÇÃO</th>
+                            </tr>
+                        </thead>
+                        <tbody id="newRequestsTableBody">
+                            <!-- New Requests POs will be rendered here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="negotiationsInProgressTab" class="tab-content">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID SOLICITAÇÃO PRINCIPAL</th>
+                                <th>Nº PO</th>
+                                <th>FORNECEDOR (CÓDIGO)</th>
+                                <th>PAÍS ORIGEM</th>
+                                <th>VALOR TOTAL (FORNECEDOR)</th>
+                                <th>STATUS DA PO</th>
+                                <th>DATA GERAÇÃO</th>
+                                <th>AÇÃO</th>
+                            </tr>
+                        </thead>
+                        <tbody id="negotiationsInProgressTableBody">
+                            <!-- Negotiations In Progress POs will be rendered here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="pendingManagementTab" class="tab-content">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID SOLICITAÇÃO PRINCIPAL</th>
+                                <th>Nº PO</th>
+                                <th>FORNECEDOR (CÓDIGO)</th>
+                                <th>PAÍS ORIGEM</th>
+                                <th>VALOR TOTAL (FORNECEDOR)</th>
+                                <th>STATUS DA PO</th>
+                                <th>DATA GERAÇÃO</th>
+                                <th>AÇÃO</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pendingManagementTableBody">
+                            <!-- Pending Management POs will be rendered here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="approvedManagementTab" class="tab-content">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID SOLICITAÇÃO PRINCIPAL</th>
+                                <th>Nº PO</th>
+                                <th>FORNECEDOR (CÓDIGO)</th>
+                                <th>PAÍS ORIGEM</th>
+                                <th>VALOR TOTAL (FORNECEDOR)</th>
+                                <th>STATUS DA PO</th>
+                                <th>DATA GERAÇÃO</th>
+                                <th>STATUS FINAL</th>
+                            </tr>
+                        </thead>
+                        <tbody id="approvedManagementTableBody">
+                            <!-- Approved/Rejected POs will be rendered here -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -204,6 +267,8 @@
     <!-- Link para o arquivo JavaScript externo -->
     <script src="script.js"></script>
     <script>
+        let currentPurchasingTab = 'newRequests'; // Adiciona uma variável para controlar a aba ativa
+
         /**
          * Exibe informações sobre a tela atual para o usuário de Compras.
          */
@@ -217,7 +282,7 @@
                         <hr style="margin:16px 0;">
                         <h3 style="font-size:1.1rem; font-weight:bold;">🔍 Busca e Filtros</h3>
                         <ul style="margin-bottom:10px;">
-                        <li>Filtre POs por <b>Status da PO</b>, <b>Fornecedor</b> (código) ou <b>País de Origem</b>.</li>
+                        <li>Filtre POs por <b>Fornecedor</b> (código) ou <b>País de Origem</b>.</li>
                         <li>Utilize a busca rápida por número da PO ou ID da Solicitação Principal.</li>
                         </ul>
                         <h3 style="font-size:1.1rem; font-weight:bold;">📋 Visualização das POs</h3>
@@ -264,69 +329,140 @@
         }
 
         /**
-         * Renderiza as tabelas da Central de Compras, aplicando filtros.
+         * Alterna entre as abas da Central de Compras.
+         * @param {string} tabType - O tipo da aba a ser ativada ('newRequests', 'negotiationsInProgress', 'pendingManagement', 'approvedManagement').
+         */
+        function switchPurchasingTab(tabType) {
+            const newRequestsTabContent = document.getElementById('newRequestsTab');
+            const negotiationsInProgressTabContent = document.getElementById('negotiationsInProgressTab');
+            const pendingManagementTabContent = document.getElementById('pendingManagementTab');
+            const approvedManagementTabContent = document.getElementById('approvedManagementTab');
+            const tabButtonsContainer = document.getElementById('purchasingTabButtons');
+
+            newRequestsTabContent.classList.remove('active');
+            negotiationsInProgressTabContent.classList.remove('active');
+            pendingManagementTabContent.classList.remove('active');
+            approvedManagementTabContent.classList.remove('active');
+
+            Array.from(tabButtonsContainer.children).forEach(button => {
+                button.classList.remove('active');
+            });
+
+            currentPurchasingTab = tabType; // Atualiza a aba ativa
+
+            if (tabType === 'newRequests') {
+                newRequestsTabContent.classList.add('active');
+                tabButtonsContainer.children[0].classList.add('active');
+            } else if (tabType === 'negotiationsInProgress') {
+                negotiationsInProgressTabContent.classList.add('active');
+                tabButtonsContainer.children[1].classList.add('active');
+            } else if (tabType === 'pendingManagement') {
+                pendingManagementTabContent.classList.add('active');
+                tabButtonsContainer.children[2].classList.add('active');
+            } else if (tabType === 'approvedManagement') {
+                approvedManagementTabContent.classList.add('active');
+                tabButtonsContainer.children[3].classList.add('active');
+            }
+            renderPurchasingCenterTables(); // Re-renderiza as tabelas após a troca de aba
+        }
+
+        /**
+         * Renderiza as tabelas da Central de Compras, aplicando filtros e separando por abas.
          */
         function renderPurchasingCenterTables() {
-            const tbody = document.getElementById('purchasingOrdersTableBody');
-            tbody.innerHTML = '';
+            const newRequestsTbody = document.getElementById('newRequestsTableBody');
+            const negotiationsInProgressTbody = document.getElementById('negotiationsInProgressTableBody');
+            const pendingManagementTbody = document.getElementById('pendingManagementTableBody');
+            const approvedManagementTbody = document.getElementById('approvedManagementTableBody');
 
-            const statusFilter = document.getElementById('poStatusFilter').value;
+            // Limpa todas as tabelas antes de renderizar
+            newRequestsTbody.innerHTML = '';
+            negotiationsInProgressTbody.innerHTML = '';
+            pendingManagementTbody.innerHTML = '';
+            approvedManagementTbody.innerHTML = '';
+
             const supplierFilterCode = document.getElementById('poSupplierFilter').value;
             const originCountryFilter = document.getElementById('poOriginCountryFilter').value;
             const searchInput = document.getElementById('poSearch').value.toLowerCase();
 
-            let filteredPOs = generatedPurchaseOrders.filter(po => {
-                const matchesStatus = statusFilter === 'Todos' || po.overallApprovalStatus === statusFilter;
+            // Filtra as POs com base nos filtros globais
+            const filteredPOs = generatedPurchaseOrders.filter(po => {
                 const matchesSupplier = supplierFilterCode === 'Todos' || po.supplierCode === supplierFilterCode;
                 const matchesOriginCountry = originCountryFilter === 'Todos' || po.originCountry === originCountryFilter;
                 const matchesSearch = searchInput === '' ||
                                       po.id.toLowerCase().includes(searchInput) ||
                                       (po.parentOrderId && po.parentOrderId.toLowerCase().includes(searchInput));
-                return matchesStatus && matchesSupplier && matchesOriginCountry && matchesSearch;
+                return matchesSupplier && matchesOriginCountry && matchesSearch;
             });
 
-            if (filteredPOs.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-gray-500">Nenhuma Ordem de Compra encontrada com os filtros aplicados.</td></tr>`;
-                return;
-            }
+            // Separa as POs por categoria de aba
+            const newRequestsPOs = filteredPOs.filter(po => po.overallApprovalStatus === 'Pendente');
+            const negotiationsInProgressPOs = filteredPOs.filter(po => po.overallApprovalStatus === 'Negociado');
+            const pendingManagementPOs = filteredPOs.filter(po => po.overallApprovalStatus === 'Aguardando Aprovação');
+            const approvedManagementPOs = filteredPOs.filter(po => ['Aprovado', 'Rejeitado', 'Finalizado'].includes(po.overallApprovalStatus));
 
-            filteredPOs.forEach(po => {
-                const row = document.createElement('tr');
-
-                let statusIndicatorClass = '';
-                switch (po.overallApprovalStatus) {
-                    case 'Pendente':
-                    case 'Aguardando Aprovação':
-                        statusIndicatorClass = 'yellow';
-                        break;
-                    case 'Negociado':
-                        statusIndicatorClass = 'purple'; // Novo status para negociação
-                        break;
-                    case 'Aprovado':
-                    case 'Finalizado':
-                        statusIndicatorClass = 'green';
-                        break;
-                    case 'Rejeitado':
-                        statusIndicatorClass = 'red';
-                        break;
-                    default:
-                        statusIndicatorClass = 'gray';
+            // Função auxiliar para renderizar uma tabela
+            const renderTable = (tbodyElement, poList, isApprovedRejectedTab = false) => {
+                if (poList.length === 0) {
+                    tbodyElement.innerHTML = `<tr><td colspan="${isApprovedRejectedTab ? 9 : 8}" class="text-center py-4 text-gray-500">Nenhuma PO encontrada.</td></tr>`;
+                    return;
                 }
 
-                row.innerHTML = `
-                    <td>${po.parentOrderId || 'N/A'}</td>
-                    <td>${po.id}</td>
-                    <td>${po.supplierCode} - ${po.supplier}</td>
-                    <td>${po.originCountry}</td>
-                    <td>R$ ${parseFloat(po.newSupplierPriceTotal).toFixed(2).replace('.', ',')}</td>
-                    <td><span class="status-indicator ${statusIndicatorClass}"></span>${po.overallApprovalStatus}</td>
-                    <td>${po.date}</td>
-                    <td>
-                        <button class="btn-primary" onclick="viewPurchaseOrderDetails('${po.id}')">Ver Detalhes</button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
+                poList.forEach(po => {
+                    const row = document.createElement('tr');
+                    let statusIndicatorClass = '';
+                    switch (po.overallApprovalStatus) {
+                        case 'Pendente':
+                            statusIndicatorClass = 'yellow';
+                            break;
+                        case 'Negociado':
+                            statusIndicatorClass = 'purple';
+                            break;
+                        case 'Aguardando Aprovação':
+                            statusIndicatorClass = 'yellow';
+                            break;
+                        case 'Aprovado':
+                        case 'Finalizado':
+                            statusIndicatorClass = 'green';
+                            break;
+                        case 'Rejeitado':
+                            statusIndicatorClass = 'red';
+                            break;
+                        default:
+                            statusIndicatorClass = 'gray';
+                    }
+
+                    let actionColumnHtml = '';
+                    if (isApprovedRejectedTab) {
+                        actionColumnHtml = `<td>${po.overallApprovalStatus}</td>`;
+                    } else {
+                        actionColumnHtml = `<td><button class="btn-primary" onclick="viewPurchaseOrderDetails('${po.id}')">Ver Detalhes</button></td>`;
+                    }
+
+                    row.innerHTML = `
+                        <td>${po.parentOrderId || 'N/A'}</td>
+                        <td>${po.id}</td>
+                        <td>${po.supplierCode} - ${po.supplier}</td>
+                        <td>${po.originCountry}</td>
+                        <td>R$ ${parseFloat(po.newSupplierPriceTotal).toFixed(2).replace('.', ',')}</td>
+                        <td><span class="status-indicator ${statusIndicatorClass}"></span>${po.overallApprovalStatus}</td>
+                        <td>${po.date}</td>
+                        ${actionColumnHtml}
+                    `;
+                    tbodyElement.appendChild(row);
+                });
+            };
+
+            // Renderiza as tabelas com base na aba ativa
+            if (currentPurchasingTab === 'newRequests') {
+                renderTable(newRequestsTbody, newRequestsPOs);
+            } else if (currentPurchasingTab === 'negotiationsInProgress') {
+                renderTable(negotiationsInProgressTbody, negotiationsInProgressPOs);
+            } else if (currentPurchasingTab === 'pendingManagement') {
+                renderTable(pendingManagementTbody, pendingManagementPOs);
+            } else if (currentPurchasingTab === 'approvedManagement') {
+                renderTable(approvedManagementTbody, approvedManagementPOs, true); // Passa true para a aba de aprovados/rejeitados
+            }
         }
 
         /**
@@ -490,15 +626,6 @@
         }
 
         /**
-         * Popula o filtro de status na tela da Central de Compras.
-         */
-        function populatePurchasingStatusFilter() {
-            const statusFilterSelect = document.getElementById('poStatusFilter');
-            // As opções já estão no HTML, então não precisamos repopular, apenas garantir que existam.
-            // Se os status fossem dinâmicos, faríamos algo similar ao populatePurchasingSupplierFilter.
-        }
-
-        /**
          * Popula o filtro de país de origem na tela da Central de Compras.
          */
         function populatePurchasingOriginCountryFilter() {
@@ -524,8 +651,8 @@
         document.addEventListener('DOMContentLoaded', () => {
             // Popula os filtros ao carregar a página
             populatePurchasingSupplierFilter();
-            populatePurchasingStatusFilter();
             populatePurchasingOriginCountryFilter();
+            switchPurchasingTab('newRequests'); // Ativa a aba "Novas Solicitações" por padrão
             renderPurchasingCenterTables(); // Renderiza a tabela de POs inicialmente
 
             // Adiciona event listener para o botão de logout
