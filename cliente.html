@@ -542,6 +542,7 @@
         #addedProductsTable {
             width: 100%;
             margin-top: 15px;
+            table-layout: auto; /* Adicionado para layout de tabela automático */
         }
 
         #addedProductsTable th,
@@ -557,6 +558,11 @@
             background-color: var(--table-header-bg);
             font-weight: 600;
             text-transform: uppercase;
+            white-space: nowrap; /* Manter cabeçalhos em uma linha */
+        }
+
+        #addedProductsTable td {
+            white-space: normal; /* Permitir quebra de linha nas células de dados */
         }
 
         #addedProductsTable .remove-item-btn {
@@ -972,6 +978,22 @@
             background-color: var(--highlight-container-bg);
             border: 1px solid var(--highlight-container-border);
             font-weight: bold;
+        }
+
+        /* Estilos para o modal do fluxograma */
+        #flowchartModal .modal-content {
+            max-width: 90%; /* Ajusta a largura máxima do modal */
+            width: auto; /* Permite que a largura se ajuste ao conteúdo */
+            padding: 15px; /* Reduz o padding para dar mais espaço à imagem */
+        }
+
+        #flowchartImage {
+            max-width: 100%; /* Garante que a imagem não exceda a largura do modal */
+            height: auto; /* Mantém a proporção da imagem */
+            display: block; /* Remove espaços extras abaixo da imagem */
+            background-color: transparent; /* Remove qualquer fundo branco */
+            border: none; /* Remove qualquer borda */
+            object-fit: contain; /* Garante que a imagem inteira seja visível */
         }
     </style>
 </head>
@@ -1455,7 +1477,7 @@
         const colombiaTrackingFlow = [
             { name: 'Pendente', class: 'pending' },
             { name: 'Em Separação', class: 'separation' },
-            { name: 'Em Conferência', class: 'conference' },
+            { name: 'Em Conferência', 'class': 'conference' },
             { name: 'Em Rota de Entrega', class: 'in-transit' },
             { name: 'Entregue', class: 'delivered', isFinal: true },
             { name: 'Aprovado', class: 'approved' },
@@ -2324,7 +2346,7 @@
                     validationFeedbackDiv.className = 'validation-message status-error';
                 } else {
                     validationFeedbackDiv.innerText = `✅ Quantidade (${quantity}) disponível em estoque na Colômbia.`;
-                    validationFeedbackDiv.className = 'validation-message status-ok';
+                    messageType = 'success';
                 }
             }
         }
@@ -2457,42 +2479,29 @@
                 return;
             }
 
-            let tableHtml = `<table class="data-table" id="addedProductsTable">
-                                <colgroup>
-                                    <col style="width: 10%;">
-                                    <col style="width: 10%;">
-                                    <col style="width: 20%;">
-                                    <col style="width: 8%;">
-                                    <col class="colombia-col" style="width: 10%;">
-                                    <col class="colombia-col" style="width: 10%;">
-                                    <col class="colombia-col" style="width: 10%;">
-                                    <col class="hongkong-col" style="width: 6%;">
-                                    <col class="hongkong-col" style="width: 10%;">
-                                    <col class="hongkong-col" style="width: 10%;">
-                                    <col style="width: 12%;">
-                                    <col style="width: 8%;">
-                                </colgroup>
-                                <thead>
-                                    <tr>
-                                        <th rowspan="2">Cód Cliente</th>
-                                        <th rowspan="2">Cód Produto</th>
-                                        <th rowspan="2">Descrição</th>
-                                        <th rowspan="2">Qtd. Solicitada</th>
-                                        <th colspan="3" class="colombia-col" style="text-align: center;">Colômbia</th>
-                                        <th colspan="3" class="hongkong-col" style="text-align: center;">Hong Kong</th>
-                                        <th rowspan="2">Filial Selecionada</th>
-                                        <th rowspan="2">Ação</th>
-                                    </tr>
-                                    <tr>
-                                        <th class="colombia-col">Estoque</th>
-                                        <th class="colombia-col">Valor Unit.</th>
-                                        <th class="colombia-col">Valor Total</th>
-                                        <th class="hongkong-col">MOQ</th>
-                                        <th class="hongkong-col">Valor Unit.</th>
-                                        <th class="hongkong-col">Valor Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>`;
+            let tableHtml = `<div class="table-container">
+                                <table class="data-table" id="addedProductsTable">
+                                    <thead>
+                                        <tr>
+                                            <th rowspan="2">Cód Cliente</th>
+                                            <th rowspan="2">Cód Produto</th>
+                                            <th rowspan="2">Descrição</th>
+                                            <th rowspan="2">Qtd. Solicitada</th>
+                                            <th colspan="3" class="colombia-col" style="text-align: center;">Colômbia</th>
+                                            <th colspan="3" class="hongkong-col" style="text-align: center;">Hong Kong</th>
+                                            <th rowspan="2">Filial Selecionada</th>
+                                            <th rowspan="2">Ação</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="colombia-col">Estoque</th>
+                                            <th class="colombia-col">Valor Unit.</th>
+                                            <th class="colombia-col">Valor Total</th>
+                                            <th class="hongkong-col">MOQ</th>
+                                            <th class="hongkong-col">Valor Unit.</th>
+                                            <th class="hongkong-col">Valor Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>`;
 
             productsInCurrentOrder.forEach((product, index) => {
                 const productInfoFromDB = productDatabase[product.code];
@@ -2540,7 +2549,7 @@
                     </tr>
                 `;
             });
-            tableHtml += `</tbody></table>`;
+            tableHtml += `</tbody></table></div>`; /* Fechar a div table-container */
             listDiv.innerHTML += tableHtml;
         }
 
@@ -2741,7 +2750,7 @@
                     } else if (po.overallApprovalStatus === 'Aprovado') {
                         cardStatusEmoji = '🟢';
                     } else if (po.overallApprovalStatus === 'Rejeitado') {
-                        cardStatusEmoji = '�';
+                        cardStatusEmoji = '🔴';
                     } else if (po.overallApprovalStatus === 'Negociado') {
                         cardStatusEmoji = '🟣';
                     } else if (po.overallApprovalStatus === 'Finalizado') {
