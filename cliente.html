@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Fluig - Protótipo</title>
+    <style>
+        /* Importa a fonte Roboto do Google Fonts para uma tipografia consistente */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+        /* Definição de variáveis CSS para cores e sombras, facilitando a manutenção e padronização */
+        :root {
+            --primary-color: #007bff; /* Azul primário para botões e destaques */
+            --secondary-color: #6c757d; /* Cinza secundário para botões e textos */
+            --text-color: #333; /* Cor padrão para a maioria dos textos */
+            --light-gray: #f8f9fa; /* Fundo claro para o corpo da página */
+            --border-color: #dee2e6; /* Cor padrão para bordas */
+            --header-bg: #fff; /* Fundo branco para o cabeçalho */
+            --table-header-bg: #e9ecef; /* Fundo para cabeçalhos de tabela */
+            --shadow: 0 2px 4px rgba(0,0,0,0.05); /* Sombra leve para elementos */
+            --red-alert: #dc3545; /* Vermelho para mensagens de erro/alerta */
+            --green-success: #28a745; /* Verde para mensagens de sucesso */
+            --orange-warning: #ffc107; /* Laranja para mensagens de aviso */
+            --colombia-bg: #e6f7ff; /* Fundo para seções relacionadas à Colômbia */
+            --hongkong-bg: #fff3e0; /* Fundo para seções relacionadas a Hong Kong */
+            --colombia-border: #90cdf4; /* Borda para seções relacionadas à Colômbia */
+            --hongkong-border: #ffcc80; /* Borda para seções relacionadas a Hong Kong */
+            --highlight-container-bg: #d1e7dd; /* Fundo verde claro para destaque de container */
+            --highlight-container-border: #28a745; /* Borda verde mais escura para destaque */
+        }
+
+        /* Reset básico de CSS e definição da fonte para todos os elementos */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            color: var(--text-color);
+        }
+
+        /* Estilos para o corpo da página, definindo o fundo, altura mínima e layout flexível */
+        body {
+            background-color: var(--light-gray);
+            line-height: 1.6;
+            font-size: 14px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Garante que o body ocupa a altura total da viewport */
+        }
+
+        /* Estilos para as páginas (telas), inicialmente ocultas */
+        .page {
+            display: none; /* Oculta as páginas por padrão */
+            width: 100%;
+            flex-grow: 1; /* Permite que a página ocupe o espaço disponível */
+        }
+
+        /* Estilo para a página ativa, tornando-a visível e flexível */
+        .page.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Classe utilitária para ocultar elementos */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Estilos para o cabeçalho comum a várias telas */
+        .header {
+            background-color: var(--header-bg);
+            padding: 15px 40px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            background-color: #e0e0e0;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #666;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        /* Estilos para botões primários */
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.2s ease-in-out;
+            white-space: nowrap;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        /* Estilos para botões secundários */
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.2s ease-in-out;
+            white-space: nowrap;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        /* Estilos para grupos de input (rótulo + campo) */
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .input-group input[type="text"],
+        .input-group input[type="password"],
+        .input-group input[type="number"],
+        .input-group input[type="file"],
+        .input-group select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s ease-in-out;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus,
+        textarea:focus {
+            border-color: var(--primary-color);
+        }
+
+        /* Estilos específicos para o conteúdo da página de login */
+        #login-page-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1;
+            background-color: #f0f2f5; /* Fundo cinza claro para a área de login */
+        }
+
+        /* Contêiner do formulário de login */
+        .login-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); /* Sombra mais proeminente */
+            text-align: center;
+            width: 380px; /* Largura fixa para o contêiner de login */
+        }
+
+        .login-header {
+            margin-bottom: 30px;
+        }
+
+        .login-header img {
+            max-width: 200px;
+            height: auto;
+        }
+
+        /* Estilos para os inputs do formulário de login com ícones e rótulos flutuantes */
+        .login-form .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .login-form .input-group input {
+            padding-left: 40px; /* Espaço para o ícone */
+        }
+
+        .login-form .input-group label {
+            position: absolute;
+            left: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 16px;
+            pointer-events: none;
+            transition: all 0.2s ease-in-out;
+            background: none;
+            padding: 0;
+            z-index: 1;
+        }
+
+        .login-form .input-group input:focus + label,
+        .login-form .input-group input:not(:placeholder-shown) + label {
+            top: 0;
+            font-size: 12px;
+            background-color: #fff;
+            padding: 0 5px;
+            left: 35px;
+            color: var(--primary-color);
+            z-index: 2;
+        }
+
+        .login-form .input-group .icon-user,
+        .login-form .input-group .icon-lock {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 18px;
+            z-index: 1;
+        }
+
+        /* Estilo para o botão de acesso (login) */
+        .btn-access {
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            transition: background-color 0.2s ease-in-out;
+            margin-top: 20px;
+        }
+
+        .btn-access:hover {
+            background-color: #0056b3;
+        }
+
+        /* Estilo para o link "Esqueceu sua senha?" */
+        .forgot-password {
+            display: block;
+            margin-top: 15px;
+            font-size: 13px;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        /* Ícones usando pseudo-elementos para melhor compatibilidade e leveza */
+        .icon-user::before { content: '👤'; }
+        .icon-lock::before { content: '🔒'; }
+        .icon-search::before { content: '🔍'; }
+        .icon-plus::before { content: '➕'; }
+        .icon-question::before { content: '?'; }
+        .icon-flow::before { content: '!'; } /* Ícone para o botão Fluxo */
+
+
+        /* Estilos para modais (pop-ups) */
+        .modal-overlay {
+            display: none; /* Oculto por padrão */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6); /* Fundo semi-transparente */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; /* Garante que o modal fique acima de outros elementos */
+        }
+
+        .modal-overlay.active {
+            display: flex; /* Exibe o modal quando ativo */
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #888;
+        }
+
+        .modal-content h3 {
+            margin-bottom: 20px;
+            font-size: 20px;
+            color: var(--primary-color);
+        }
+
+        .modal-content pre {
+            background-color: var(--light-gray);
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap; /* Permite quebras de linha */
+            font-family: monospace;
+            font-size: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-content .modal-actions {
+            margin-top: 25px;
+            text-align: right;
+        }
+
+        /* Estilos para o modal de fluxograma */
+        #flowchartModal {
+            display: none; /* Oculto por padrão */
+            position: fixed; /* Fica no lugar */
+            z-index: 1001; /* Fica no topo */
+            left: 0;
+            top: 0;
+            width: 100%; /* Largura total */
+            height: 100%; /* Altura total */
+            overflow: auto; /* Habilita rolagem se necessário */
+            background-color: rgba(0,0,0,0.9); /* Fundo preto com opacidade */
+            justify-content: center;
+            align-items: center;
+        }
+
+        #flowchartModal.active {
+            display: flex; /* Exibe o modal de fluxograma quando ativo */
+        }
+
+        #flowchartModal .modal-content {
+            margin: auto;
+            display: block;
+            width: 90%;
+            height: 90%;
+            max-width: 1200px; /* Ajustável conforme necessário */
+            max-height: 800px; /* Ajustável conforme necessário */
+            background-color: #fff; /* Fundo branco para a imagem */
+            padding: 20px;
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #flowchartModal .modal-content img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Garante que a imagem se ajuste ao modal sem cortar */
+        }
+
+        #flowchartModal .modal-close-btn {
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            color: #333; /* Cor mais escura para visibilidade em fundo branco */
+            font-size: 35px;
+            font-weight: bold;
+            transition: 0.3s;
+            background: none;
+            border: none;
+            cursor: pointer;
+            z-index: 1002; /* Garante que o botão de fechar esteja acima da imagem */
+        }
+
+        #flowchartModal .modal-close-btn:hover,
+        #flowchartModal .modal-close-btn:focus {
+            color: #999;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Página de Login - Visível por padrão ao carregar a aplicação -->
+    <div id="login-page" class="page active">
+        <div id="login-page-content">
+            <div class="login-container">
+                <div class="login-header">
+                    <!-- Imagem do logo da Totvs Fluig -->
+                    <img src="https://i.ibb.co/8Lyy59Vt/Captura-de-tela-2025-07-01-163440.png" alt="Totvs Fluig Logo">
+                </div>
+                <div class="login-form">
+                    <div class="input-group">
+                        <i class="icon-user"></i>
+                        <input type="text" id="username" placeholder=" ">
+                        <label for="username">Usuário</label>
+                    </div>
+                    <div class="input-group">
+                        <i class="icon-lock"></i>
+                        <input type="password" id="password" placeholder=" ">
+                        <label for="password">Senha</label>
+                    </div>
+                    <button id="loginButton" class="btn-access">ACESSAR</button>
+                    <a href="#" class="forgot-password">Esqueceu sua senha?</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Página DIMPEX - Atualmente renderizada via iframe, pode ser um arquivo HTML separado -->
+    <div id="dimpex-page" class="page">
+        <iframe id="dimpexFrame" src="dimpex.html" style="width:100%; height:100%; border:none;"></iframe>
+    </div>
+
+    <!-- Modal de Mensagens Genérico - Usado para exibir informações, erros ou confirmações -->
+    <div id="messageModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-btn" id="messageModalCloseBtn">&times;</button>
+            <h3 id="messageModalTitle"></h3>
+            <div id="messageModalContent"></div>
+            <div class="modal-actions">
+                <button class="btn-primary" id="messageModalConfirmBtn">OK</button>
+                <button class="btn-secondary" id="messageModalCancelBtn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Fluxograma - Exibe o fluxograma do processo -->
+    <div id="flowchartModal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="modal-close-btn" onclick="closeFlowchartModal()">&times;</span>
+            <img id="flowchartImage" src="https://raw.githubusercontent.com/SamuelJuniorrr/importexport/refs/heads/main/fluxograma.png" alt="Fluxograma do Processo">
+        </div>
+    </div>
+
+    <script>
+        // Variáveis globais para controle de estado da aplicação
+        let currentScreen = 'loginScreen'; // Tela atualmente ativa
+        let userRole = 'guest'; // Perfil do usuário logado (cliente, compras, gestor, guest)
+
+        // Dados simulados para produtos, pedidos e fornecedores
+        const productDatabase = {
+            "PROD001": { code: "PROD001", clientCode: "SKU-001", description: "Smartphone Premium X1", moq: 3, unitPrice: 150.00, tableValue: 160.00, cubageUnit: 0.005, simulatedStock: 100, productLine: "Eletrônicos", supplier: "Fornecedor A", originCountry: "Hong Kong" },
+            "PROD002": { code: "PROD002", clientCode: "SKU-002", description: "Tablet Pro Z", moq: 2, unitPrice: 250.00, tableValue: 265.00, cubageUnit: 0.008, simulatedStock: 50, productLine: "Eletrônicos", supplier: "Fornecedor B", originCountry: "Hong Kong" },
+            "PROD003": { code: "PROD003", clientCode: "SKU-003", description: "Fone Bluetooth Max", moq: 5, unitPrice: 45.00, tableValue: 50.00, cubageUnit: 0.001, simulatedStock: 200, productLine: "Acessórios", supplier: "Fornecedor C", originCountry: "Colômbia" },
+            "PROD004": { code: "PROD004", clientCode: "SKU-004", description: "Smartwatch Sport Y", moq: 1, unitPrice: 80.00, tableValue: 85.00, cubageUnit: 0.002, simulatedStock: 120, productLine: "Vestíveis", supplier: "Fornecedor A", originCountry: "Hong Kong" },
+            "PROD005": { code: "PROD005", clientCode: "SKU-005", description: "Câmera Digital Ultra HD", moq: 2, unitPrice: 300.00, tableValue: 320.00, cubageUnit: 0.01, simulatedStock: 30, productLine: "Fotografia", supplier: "Fornecedor B", originCountry: "Hong Kong" },
+            "PROD006": { code: "PROD006", clientCode: "SKU-006", description: "Bateria Portátil Mega", moq: 10, unitPrice: 25.00, tableValue: 28.00, cubageUnit: 0.0005, simulatedStock: 300, productLine: "Acessórios", supplier: "Fornecedor C", originCountry: "Colômbia" },
+            "PROD007": { code: "PROD007", clientCode: "SKU-007", description: "Cadeira Ergonômica", moq: 1, unitPrice: 600.00, tableValue: 650.00, cubageUnit: 0.15, simulatedStock: 15, productLine: "Móveis de Escritório", supplier: "Fornecedor A", originCountry: "Hong Kong" },
+            "PROD008": { code: "PROD008", clientCode: "SKU-008", description: "Impressora 3D Industrial", moq: 1, unitPrice: 800.00, tableValue: 850.00, cubageUnit: 0.8, simulatedStock: 0, productLine: "Maquinário", supplier: "Fornecedor B", originCountry: "Hong Kong" },
+            "PROD009": { code: "PROD009", clientCode: "SKU-009", description: "Monitor Ultrawide", moq: 1, unitPrice: 350.00, tableValue: 350.00, cubageUnit: 0.05, simulatedStock: 50, productLine: "Periféricos", supplier: "Fornecedor C", originCountry: "Colômbia" },
+            "PROD010": { code: "PROD010", clientCode: "SKU-010", description: "Teclado Mecânico", moq: 1, unitPrice: 80.00, tableValue: 80.00, cubageUnit: 0.01, simulatedStock: 75, productLine: "Periféricos", supplier: "Fornecedor A", originCountry: "Hong Kong" },
+            "PROD011": { code: "PROD011", clientCode: "SKU-011", description: "Mouse Gamer", moq: 1, unitPrice: 40.00, tableValue: 40.00, cubageUnit: 0.001, simulatedStock: 150, productLine: "Periféricos", supplier: "Fornecedor B", originCountry: "Hong Kong" }
+        };
+
+        // Mapeamento de código de cliente para código de produto interno
+        const universalClientCodeToProductCodeMap = {};
+        for (const prodCode in productDatabase) {
+            const product = productDatabase[prodCode];
+            if (product.clientCode) {
+                universalClientCodeToProductCodeMap[product.clientCode.toUpperCase()] = prodCode;
+            }
+        }
+
+        // Mapeamento de códigos e nomes de fornecedores
+        const supplierCodeMap = {};
+        const supplierNameMap = {};
+        let nextSupplierCode = 22; // Início dos códigos de fornecedores simulados
+
+        // Nomes de clientes simulados
+        const clientNames = ["Cliente Mexico", "Cliente Chile", "Cliente Paraguai", "Cliente Colombia"];
+        let clientIndex = 0; // Índice para atribuir nomes de clientes ciclicamente
+
+        // Função para atribuir nomes de clientes de forma cíclica, evitando "Cliente Colombia" para origem "Colômbia"
+        function assignClientName(originCountry) {
+            let assignedClient = clientNames[clientIndex % clientNames.length];
+            // Garante que "Cliente Colombia" não seja atribuído a pedidos de origem "Colômbia"
+            if (originCountry === 'Colômbia' && assignedClient === 'Cliente Colombia') {
+                clientIndex++; // Pula "Cliente Colombia" para esta origem
+                assignedClient = clientNames[clientIndex % clientNames.length];
+            }
+            clientIndex++;
+            return assignedClient;
+        }
+
+        // Dados simulados de pedidos existentes
+        const orders = [
+            {
+                orderId: 'PED-001', parentOrderId: 'SOL-001', clientFlag: assignClientName('Hong Kong'), originCountry: 'Hong Kong',
+                totalValue: 1550.00, status: 'Pendente', requestDate: '2025-06-20', lastUpdateDate: '2025-06-20',
+                supplier: 'Fornecedor A', products: [{ code: 'PROD001', description: 'Smartphone Premium X1', quantity: 10, unitPrice: 155.00, cubageUnit: 0.005 }]
+            },
+            {
+                orderId: 'PED-002', parentOrderId: 'SOL-009', clientFlag: assignClientName('Colômbia'), originCountry: 'Colômbia',
+                totalValue: 1200.00, status: 'Pendente', requestDate: '2025-06-21', lastUpdateDate: '2025-06-21',
+                supplier: 'Fornecedor B', products: [{ code: 'PROD007', description: 'Cadeira Ergonômica', quantity: 2, unitPrice: 600.00, cubageUnit: 0.15 }]
+            },
+            {
+                orderId: 'PED-003', parentOrderId: 'SOL-002', clientFlag: assignClientName('Hong Kong'), originCountry: 'Hong Kong',
+                totalValue: 300.00, status: 'Rejeitado', requestDate: '2025-06-18', lastUpdateDate: '2025-06-19',
+                supplier: 'Fornecedor A', products: [{ code: 'PROD003', description: 'Fone Bluetooth Max', quantity: 5, unitPrice: 45.00, cubageUnit: 0.001 }, { code: 'PROD006', description: 'Bateria Portátil Mega', quantity: 5, unitPrice: 25.00, cubageUnit: 0.0005 }]
+            },
+            {
+                orderId: 'PED-004', parentOrderId: 'SOL-010', clientFlag: assignClientName('Colômbia'), originCountry: 'Colômbia',
+                totalValue: 800.00, status: 'Entregue', requestDate: '2025-06-23', lastUpdateDate: '2025-06-23',
+                supplier: 'Fornecedor C', products: [{ code: 'PROD008', description: 'Impressora 3D Industrial', quantity: 1, unitPrice: 800.00, cubageUnit: 0.8 }]
+            },
+            {
+                orderId: 'PED-005', parentOrderId: 'SOL-003', clientFlag: assignClientName('Hong Kong'), originCountry: 'Hong Kong',
+                totalValue: 454.00, status: 'Pendente', requestDate: '2025-06-24', lastUpdateDate: '2025-06-24',
+                supplier: 'Fornecedor B', products: [{ code: 'PROD001', description: 'Smartphone Premium X1', quantity: 2, unitPrice: 152.00, cubageUnit: 0.005 }, { code: 'PROD003', description: 'Fone Bluetooth Max', quantity: 3, unitPrice: 46.00, cubageUnit: 0.001 }]
+            },
+            {
+                orderId: 'PED-006', parentOrderId: 'SOL-003', clientFlag: assignClientName('Hong Kong'), originCountry: 'Hong Kong',
+                totalValue: 120.00, status: 'Chegada no Porto de Destino (ATA)', requestDate: '2025-06-24', lastUpdateDate: '2025-06-25',
+                supplier: 'Fornecedor A', products: [{ code: 'PROD004', description: 'Smartwatch Sport Y', quantity: 1, unitPrice: 80.00, cubageUnit: 0.002 }, { code: 'PROD006', description: 'Bateria Portátil Mega', quantity: 2, unitPrice: 20.00, cubageUnit: 0.0005 }]
+            },
+            {
+                orderId: 'PED-007', parentOrderId: 'SOL-004', clientFlag: assignClientName('Colômbia'), originCountry: 'Colômbia',
+                totalValue: 1800.00, status: 'Em Conferência', requestDate: '2025-06-25', lastUpdateDate: '2025-06-25',
+                supplier: 'Fornecedor C', products: [{ code: 'PROD007', description: 'Cadeira Ergonômica', quantity: 3, unitPrice: 600.00, cubageUnit: 0.15 }]
+            },
+            {
+                orderId: 'PED-008', parentOrderId: 'SOL-011', clientFlag: assignClientName('Hong Kong'), originCountry: 'Hong Kong',
+                totalValue: 700.00, status: 'Carga Pronta', requestDate: '2025-06-25', lastUpdateDate: '2025-06-25',
+                supplier: 'Fornecedor B', products: [{ code: 'PROD009', description: 'Monitor Ultrawide', quantity: 2, unitPrice: 350.00, cubageUnit: 0.05 }]
+            },
+            {
+                orderId: 'PED-009', parentOrderId: 'SOL-005', clientFlag: assignClientName('Hong Kong'), originCountry: 'Hong Kong',
+                totalValue: 120.00, status: 'Aprovado', requestDate: '2025-06-26', lastUpdateDate: '2025-06-26',
+                supplier: 'Fornecedor A', products: [{ code: 'PROD010', description: 'Teclado Mecânico', quantity: 1, unitPrice: 80.00, cubageUnit: 0.01 }, { code: 'PROD011', description: 'Mouse Gamer', quantity: 1, unitPrice: 40.00, cubageUnit: 0.001 }]
+            },
+            {
+                orderId: 'PED-010', parentOrderId: 'SOL-005', clientFlag: assignClientName('Hong Kong'), originCountry: 'Hong Kong',
+                totalValue: 960.00, status: 'Pendente', requestDate: '2025-06-26', lastUpdateDate: '2025-06-26',
+                supplier: 'Fornecedor C', products: [{ code: 'PROD005', description: 'Câmera Digital Ultra HD', quantity: 3, unitPrice: 320.00, cubageUnit: 0.01 }]
+            },
+            {
+                orderId: 'PED-011', parentOrderId: 'SOL-006', clientFlag: assignClientName('Hong Kong'), originCountry: 'Hong Kong',
+                totalValue: 100.00, status: 'Cancelado', requestDate: '2025-06-27', lastUpdateDate: '2025-06-27',
+                supplier: 'Fornecedor A', products: [{ code: 'PROD003', description: 'Fone Bluetooth Max', quantity: 2, unitPrice: 50.00, cubageUnit: 0.001 }]
+            },
+            {
+                orderId: 'PED-012', parentOrderId: 'SOL-012', clientFlag: assignClientName('Colômbia'), originCountry: 'Colômbia', // Este cliente não será "Cliente Colombia"
+                totalValue: 800.00, status: 'Em Rota de Entrega', requestDate: '2025-06-27', lastUpdateDate: '2025-06-27',
+                supplier: 'Fornecedor B', products: [{ code: 'PROD008', description: 'Impressora 3D Industrial', quantity: 1, unitPrice: 800.00, cubageUnit: 0.8 }]
+            },
+            {
+                orderId: 'PED-013', parentOrderId: 'SOL-007', clientFlag: assignClientName('Colômbia'), originCountry: 'Colômbia',
+                totalValue: 1200.00, status: 'Pendente', requestDate: '2025-06-28', lastUpdateDate: '2025-06-28',
+                supplier: 'Fornecedor C', products: [{ code: 'PROD007', description: 'Cadeira Ergonômica', quantity: 2, unitPrice: 600.00, cubageUnit: 0.15 }]
+            },
+            {
+                orderId: 'PED-014', parentOrderId: 'SOL-013', clientFlag: assignClientName('Hong Kong'), originCountry: 'Hong Kong',
+                totalValue: 160.00, status: 'Saída do Porto de Embarque (ATD)', requestDate: '2025-06-28', lastUpdateDate: '2025-06-28',
+                supplier: 'Fornecedor A', products: [{ code: 'PROD001', description: 'Smartphone Premium X1', quantity: 1, unitPrice: 160.00, cubageUnit: 0.005 }]
+            },
+            {
+                orderId: 'PED-015', parentOrderId: 'SOL-008', clientFlag: assignClientName('Hong Kong'), originCountry: 'Hong Kong',
+                totalValue: 760.00, status: 'Pendente', requestDate: '2025-06-29', lastUpdateDate: '2025-06-29',
+                supplier: 'Fornecedor A', products: [{ code: 'PROD001', description: 'Smartphone Premium X1', quantity: 5, unitPrice: 152.00, cubageUnit: 0.005 }]
+            },
+            {
+                orderId: 'PED-016', parentOrderId: 'SOL-008', clientFlag: assignClientName('Hong Kong'), originCountry: 'Hong Kong',
+                totalValue: 510.00, status: 'Pendente', requestDate: '2025-06-29', lastUpdateDate: '2025-06-29',
+                supplier: 'Fornecedor B', products: [{ code: 'PROD002', description: 'Tablet Pro Z', quantity: 2, unitPrice: 255.00, cubageUnit: 0.008 }]
+            },
+            {
+                orderId: 'PED-017', parentOrderId: 'SOL-014', clientFlag: assignClientName('Hong Kong'), originCountry: 'Hong Kong',
+                totalValue: 840.00, status: 'Pendente', requestDate: '2025-06-30', lastUpdateDate: '2025-06-30',
+                supplier: 'Fornecedor C', products: [{ code: 'PROD003', description: 'Fone Bluetooth Max', quantity: 20, unitPrice: 42.00, cubageUnit: 0.001 }]
+            },
+            {
+                orderId: 'PED-018', parentOrderId: 'SOL-015', clientFlag: assignClientName('Hong Kong'), originCountry: 'Hong Kong',
+                totalValue: 410.00, status: 'Pendente', requestDate: '2025-06-29', lastUpdateDate: '2025-06-29',
+                supplier: 'Fornecedor A', products: [{ code: 'PROD004', description: 'Smartwatch Sport Y', quantity: 5, unitPrice: 82.00, cubageUnit: 0.002 }]
+            },
+            {
+                orderId: 'PED-019', parentOrderId: 'SOL-016', clientFlag: assignClientName('Hong Kong'), originCountry: 'Hong Kong',
+                totalValue: 310.00, status: 'Pendente', requestDate: '2025-06-30', lastUpdateDate: '2025-06-30',
+                supplier: 'Fornecedor B', products: [{ code: 'PROD005', description: 'Câmera Digital Ultra HD', quantity: 1, unitPrice: 310.00, cubageUnit: 0.01 }]
+            },
+            {
+                orderId: 'PED-020', parentOrderId: 'SOL-017', clientFlag: assignClientName('Hong Kong'), originCountry: 'Hong Kong',
+                totalValue: 330.00, status: 'Pendente', requestDate: '2025-06-25', lastUpdateDate: '2025-06-25',
+                supplier: 'Fornecedor A', products: [{ code: 'PROD006', description: 'Bateria Portátil Mega', quantity: 15, unitPrice: 22.00, cubageUnit: 0.0005 }]
+            },
+            {
+                orderId: 'SAP-001', parentOrderId: 'SOL-018', clientFlag: assignClientName('Colômbia'), originCountry: 'Colômbia', // Este cliente não será "Cliente Colombia"
+                totalValue: 500.00, status: 'Em Separação', requestDate: '2025-07-01', lastUpdateDate: '2025-07-01',
+                supplier: 'Fornecedor C', products: [{ code: 'PROD009', description: 'Monitor Ultrawide', quantity: 1, unitPrice: 350.00, cubageUnit: 0.05 }, { code: 'PROD003', description: 'Fone Bluetooth Max', quantity: 3, unitPrice: 50.00, cubageUnit: 0.001 }]
+            }
+        ];
+
+        // Dados simulados de ordens de compra geradas
+        const initialGeneratedPurchaseOrders = [
+            {
+                parentOrderId: 'SOL-001', id: 'PED-001', supplier: 'Fornecedor A', supplierCode: '22', date: '2025-06-20',
+                products: [
+                    { code: 'PROD001', name: 'Smartphone Premium X1', quantity: 10, unitPrice: 150.00, currentInternalUnitPrice: 160.00, newSupplierUnitPrice: 155.00, approvalStatus: 'Pendente' }
+                ],
+                newSupplierPriceTotal: (10 * 155).toFixed(2), currentInternalPriceTotal: (10 * 160).toFixed(2), overallApprovalStatus: 'Pendente',
+                totalCubage: (10 * 0.005).toFixed(2)
+            },
+            {
+                parentOrderId: 'SOL-014', id: 'PED-017', supplier: 'Fornecedor C', supplierCode: '44', date: '2025-06-30',
+                products: [
+                    { code: 'PROD003', name: 'Fone Bluetooth Max', quantity: 20, unitPrice: 40.00, currentInternalUnitPrice: 48.00, newSupplierUnitPrice: 42.00, approvalStatus: 'Pendente' }
+                ],
+                newSupplierPriceTotal: (20 * 42).toFixed(2), currentInternalPriceTotal: (20 * 48).toFixed(2), overallApprovalStatus: 'Pendente',
+                totalCubage: (20 * 0.001).toFixed(2)
+            },
+            {
+                parentOrderId: 'SOL-003', id: 'PED-005', supplier: 'Fornecedor B', supplierCode: '33', date: '2025-06-24',
+                products: [
+                    { code: 'PROD001', name: 'Smartphone Premium X1', quantity: 2, unitPrice: 150.00, currentInternalUnitPrice: 158.00, newSupplierUnitPrice: 152.00, approvalStatus: 'Pendente' },
+                    { code: 'PROD003', name: 'Fone Bluetooth Max', quantity: 3, unitPrice: 45.00, currentInternalUnitPrice: 48.00, newSupplierUnitPrice: 46.00, approvalStatus: 'Pendente' }
+                ],
+                newSupplierPriceTotal: (2 * 152 + 3 * 46).toFixed(2), currentInternalPriceTotal: (2 * 158 + 3 * 48).toFixed(2), overallApprovalStatus: 'Negociado',
+                totalCubage: (2 * 0.005 + 3 * 0.001).toFixed(2)
+            },
+            {
+                parentOrderId: 'SOL-015', id: 'PED-018', supplier: 'Fornecedor A', supplierCode: '22', date: '2025-06-29',
+                products: [
+                    { code: 'PROD004', name: 'Smartwatch Sport Y', quantity: 5, unitPrice: 80.00, currentInternalUnitPrice: 85.00, newSupplierUnitPrice: 82.00, approvalStatus: 'Pendente' }
+                ],
+                newSupplierPriceTotal: (5 * 82).toFixed(2), currentInternalPriceTotal: (5 * 85).toFixed(2), overallApprovalStatus: 'Negociado',
+                totalCubage: (5 * 0.002).toFixed(2)
+            },
+            {
+                parentOrderId: 'SOL-008', id: 'PED-015', supplier: 'Fornecedor A', supplierCode: '22', date: '2025-06-29',
+                products: [
+                    { code: 'PROD001', name: 'Smartphone Premium X1', quantity: 5, unitPrice: 150.00, currentInternalUnitPrice: 158.00, newSupplierUnitPrice: 152.00, approvalStatus: 'Pendente' }
+                ],
+                newSupplierPriceTotal: (5 * 152).toFixed(2), currentInternalPriceTotal: (5 * 158).toFixed(2), overallApprovalStatus: 'Aguardando Aprovação',
+                totalCubage: (5 * 0.005).toFixed(2)
+            },
+            {
+                parentOrderId: 'SOL-008', id: 'PED-016', supplier: 'Fornecedor B', supplierCode: '33', date: '2025-06-29',
+                products: [
+                    { code: 'PROD002', name: 'Tablet Pro Z', quantity: 2, unitPrice: 250.00, currentInternalUnitPrice: 260.00, newSupplierUnitPrice: 255.00, approvalStatus: 'Pendente' }
+                ],
+                newSupplierPriceTotal: (2 * 255).toFixed(2), currentInternalPriceTotal: (2 * 260).toFixed(2), overallApprovalStatus: 'Aguardando Aprovação',
+                totalCubage: (2 * 0.008).toFixed(2)
+            },
+            {
+                parentOrderId: 'SOL-016', id: 'PED-019', supplier: 'Fornecedor B', supplierCode: '33', date: '2025-06-30',
+                products: [
+                    { code: 'PROD005', name: 'Câmera Digital Ultra HD', quantity: 1, unitPrice: 300.00, currentInternalUnitPrice: 320.00, newSupplierUnitPrice: 310.00, approvalStatus: 'Pendente' }
+                ],
+                newSupplierPriceTotal: (1 * 310).toFixed(2), currentInternalPriceTotal: (1 * 320).toFixed(2), overallApprovalStatus: 'Aguardando Aprovação',
+                totalCubage: (1 * 0.01).toFixed(2)
+            },
+            {
+                parentOrderId: 'SOL-020', id: 'PED-021', supplier: 'Fornecedor A', supplierCode: '22', date: '2025-07-01',
+                products: [
+                    { code: 'PROD004', name: 'Smartwatch Sport Y', quantity: 3, unitPrice: 80.00, currentInternalUnitPrice: 85.00, newSupplierUnitPrice: 88.00, approvalStatus: 'Rejeitar' }
+                ],
+                newSupplierPriceTotal: (3 * 88).toFixed(2), currentInternalPriceTotal: (3 * 85).toFixed(2), overallApprovalStatus: 'Rejeitado',
+                totalCubage: (3 * 0.002).toFixed(2)
+            },
+            {
+                parentOrderId: 'SOL-005', id: 'PED-010', supplier: 'Fornecedor C', supplierCode: '44', date: '2025-06-26',
+                products: [
+                    { code: 'PROD005', name: 'Câmera Digital Ultra HD', quantity: 3, unitPrice: 320.00, currentInternalUnitPrice: 335.00, newSupplierUnitPrice: 320.00, approvalStatus: 'Aprovado' }
+                ],
+                newSupplierPriceTotal: (3 * 320).toFixed(2), currentInternalPriceTotal: (3 * 335).toFixed(2), overallApprovalStatus: 'Aprovado',
+                totalCubage: (3 * 0.01).toFixed(2)
+            },
+            {
+                parentOrderId: 'SOL-009', id: 'PED-002', supplier: 'Fornecedor B', supplierCode: '33', date: '2025-06-21',
+                products: [
+                    { code: 'PROD007', name: 'Cadeira Ergonômica', quantity: 2, unitPrice: 600.00, currentInternalUnitPrice: 630.00, newSupplierUnitPrice: 600.00, approvalStatus: 'Aprovado' }
+                ],
+                newSupplierPriceTotal: (2 * 600).toFixed(2), currentInternalPriceTotal: (2 * 630).toFixed(2), overallApprovalStatus: 'Aprovado',
+                totalCubage: (2 * 0.15).toFixed(2)
+            },
+            {
+                parentOrderId: 'SOL-017', id: 'PED-020', supplier: 'Fornecedor A', supplierCode: '22', date: '2025-06-25',
+                products: [
+                    { code: 'PROD006', name: 'Bateria Portátil Mega', quantity: 15, unitPrice: 20.00, currentInternalUnitPrice: 28.00, newSupplierUnitPrice: 22.00, approvalStatus: 'Aprovado' }
+                ],
+                newSupplierPriceTotal: (15 * 22).toFixed(2), currentInternalPriceTotal: (15 * 28).toFixed(2), overallApprovalStatus: 'Finalizado',
+                totalCubage: (15 * 0.0005).toFixed(2)
+            },
+        ];
+
+        let generatedPurchaseOrders = JSON.parse(JSON.stringify(initialGeneratedPurchaseOrders));
+
+        // Contadores para IDs de pedidos
+        let nextParentRequestCounter = 1;
+        let nextPurchaseOrderIdCounter = 0;
+        let nextSapOrderIdCounter = 1;
+
+        // Funções globais para manipulação de telas e modais
+        function showScreen(screenId) {
+            // Oculta todas as páginas e ativa a página com o ID fornecido
+            document.querySelectorAll('.page').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+            currentScreen = screenId; // Atualiza a variável de controle da tela atual
+
+            // Esconde o botão de simulação do Renato se o usuário for cliente
+            const simulateRenatoBtn = document.getElementById('simulateRenatoBtn');
+            if (simulateRenatoBtn) {
+                if (userRole === 'client') {
+                    simulateRenatoBtn.classList.add('hidden');
+                } else {
+                    simulateRenatoBtn.classList.remove('hidden');
+                }
+            }
+        }
+
+        function showMessage(title, content, type = 'info', onConfirm = null, onCancel = null) {
+            // Exibe um modal de mensagem com título, conteúdo e botões de ação opcionais
+            const modal = document.getElementById('messageModal');
+            document.getElementById('messageModalTitle').innerText = title;
+            document.getElementById('messageModalContent').innerHTML = content;
+            const confirmBtn = document.getElementById('messageModalConfirmBtn');
+            const cancelBtn = document.getElementById('messageModalCancelBtn');
+            const closeBtn = document.getElementById('messageModalCloseBtn');
+
+            // Define os manipuladores de evento para os botões do modal
+            confirmBtn.onclick = () => { if (onConfirm) onConfirm(); modal.classList.remove('active'); };
+            cancelBtn.onclick = () => { if (onCancel) onCancel(); modal.classList.remove('active'); };
+            closeBtn.onclick = () => modal.classList.remove('active');
+
+            // Gerencia a visibilidade dos botões de acordo com os callbacks fornecidos
+            confirmBtn.classList.add('hidden');
+            cancelBtn.classList.add('hidden');
+            closeBtn.classList.remove('hidden');
+
+            if (onConfirm || onCancel) {
+                closeBtn.classList.add('hidden');
+                confirmBtn.classList.remove('hidden');
+                if (onCancel) {
+                    cancelBtn.classList.remove('hidden');
+                }
+            }
+            modal.classList.add('active'); // Ativa a exibição do modal
+        }
+
+        function login() {
+            // Lógica de login baseada no nome de usuário e senha
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username === 'cliente' && password === 'cliente') {
+                userRole = 'client';
+                // Redireciona para a página do cliente
+                window.location.href = 'cliente.html';
+            } else if (username === 'compras' && password === 'compras') {
+                userRole = 'compras';
+                // Redireciona para a página de compras
+                window.location.href = 'compras.html';
+            }
+             else if (username === 'gestor' && password === 'gestor') {
+                userRole = 'gestor';
+                // Redireciona para a página do gestor
+                window.location.href = 'gestor.html';
+            }
+            else if (username === 'dimpex' && password === 'dimpex') {
+                userRole = 'dimpex';
+                // Redireciona para a página DIMPEX
+                window.location.href = 'dimpex.html';
+            }
+            else {
+                // Exibe mensagem de erro para credenciais inválidas
+                showMessage('Erro de Login', 'Utilizador ou palavra-passe inválidos.', 'error');
+            }
+        }
+
+        function logout() {
+            // Reseta o estado da aplicação e redireciona para a página de login
+            userRole = 'guest';
+            // Limpa os campos de usuário e senha
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            // Redireciona para a página de login (index.html)
+            window.location.href = 'index.html';
+        }
+
+        // Função para abrir o modal do fluxograma
+        function openFlowchartModal() {
+            document.getElementById('flowchartModal').classList.add('active');
+        }
+
+        // Função para fechar o modal do fluxograma
+        function closeFlowchartModal() {
+            document.getElementById('flowchartModal').classList.remove('active');
+        }
+
+        // Event listener que é acionado quando o DOM é completamente carregado
+        document.addEventListener('DOMContentLoaded', () => {
+            // Calcula os próximos IDs para pedidos principais, de compra e SAP
+            const maxSolId = orders.reduce((max, order) => {
+                const solNum = order.parentOrderId && typeof order.parentOrderId === 'string'
+                               ? parseInt(order.parentOrderId.replace('SOL-', ''))
+                               : 0;
+                return isNaN(solNum) ? max : Math.max(max, solNum);
+            }, 0);
+            nextParentRequestCounter = maxSolId + 1;
+
+            const maxPedId = orders.reduce((max, order) => {
+                const pedNum = order.orderId && typeof order.orderId === 'string' && order.orderId.startsWith('PED-')
+                               ? parseInt(order.orderId.replace('PED-', ''))
+                               : 0;
+                return isNaN(pedNum) ? max : Math.max(max, pedNum);
+            }, 0);
+            nextPurchaseOrderIdCounter = maxPedId + 1;
+
+            const maxSapId = orders.reduce((max, order) => {
+                const sapNum = order.orderId && typeof order.orderId === 'string' && order.orderId.startsWith('SAP-')
+                               ? parseInt(order.orderId.replace('SAP-', ''))
+                               : 0;
+                return isNaN(sapNum) ? max : Math.max(max, sapNum);
+            }, 0);
+            nextSapOrderIdCounter = maxSapId + 1;
+            
+            // Garante que os campos de login estejam vazios ao carregar a página
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            // Exibe a tela de login como a tela inicial
+            showScreen('login-page');
+
+            // Adiciona o event listener para o botão de login
+            const loginButton = document.getElementById('loginButton');
+            if (loginButton) {
+                loginButton.addEventListener('click', login);
+            }
+
+            // Adiciona event listener para o botão de fechar do modal de mensagem
+            const messageModalCloseBtn = document.getElementById('messageModalCloseBtn');
+            if (messageModalCloseBtn) {
+                messageModalCloseBtn.addEventListener('click', () => {
+                    document.getElementById('messageModal').classList.remove('active');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
