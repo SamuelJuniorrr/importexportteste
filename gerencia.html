@@ -49,7 +49,7 @@
 
             <div class="tab-buttons" id="renatoApprovalTabButtons">
                 <button class="tab-button active" onclick="switchRenatoApprovalTab('pendingApproval')">Aguardando Aprovação</button>
-                <button class="tab-button" onclick="switchRenatoApprovalTab('approvedRejected')">Aprovados/Rejeitados</button>
+                <button class="tab-button" onclick="switchRenatoApprovalTab('analyzedOrders')">Pedidos Analisados</button>
             </div>
 
             <div id="pendingApprovalTab" class="tab-content active">
@@ -74,7 +74,7 @@
                 </div>
             </div>
 
-            <div id="approvedRejectedTab" class="tab-content">
+            <div id="analyzedOrdersTab" class="tab-content">
                 <div class="table-container">
                     <table>
                         <thead>
@@ -87,9 +87,10 @@
                                 <th>STATUS DA PO</th>
                                 <th>DATA GERAÇÃO</th>
                                 <th>STATUS FINAL</th>
+                                <th>AÇÃO</th> <!-- Adicionada coluna de Ação para Estornar -->
                             </tr>
                         </thead>
-                        <tbody id="renatoApprovedRejectedTableBody">
+                        <tbody id="renatoAnalyzedOrdersTableBody">
                             <!-- Approved/Rejected POs will be rendered here -->
                         </tbody>
                     </table>
@@ -196,6 +197,15 @@
         </div>
     </div>
 
+    <!-- Loading Screen Modal (Adicionado) -->
+    <div id="analysisLoadingScreen" class="modal-overlay">
+        <div class="modal-content text-center">
+            <h3>Carregando Análise...</h3>
+            <p>Por favor, aguarde enquanto preparamos os dados para aprovação.</p>
+            <div class="loader mt-4"></div>
+        </div>
+    </div>
+
     <!-- Flowchart Modal Structure -->
     <div id="flowchartModal" class="modal-overlay">
         <div class="modal-content">
@@ -226,7 +236,7 @@
                         <h3 style="font-size:1.1rem; font-weight:bold;">📋 Visualização das POs</h3>
                         <ul style="margin-bottom:10px;">
                         <li><b>Aguardando Aprovação:</b> POs prontas para sua revisão.</li>
-                        <li><b>Aprovados/Rejeitados:</b> Histórico de POs já processadas.</li>
+                        <li><b>Pedidos Analisados:</b> Histórico de POs já processadas, com opção de estorno.</li>
                         <li>Clique em <b>Ver Detalhes</b> para analisar cada produto e tomar sua decisão.</li>
                         </ul>
                         <h3 style="font-size:1.1rem; font-weight:bold;">📊 Decisão de Aprovação</h3>
@@ -263,21 +273,30 @@
          * Retorna à Central de Aprovação Gerencial.
          */
         function backToRenatoApprovalCenter() {
-            showScreen('renatoApprovalScreen');
-            renderRenatoApprovalTables(); // Re-renderiza as tabelas de POs
+            // Esconde a tela de detalhes e mostra as abas novamente
+            document.getElementById('renatoPoDetailsScreen').classList.remove('active');
+            document.getElementById('renatoApprovalScreen').classList.add('active');
+
+            // Garante que as abas e o conteúdo das abas sejam visíveis
+            document.getElementById('renatoApprovalTabButtons').classList.remove('hidden');
+            document.getElementById('pendingApprovalTab').classList.remove('hidden');
+            document.getElementById('analyzedOrdersTab').classList.remove('hidden'); // Certifica que a aba "Pedidos Analisados" também esteja visível
+
+            // Re-renderiza as tabelas de POs
+            renderRenatoApprovalTables();
         }
 
         /**
-         * Alterna entre as abas "Aguardando Aprovação" e "Aprovados/Rejeitados".
-         * @param {string} tabType - O tipo da aba a ser ativada ('pendingApproval' ou 'approvedRejected').
+         * Alterna entre as abas "Aguardando Aprovação" e "Pedidos Analisados".
+         * @param {string} tabType - O tipo da aba a ser ativada ('pendingApproval' ou 'analyzedOrders').
          */
         function switchRenatoApprovalTab(tabType) {
             const pendingTabContent = document.getElementById('pendingApprovalTab');
-            const approvedRejectedTabContent = document.getElementById('approvedRejectedTab');
+            const analyzedOrdersTabContent = document.getElementById('analyzedOrdersTab'); // Renomeado
             const tabButtonsContainer = document.getElementById('renatoApprovalTabButtons');
 
             pendingTabContent.classList.remove('active');
-            approvedRejectedTabContent.classList.remove('active');
+            analyzedOrdersTabContent.classList.remove('active');
 
             Array.from(tabButtonsContainer.children).forEach(button => {
                 button.classList.remove('active');
@@ -286,8 +305,8 @@
             if (tabType === 'pendingApproval') {
                 pendingTabContent.classList.add('active');
                 tabButtonsContainer.children[0].classList.add('active');
-            } else if (tabType === 'approvedRejected') {
-                approvedRejectedTabContent.classList.add('active');
+            } else if (tabType === 'analyzedOrders') { // Renomeado
+                analyzedOrdersTabContent.classList.add('active');
                 tabButtonsContainer.children[1].classList.add('active');
             }
             renderRenatoApprovalTables(); // Re-renderiza as tabelas após a troca de aba
@@ -298,30 +317,32 @@
          */
         function renderRenatoApprovalTables() {
             const pendingTbody = document.getElementById('renatoPendingApprovalTableBody');
-            const approvedRejectedTbody = document.getElementById('renatoApprovedRejectedTableBody');
+            const analyzedTbody = document.getElementById('renatoAnalyzedOrdersTableBody'); // Renomeado
             pendingTbody.innerHTML = '';
-            approvedRejectedTbody.innerHTML = '';
+            analyzedTbody.innerHTML = '';
 
             const supplierFilterCode = document.getElementById('renatoPoSupplierFilter').value;
             const originCountryFilter = document.getElementById('renatoPoOriginCountryFilter').value;
             const searchInput = document.getElementById('renatoPoSearch').value.toLowerCase();
 
+            // Filtra para "Aguardando Aprovação" (apenas este status)
             const pendingPOs = generatedPurchaseOrders.filter(po => {
                 const matchesSupplier = supplierFilterCode === 'Todos' || po.supplierCode === supplierFilterCode;
                 const matchesOriginCountry = originCountryFilter === 'Todos' || po.originCountry === originCountryFilter;
                 const matchesSearch = searchInput === '' ||
                                       po.id.toLowerCase().includes(searchInput) ||
                                       (po.parentOrderId && po.parentOrderId.toLowerCase().includes(searchInput));
-                return ['Negociado', 'Aguardando Aprovação'].includes(po.overallApprovalStatus) && matchesSupplier && matchesOriginCountry && matchesSearch;
+                return po.overallApprovalStatus === 'Aguardando Aprovação' && matchesSupplier && matchesOriginCountry && matchesSearch;
             });
 
-            const approvedRejectedPOs = generatedPurchaseOrders.filter(po => {
+            // Filtra para "Pedidos Analisados" (Aprovado, Rejeitado, Finalizado)
+            const analyzedPOs = generatedPurchaseOrders.filter(po => {
                 const matchesSupplier = supplierFilterCode === 'Todos' || po.supplierCode === supplierFilterCode;
                 const matchesOriginCountry = originCountryFilter === 'Todos' || po.originCountry === originCountryFilter;
                 const matchesSearch = searchInput === '' ||
                                       po.id.toLowerCase().includes(searchInput) ||
                                       (po.parentOrderId && po.parentOrderId.toLowerCase().includes(searchInput));
-                return ['Aprovado', 'Rejeitado', 'Finalizado'].includes(po.overallApprovalStatus) && matchesSupplier && matchesOriginCountry && matchesSearch;
+                return ['Aprovado', 'Rejeitado', 'Finalizado', 'Em Negociação'].includes(po.overallApprovalStatus) && matchesSupplier && matchesOriginCountry && matchesSearch; // Incluindo 'Em Negociação' para estorno
             });
 
             if (pendingPOs.length === 0) {
@@ -351,16 +372,18 @@
                 });
             }
 
-            if (approvedRejectedPOs.length === 0) {
-                approvedRejectedTbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-gray-500">Nenhuma PO aprovada ou rejeitada.</td></tr>`;
+            if (analyzedPOs.length === 0) {
+                analyzedTbody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-gray-500">Nenhuma PO analisada.</td></tr>`; // Colspan ajustado
             } else {
-                approvedRejectedPOs.forEach(po => {
+                analyzedPOs.forEach(po => {
                     const row = document.createElement('tr');
                     let statusIndicatorClass = '';
                     if (po.overallApprovalStatus === 'Aprovado' || po.overallApprovalStatus === 'Finalizado') {
                         statusIndicatorClass = 'green';
                     } else if (po.overallApprovalStatus === 'Rejeitado') {
                         statusIndicatorClass = 'red';
+                    } else if (po.overallApprovalStatus === 'Em Negociação') {
+                        statusIndicatorClass = 'purple'; // Status de "Em Negociação" para estorno
                     }
                     row.innerHTML = `
                         <td>${po.parentOrderId || 'N/A'}</td>
@@ -371,8 +394,11 @@
                         <td><span class="status-indicator ${statusIndicatorClass}"></span>${po.overallApprovalStatus}</td>
                         <td>${po.date}</td>
                         <td>${po.overallApprovalStatus}</td>
+                        <td>
+                            <button class="btn-secondary" onclick="reversePOApproval('${po.id}')">Estornar</button>
+                        </td>
                     `;
-                    approvedRejectedTbody.appendChild(row);
+                    analyzedTbody.appendChild(row);
                 });
             }
         }
@@ -382,68 +408,86 @@
          * @param {string} poId - O ID da PO a ser visualizada.
          */
         function viewRenatoApprovalDetails(poId) {
-            currentViewingPO = generatedPurchaseOrders.find(po => po.id === poId);
-            if (!currentViewingPO) {
-                showMessage('Erro', 'Detalhes da PO não encontrados para aprovação.', 'error');
-                return;
-            }
+            // Exibe a tela de carregamento
+            document.getElementById('analysisLoadingScreen').classList.add('active');
 
-            document.getElementById('renatoCurrentPoId').innerText = currentViewingPO.id;
-            document.getElementById('renatoPoDetailId').innerText = currentViewingPO.id;
-            document.getElementById('renatoPoDetailParentOrderId').innerText = currentViewingPO.parentOrderId || 'N/A';
-            document.getElementById('renatoPoDetailSupplier').innerText = `${currentViewingPO.supplierCode} - ${currentViewingPO.supplier}`;
-            document.getElementById('renatoPoDetailOriginCountry').innerText = currentViewingPO.originCountry;
-            document.getElementById('renatoPoDetailNewSupplierPriceTotal').innerText = `R$ ${parseFloat(currentViewingPO.newSupplierPriceTotal).toFixed(2).replace('.', ',')}`;
-            document.getElementById('renatoPoDetailCurrentInternalPriceTotal').innerText = `R$ ${parseFloat(currentViewingPO.currentInternalPriceTotal).toFixed(2).replace('.', ',')}`;
-            document.getElementById('renatoPoDetailOverallApprovalStatus').innerText = currentViewingPO.overallApprovalStatus;
-            document.getElementById('renatoPoDetailDate').innerText = currentViewingPO.date;
-            document.getElementById('renatoPoDetailNegotiationNotes').innerText = currentViewingPO.negotiationNotes || 'Nenhuma nota de negociação.';
+            // Simula um atraso para o carregamento
+            setTimeout(() => {
+                // Esconde a tela de carregamento após o atraso
+                document.getElementById('analysisLoadingScreen').classList.remove('active');
 
-            const productsTableBody = document.getElementById('renatoPoDetailsProductsTableBody');
-            productsTableBody.innerHTML = '';
-
-            currentViewingPO.products.forEach(product => {
-                const row = document.createElement('tr');
-                const internalPrice = parseFloat(product.currentInternalUnitPrice);
-                const supplierPrice = parseFloat(product.newSupplierUnitPrice);
-                const priceDifference = (supplierPrice - internalPrice).toFixed(2);
-                let priceClass = '';
-                if (priceDifference > 0) {
-                    priceClass = 'price-difference-positive';
-                } else if (priceDifference < 0) {
-                    priceClass = 'price-difference-negative';
+                currentViewingPO = generatedPurchaseOrders.find(po => po.id === poId);
+                if (!currentViewingPO) {
+                    showMessage('Erro', 'Detalhes da PO não encontrados para aprovação.', 'error');
+                    return;
                 }
 
-                const totalInternal = (internalPrice * product.quantity).toFixed(2);
-                const totalSupplier = (supplierPrice * product.quantity).toFixed(2);
+                // Esconde as abas e o conteúdo das abas
+                document.getElementById('renatoApprovalTabButtons').classList.add('hidden');
+                document.getElementById('pendingApprovalTab').classList.add('hidden');
+                document.getElementById('analyzedOrdersTab').classList.add('hidden'); // Renomeado
 
-                // Determina a classe 'selected' para os botões
-                const approveSelected = product.approvalStatus === 'Aprovado' ? 'selected' : '';
-                const negotiateSelected = product.approvalStatus === 'Negociar' ? 'selected' : '';
-                const rejectSelected = product.approvalStatus === 'Rejeitar' ? 'selected' : '';
+                // Exibe a tela de detalhes da PO
+                document.getElementById('renatoPoDetailsScreen').classList.add('active');
 
-                row.innerHTML = `
-                    <td>${product.code}</td>
-                    <td>${product.name}</td>
-                    <td>${product.quantity}</td>
-                    <td>R$ ${internalPrice.toFixed(2).replace('.', ',')}</td>
-                    <td>R$ ${supplierPrice.toFixed(2).replace('.', ',')}</td>
-                    <td class="${priceClass}">R$ ${priceDifference.replace('.', ',')}</td>
-                    <td>R$ ${totalInternal.replace('.', ',')}</td>
-                    <td>R$ ${totalSupplier.replace('.', ',')}</td>
-                    <td class="product-approval-status ${product.approvalStatus}">${product.approvalStatus || 'Pendente'}</td>
-                    <td>
-                        <div class="approval-buttons-group">
-                            <button class="btn btn-approve ${approveSelected}" onclick="processApprovalDecision('${currentViewingPO.id}', '${product.code}', 'Aprovado', this)">Aprovar</button>
-                            <button class="btn btn-negotiate ${negotiateSelected}" onclick="processApprovalDecision('${currentViewingPO.id}', '${product.code}', 'Negociar', this)">Negociar</button>
-                            <button class="btn btn-reject ${rejectSelected}" onclick="processApprovalDecision('${currentViewingPO.id}', '${product.code}', 'Rejeitar', this)">Rejeitar</button>
-                        </div>
-                    </td>
-                `;
-                productsTableBody.appendChild(row);
-            });
 
-            showScreen('renatoPoDetailsScreen');
+                document.getElementById('renatoCurrentPoId').innerText = currentViewingPO.id;
+                document.getElementById('renatoPoDetailId').innerText = currentViewingPO.id;
+                document.getElementById('renatoPoDetailParentOrderId').innerText = currentViewingPO.parentOrderId || 'N/A';
+                document.getElementById('renatoPoDetailSupplier').innerText = `${currentViewingPO.supplierCode} - ${currentViewingPO.supplier}`;
+                document.getElementById('renatoPoDetailOriginCountry').innerText = currentViewingPO.originCountry;
+                document.getElementById('renatoPoDetailNewSupplierPriceTotal').innerText = `R$ ${parseFloat(currentViewingPO.newSupplierPriceTotal).toFixed(2).replace('.', ',')}`;
+                document.getElementById('renatoPoDetailCurrentInternalPriceTotal').innerText = `R$ ${parseFloat(currentViewingPO.currentInternalPriceTotal).toFixed(2).replace('.', ',')}`;
+                document.getElementById('renatoPoDetailOverallApprovalStatus').innerText = currentViewingPO.overallApprovalStatus;
+                document.getElementById('renatoPoDetailDate').innerText = currentViewingPO.date;
+                document.getElementById('renatoPoDetailNegotiationNotes').innerText = currentViewingPO.negotiationNotes || 'Nenhuma nota de negociação.';
+
+                const productsTableBody = document.getElementById('renatoPoDetailsProductsTableBody');
+                productsTableBody.innerHTML = '';
+
+                currentViewingPO.products.forEach(product => {
+                    const row = document.createElement('tr');
+                    const internalPrice = parseFloat(product.currentInternalUnitPrice);
+                    const supplierPrice = parseFloat(product.newSupplierUnitPrice);
+                    const priceDifference = (supplierPrice - internalPrice).toFixed(2);
+                    let priceClass = '';
+                    if (priceDifference > 0) {
+                        priceClass = 'price-difference-positive';
+                    } else if (priceDifference < 0) {
+                        priceClass = 'price-difference-negative';
+                    }
+
+                    const totalInternal = (internalPrice * product.quantity).toFixed(2);
+                    const totalSupplier = (supplierPrice * product.quantity).toFixed(2);
+
+                    // Determina a classe 'selected' para os botões
+                    const approveSelected = product.approvalStatus === 'Aprovado' ? 'selected' : '';
+                    const negotiateSelected = product.approvalStatus === 'Negociar' ? 'selected' : '';
+                    const rejectSelected = product.approvalStatus === 'Rejeitar' ? 'selected' : '';
+
+                    row.innerHTML = `
+                        <td>${product.code}</td>
+                        <td>${product.name}</td>
+                        <td>${product.quantity}</td>
+                        <td>R$ ${internalPrice.toFixed(2).replace('.', ',')}</td>
+                        <td>R$ ${supplierPrice.toFixed(2).replace('.', ',')}</td>
+                        <td class="${priceClass}">R$ ${priceDifference.replace('.', ',')}</td>
+                        <td>R$ ${totalInternal.replace('.', ',')}</td>
+                        <td>R$ ${totalSupplier.replace('.', ',')}</td>
+                        <td class="product-approval-status ${product.approvalStatus}">${product.approvalStatus || 'Pendente'}</td>
+                        <td>
+                            <div class="approval-buttons-group">
+                                <button class="btn btn-approve ${approveSelected}" onclick="processApprovalDecision('${currentViewingPO.id}', '${product.code}', 'Aprovado', this)">Aprovar</button>
+                                <button class="btn btn-negotiate ${negotiateSelected}" onclick="processApprovalDecision('${currentViewingPO.id}', '${product.code}', 'Negociar', this)">Negociar</button>
+                                <button class="btn btn-reject ${rejectSelected}" onclick="processApprovalDecision('${currentViewingPO.id}', '${product.code}', 'Rejeitar', this)">Rejeitar</button>
+                            </div>
+                        </td>
+                    `;
+                    productsTableBody.appendChild(row);
+                });
+
+                // showScreen('renatoPoDetailsScreen'); // Já está sendo feito acima
+            }, 1000); // Simula um atraso de 1 segundo
         }
 
         /**
@@ -492,7 +536,7 @@
             } else if (anyProductRejected) {
                 po.overallApprovalStatus = 'Rejeitado';
             } else if (anyProductToNegotiate) {
-                po.overallApprovalStatus = 'Negociado';
+                po.overallApprovalStatus = 'Em Negociação'; // Alterado para 'Em Negociação'
             } else if (anyProductPending) {
                 po.overallApprovalStatus = 'Aguardando Aprovação';
             } else {
@@ -542,9 +586,9 @@
                     synchronizeOrdersAndPOs();
                     backToRenatoApprovalCenter();
                 });
-            } else if (po.overallApprovalStatus === 'Negociado') {
+            } else if (po.overallApprovalStatus === 'Em Negociação') { // Alterado para 'Em Negociação'
                 showMessage('Aprovação Finalizada', `A PO ${po.id} foi marcada para NOVA NEGOCIAÇÃO. O time de Compras Internacionais será notificado.`, 'warning', () => {
-                    po.overallApprovalStatus = 'Negociado'; // Confirma o status final
+                    po.overallApprovalStatus = 'Em Negociação'; // Confirma o status final
                     po.lastUpdateDate = new Date().toISOString().slice(0, 10);
                     synchronizeOrdersAndPOs();
                     backToRenatoApprovalCenter();
@@ -552,6 +596,39 @@
             } else {
                 showMessage('Atenção', `O status atual da PO (${po.overallApprovalStatus}) não permite a finalização. Verifique os status dos produtos.`, 'warning');
             }
+        }
+
+        /**
+         * Reverte o status de aprovação de uma PO para "Aguardando Aprovação".
+         * @param {string} poId - O ID da PO a ser estornada.
+         */
+        function reversePOApproval(poId) {
+            const po = generatedPurchaseOrders.find(p => p.id === poId);
+            if (!po) {
+                showMessage('Erro', 'PO não encontrada para estorno.', 'error');
+                return;
+            }
+
+            showMessage(
+                'Confirmar Estorno',
+                `Tem certeza que deseja estornar o pedido ${po.id}? Ele retornará para "Aguardando Aprovação".`,
+                'warning',
+                () => {
+                    po.overallApprovalStatus = 'Aguardando Aprovação';
+                    po.lastUpdateDate = new Date().toISOString().slice(0, 10);
+                    // Resetar o status de aprovação de todos os produtos para Pendente,
+                    // para que o gestor possa reavaliá-los.
+                    po.products.forEach(product => {
+                        product.approvalStatus = 'Pendente';
+                    });
+                    synchronizeOrdersAndPOs();
+                    renderRenatoApprovalTables(); // Re-renderiza as tabelas para refletir a mudança
+                    showMessage('Sucesso', `Pedido ${po.id} estornado para "Aguardando Aprovação".`, 'success');
+                },
+                () => {
+                    // Ação de cancelamento (não faz nada)
+                }
+            );
         }
 
         /**
