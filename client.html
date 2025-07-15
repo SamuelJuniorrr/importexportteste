@@ -1,0 +1,2931 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Fluig - Cliente</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos comuns para todas as páginas */
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --text-color: #333;
+            --light-gray: #f8f9fa;
+            --border-color: #dee2e6;
+            --header-bg: #fff;
+            --table-header-bg: #e9ecef;
+            --shadow: 0 2px 4px rgba(0,0,0,0.05);
+            --red-alert: #dc3545;
+            --green-success: #28a745;
+            --orange-warning: #ffc107;
+            --colombia-bg: #e6f7ff;
+            --hongkong-bg: #fff3e0;
+            --colombia-border: #90cdf4;
+            --hongkong-border: #ffcc80;
+            --highlight-container-bg: #d1e7dd; /* Light green for highlight */
+            --highlight-container-border: #28a745; /* Darker green border */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            color: var(--text-color);
+        }
+
+        body {
+            background-color: var(--light-gray);
+            line-height: 1.6;
+            font-size: 14px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .page {
+            display: none;
+            width: 100%;
+            flex-grow: 1;
+        }
+
+        .page.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .header {
+            background-color: var(--header-bg);
+            padding: 15px 40px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            background-color: #e0e0e0;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #666;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.2s ease-in-out;
+            white-space: nowrap;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.2s ease-in-out;
+            white-space: nowrap;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .input-group input[type="text"],
+        .input-group input[type="password"],
+        .input-group input[type="number"],
+        .input-group input[type="file"],
+        .input-group select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s ease-in-out;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus,
+        textarea:focus {
+            border-color: var(--primary-color);
+        }
+
+        .icon-search::before { content: '🔍'; }
+        .icon-plus::before { content: '➕'; }
+        .icon-question::before { content: '?'; }
+        .icon-flow::before { content: '!'; } /* Ícone para o botão Fluxo */
+
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            flex-grow: 1;
+        }
+
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex-grow: 1;
+            min-width: 150px;
+        }
+
+        .filter-group label {
+            font-weight: 500;
+            color: #555;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 8px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 14px;
+            min-width: 120px;
+        }
+
+        .search-group {
+            flex-grow: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            min-width: 250px;
+        }
+
+        .search-input-wrapper {
+            display: flex;
+            width: 100%;
+        }
+
+        .search-group input {
+            flex-grow: 1;
+            border-right: none;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .search-icon-btn {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            border-left: none;
+            border-radius: 0 5px 5px 0;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            background-color: #fff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table thead th {
+            background-color: var(--table-header-bg);
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            color: #555;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border-color);
+            white-space: nowrap;
+        }
+
+        table tbody td {
+            padding: 10px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 13px;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        table tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .pedido-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .pedido-link:hover {
+            text-decoration: underline;
+        }
+
+        .flag-icon {
+            width: 16px;
+            height: 11px;
+            vertical-align: middle;
+            margin-right: 5px;
+            border: 1px solid #eee;
+        }
+
+        .footer-button {
+            text-align: right;
+            margin-top: 20px;
+            padding: 10px 0;
+        }
+
+        .form-section {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tab-buttons {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .tab-button {
+            background-color: transparent;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .tab-button.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 20px 0;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .tab-content h2 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .tab-content p {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .accordion {
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .accordion-item {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .accordion-item:last-child {
+            border-bottom: none;
+        }
+
+        .accordion-header {
+            width: 100%;
+            background-color: #f7f7f7;
+            padding: 12px 15px;
+            text-align: left;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .accordion-header:hover {
+            background-color: #ececec;
+        }
+
+        .accordion-header .arrow {
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .accordion-header.active .arrow {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            padding: 15px;
+            background-color: #fff;
+            border-top: 1px solid var(--border-color);
+            display: none;
+        }
+
+        .accordion-content.active {
+            display: block;
+        }
+
+        #uploadPlanilhaInput,
+        #copiarColarTextarea {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .how-to-use-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .how-to-use-item {
+            background-color: #f0f5fa;
+            border: 1px dashed #cce0f0;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .how-to-use-item h4 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .how-to-use-item p {
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .how-to-use-item a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .how-to-use-item a:hover {
+            text-decoration: underline;
+        }
+
+        .add-product-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            align-items: end;
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background-color: #fefefe;
+        }
+
+        .add-product-grid .input-group {
+            margin-bottom: 0;
+        }
+
+        .add-product-grid .input-group input[type="text"],
+        .add-product-grid .input-group input[type="number"],
+        .add-product-grid .input-group select {
+            width: 100%;
+        }
+
+        .add-product-grid .input-group.full-width {
+            grid-column: span 2;
+        }
+
+        .add-product-grid .input-group.search-input {
+            display: flex;
+            align-items: center;
+        }
+        .add-product-grid .input-group.search-input input {
+            border-right: none;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+        .add-product-grid .input-group.search-input button {
+            border-left: none;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            padding: 10px 12px;
+            height: 38px;
+        }
+
+        .add-button-container {
+            grid-column: span 4;
+            text-align: right;
+            margin-top: 10px;
+        }
+
+        .products-added-section {
+            margin-top: 30px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+
+        .products-added-section h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        #noProductsMessage {
+            text-align: center;
+            color: #888;
+            padding: 20px;
+            border: 1px dashed var(--border-color);
+            border-radius: 5px;
+        }
+
+        #addedProductsTable {
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        #addedProductsTable th,
+        #addedProductsTable td {
+            padding: 10px 8px;
+            text-align: left;
+            border: 1px solid #eee;
+            font-size: 12px;
+            word-wrap: break-word;
+        }
+
+        #addedProductsTable th {
+            background-color: var(--table-header-bg);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        #addedProductsTable .remove-item-btn {
+            background-color: var(--red-alert);
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        #addedProductsTable .remove-item-btn:hover {
+            background-color: #c82333;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .product-details {
+            display: none;
+        }
+
+        .validation-message {
+            color: var(--red-alert);
+            font-size: 13px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .success-message {
+            color: var(--green-success);
+            font-size: 13px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .status-ok { color: var(--green-success); font-weight: bold; }
+        .status-warning { color: var(--orange-warning); font-weight: bold; }
+        .status-error { color: var(--red-alert); font-weight: bold; }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        .status-indicator.green { background-color: var(--green-success); }
+        .status-indicator.yellow { background-color: var(--orange-warning); }
+        .status-indicator.red { background-color: var(--red-alert); }
+        .status-indicator.blue { background-color: var(--primary-color); }
+        .status-indicator.gray { background-color: var(--secondary-color); }
+        .status-indicator.purple { background-color: #800080; }
+
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #888;
+        }
+
+        .modal-content h3 {
+            margin-bottom: 20px;
+            font-size: 20px;
+            color: var(--primary-color);
+        }
+
+        .modal-content pre {
+            background-color: var(--light-gray);
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-content .modal-actions {
+            margin-top: 25px;
+            text-align: right;
+        }
+
+        #productCatalogModal .modal-content {
+            max-width: 800px;
+        }
+
+        #productCatalogModal .modal-content .search-bar {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        #productCatalogModal .modal-content .search-bar input {
+            flex-grow: 1;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+        }
+
+        #productCatalogModal .modal-content .product-catalog-table-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+        }
+
+        #productCatalogModal .modal-content .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #productCatalogModal .modal-content .data-table th,
+        #productCatalogModal .modal-content .data-table td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        #productCatalogModal .modal-content .data-table th {
+            background-color: #f7f7f7;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        #productCatalogModal .modal-content .data-table tbody tr:hover {
+            background-color: #f5f5f5;
+            cursor: pointer;
+        }
+
+        .needs-review {
+            background-color: #fff3cd !important;
+            border: 1px solid #ffc107 !important;
+        }
+
+        .summary-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .summary-section:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+
+        .summary-section h2 {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .supplier-summary-card {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .supplier-status-indicator {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+        }
+
+        .price-difference-positive {
+            color: var(--red-alert);
+            font-weight: bold;
+        }
+
+        .price-difference-negative {
+            color: var(--green-success);
+            font-weight: bold;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px 20px;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+            border-bottom: 1px dashed #e9ecef;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 500;
+            color: #555;
+            flex-basis: 40%;
+            text-align: left;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: #333;
+            flex-basis: 60%;
+            text-align: right;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .tracking-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 20px 0;
+            position: relative;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+            white-space: nowrap;
+            min-height: 120px;
+        }
+
+        .tracking-steps::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 20px;
+            right: 20px;
+            height: 2px;
+            background-color: #e0e0e0;
+            z-index: 1;
+        }
+
+        .tracking-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            min-width: 100px;
+            position: relative;
+            z-index: 2;
+            padding: 0 10px;
+        }
+
+        .tracking-step .circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #666;
+            margin-bottom: 10px;
+            flex-shrink: 0;
+        }
+
+        .tracking-step span {
+            font-size: 12px;
+            text-align: center;
+            color: #666;
+            word-wrap: break-word;
+            white-space: normal;
+        }
+
+        .tracking-step.completed .circle {
+            background-color: var(--green-success);
+            color: #fff;
+        }
+        .tracking-step.active .circle {
+            background-color: var(--primary-color);
+            color: #fff;
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3);
+        }
+        .tracking-step.pending .circle {
+            background-color: var(--orange-warning);
+            color: #fff;
+        }
+        .tracking-step.rejected .circle,
+        .tracking-step.cancelled .circle {
+            background-color: var(--red-alert);
+            color: #fff;
+        }
+        .tracking-step.approved .circle,
+        .tracking-step.production .circle,
+        .tracking-step.ready-cargo .circle,
+        .tracking-step.atd .circle,
+        .tracking-step.pending-doc .circle,
+        .tracking-step.doc-ok .circle,
+        .tracking-step.ata .circle,
+        .tracking-step.finished .circle {
+            background-color: var(--green-success);
+            color: #fff;
+        }
+        .tracking-step.negotiation .circle,
+        .tracking-step.waiting-approval .circle {
+            background-color: var(--orange-warning);
+            color: #fff;
+        }
+        .tracking-step.separation .circle,
+        .tracking-step.conference .circle,
+        .tracking-step.in-transit .circle,
+        .tracking-step.delivered .circle {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+
+        .tracking-step.completed span {
+            color: #333;
+            font-weight: 500;
+        }
+        .tracking-step.active span {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        .tracking-step.rejected span,
+        .tracking-step.cancelled span {
+            color: var(--red-alert);
+            font-weight: bold;
+        }
+
+        .colombia-col {
+            background-color: var(--colombia-bg);
+            border-left: 1px solid var(--colombia-border);
+            border-right: 1px solid var(--colombia-border);
+        }
+
+        .hongkong-col {
+            background-color: var(--hongkong-bg);
+            border-left: 1px solid var(--hongkong-border);
+            border-right: 1px solid var(--hongkong-border);
+        }
+
+        .cubage-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+
+        .cubage-table th,
+        .cubage-table td {
+            border: 1px solid var(--border-color);
+            padding: 3px 5px;
+            text-align: left;
+            font-size: 11px;
+        }
+
+        .cubage-table th {
+            background-color: var(--table-header-bg);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* Highlight for the most probable container */
+        .cubage-table tr.highlight-container {
+            background-color: var(--highlight-container-bg);
+            border: 1px solid var(--highlight-container-border);
+            font-weight: bold;
+        }
+
+        /* Styles for Flowchart Modal */
+        #flowchartModal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1001; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+            justify-content: center;
+            align-items: center;
+        }
+
+        #flowchartModal.active {
+            display: flex;
+        }
+
+        #flowchartModal .modal-content {
+            margin: auto;
+            display: block;
+            width: 90%;
+            height: 90%;
+            max-width: 1200px; /* Adjust as needed */
+            max-height: 800px; /* Adjust as needed */
+            background-color: #fff; /* White background for the image */
+            padding: 20px;
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #flowchartModal .modal-content img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Ensures the image fits within the modal without cropping */
+        }
+
+        #flowchartModal .modal-close-btn {
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            color: #333; /* Darker color for visibility on white background */
+            font-size: 35px;
+            font-weight: bold;
+            transition: 0.3s;
+            background: none;
+            border: none;
+            cursor: pointer;
+            z-index: 1002; /* Ensure close button is above image */
+        }
+
+        #flowchartModal .modal-close-btn:hover,
+        #flowchartModal .modal-close-btn:focus {
+            color: #999;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="central-pedidos-page" class="page active">
+        <header class="header">
+            <div class="header-left">
+                <h1>Central de Pedidos</h1>
+            </div>
+            <div class="header-right">
+                <button class="btn-primary" id="novaSolicitacao"><i class="icon-plus"></i> Nova Solicitação</button>
+                <span class="header-icon" onclick="showScreenInfo()"><i class="icon-question"></i></span>
+                <span class="header-icon" onclick="SharedFunctions.openFlowchartModal()"><i class="icon-flow"></i></span>
+                <button class="btn-secondary" id="logoutButton">Sair (Logout)</button>
+            </div>
+        </header>
+
+        <div class="container">
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="status">Status:</label>
+                    <select id="status" onchange="renderOrdersTable()">
+                        <option value="Todos">Todos</option>
+                        <option value="Pendente">Pendente</option>
+                        <option value="Aprovado">Aprovado</option>
+                        <option value="Rejeitado">Rejeitado</option>
+                        <option value="Em Conferência">Em Conferência</option>
+                        <option value="Entregue">Entregue</option>
+                        <option value="Carga Pronta">Carga Pronta</option>
+                        <option value="Em Rota de Entrega">Em Rota de Entrega</option>
+                        <option value="Saída do Porto de Embarque (ATZ)">Saída do Porto de Embarque (ATZ)</option>
+                        <option value="Chegada no Porto de Destino (ATA)">Chegada no Porto de Destino (ATA)</option>
+                        <option value="Cancelado">Cancelado</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="fornecedor">Fornecedor:</label>
+                    <select id="fornecedor" onchange="renderOrdersTable()">
+                        <option value="Todos">Todos</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="paisOrigem">País Origem:</label>
+                    <select id="paisOrigem" onchange="renderOrdersTable()">
+                        <option value="Todos">Todos</option>
+                    </select>
+                </div>
+                <div class="filter-group search-group">
+                    <label for="search">Buscar por Nº Pedido ou Cliente:</label>
+                    <div class="search-input-wrapper">
+                        <input type="text" id="search" placeholder="Buscar por Nº Pedido ou Cliente">
+                        <button class="search-icon-btn" onclick="renderOrdersTable()"><i class="icon-search"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID SOLICITAÇÃO PRINCIPAL</th>
+                            <th>Nº PEDIDO</th>
+                            <th>ORIGEM</th>
+                            <th>PAÍS ORIGEM</th>
+                            <th>FORNECEDOR</th>
+                            <th>VALOR TOTAL</th>
+                            <th>STATUS DO PEDIDO</th>
+                            <th>DATA SOLICITAÇÃO/CRIAÇÃO</th>
+                            <th>DATA ÚLTIMA ALTERAÇÃO</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Orders will be rendered here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="orderDetailsScreen" class="page">
+        <header class="header">
+            <div class="header-left">
+                <h1>Detalhes do Pedido <span id="currentOrderId"></span></h1>
+            </div>
+            <div class="header-right">
+                <span class="header-icon" onclick="showScreenInfo()"><i class="icon-question"></i></span>
+                <span class="header-icon" onclick="SharedFunctions.openFlowchartModal()"><i class="icon-flow"></i></span>
+            </div>
+        </header>
+        <div class="container">
+            <div class="form-section">
+                <h2 class="text-xl font-semibold mb-4">Informações Gerais</h2>
+                <div class="details-grid">
+                    <div class="detail-row">
+                        <div class="detail-label">Nº Pedido:</div>
+                        <div class="detail-value" id="detailOrderId"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">ID Principal:</div>
+                        <div class="detail-value" id="detailParentOrderId"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Origem:</div>
+                        <div class="detail-value" id="detailOriginDisplay"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Fornecedor:</div>
+                        <div class="detail-value" id="detailSupplier"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Valor Total:</div>
+                        <div class="detail-value" id="detailTotalValue"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Status do Pedido:</div>
+                        <div class="detail-value" id="detailStatus"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Data Solicitação/Criação:</div>
+                        <div class="detail-value" id="detailRequestDate"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Data Última Alteração:</div>
+                        <div class="detail-value" id="detailLastUpdateDate"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="text-xl font-semibold mb-4">Status de Rastreamento</h2>
+                <div id="orderTrackingSection" class="relative flex justify-between items-center my-8 p-4 bg-gray-50 rounded-lg shadow-inner">
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="text-xl font-semibold mb-4">Produtos do Pedido</h2>
+                <div class="table-container">
+                    <table class="w-full">
+                        <thead>
+                            <tr>
+                                <th>Código Produto</th>
+                                <th>Descrição</th>
+                                <th>Quantidade</th>
+                                <th>Valor Unitário</th>
+                                <th>Valor Total Item</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orderDetailsProductsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn-secondary" onclick="backToOrderCenter()">Voltar para Central de Pedidos</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="newOrderFormScreen" class="page">
+        <header class="header">
+            <div class="header-left">
+                <h1>Nova Solicitação de Compra</h1>
+                <p>Por favor, preencha os detalhes dos produtos desejados.</p>
+            </div>
+            <div class="header-right">
+                <span class="header-icon" onclick="showScreenInfo()"><i class="icon-question"></i></span>
+                <span class="header-icon" onclick="SharedFunctions.openFlowchartModal()"><i class="icon-flow"></i></span>
+            </div>
+        </header>
+
+        <div class="container">
+            <div class="form-section">
+                <label for="clientOrderNumber">Número do Pedido do Cliente (Opcional)</label>
+                <input type="text" id="clientOrderNumber" placeholder="Seu número de referência do pedido">
+            </div>
+
+            <div class="tab-buttons" id="orderFormTabButtons" style="display: flex;">
+                <button class="tab-button active" onclick="switchOrderFormTab('easy')">Pedido Fácil</button>
+                <button class="tab-button" onclick="switchOrderFormTab('manual')">Pedido Manual</button>
+            </div>
+
+            <div id="easyOrderTab" class="tab-content active">
+                <h2>Pedido Fácil</h2>
+                <p>Escolha uma das opções abaixo para adicionar os produtos ao carrinho de compras</p>
+
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <button class="accordion-header" onclick="SharedFunctions.toggleCollapsible(this, 'uploadPlanilhaContent')">Upload de Planilha <span class="arrow">▼</span></button>
+                        <div class="accordion-content" id="uploadPlanilhaContent">
+                            <input type="file" id="fileUpload" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" onchange="SharedFunctions.displayFileName('fileUpload', 'fileNameDisplay')">
+                            <span id="fileNameDisplay" class="text-sm text-gray-500 ml-2">Nenhum arquivo selecionado</span>
+                            <button class="btn-primary mt-2" onclick="handleFileUpload()">Fazer Upload</button>
+                            <p class="text-xs text-gray-500 mt-2">Limite de 50 linhas de produtos e 5MB de tamanho.</p>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-header" onclick="SharedFunctions.toggleCollapsible(this, 'pasteCodesContent')">Copiar e Colar Códigos <span class="arrow">▼</span></button>
+                        <div class="accordion-content" id="pasteCodesContent">
+                            <textarea id="pasteCodes" rows="10" placeholder="Cole aqui os códigos e quantidades (Ex: COD1,10;COD2,5 ou COD1,10 ENTER COD2,5)"></textarea>
+                            <button class="btn-primary mt-2" onclick="processPastedCodes()">Processar Códigos Colados</button>
+                            <div id="addProductMessage" class="validation-message"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Saiba como utilizar nosso modelo de planilha</h3>
+                <div class="how-to-use-grid">
+                    <div class="how-to-use-item">
+                        <h4>Passo 1</h4>
+                        <p>Faça o download do modelo de planilha. Abra a planilha no seu computador e preencha com o código do produto do cliente e a quantidade desejada. Máximo de 50 linhas de produtos por pedido.</p>
+                        <a href="#" id="downloadModeloPlanilha" onclick="downloadSpreadsheetModel()">Modelo de Planilha</a>
+                    </div>
+                    <div class="how-to-use-item">
+                        <h4>Passo 2</h4>
+                        <p>Com sua planilha pronta e salva no seu computador, clique em Selecionar arquivo. Em seguida, clique em Fazer upload. O tamanho da planilha não deve ultrapassar 5MB de tamanho.</p>
+                    </div>
+                    <div class="how-to-use-item">
+                        <h4>Passo 3</h4>
+                        <p>Com sua planilha pronta e salva no seu computador, clique em Selecionar arquivo. Em seguida, clique em Fazer upload. O tamanho da planilha não deve ultrapassar 5MB de tamanho.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="manualOrderTab" class="tab-content">
+                <h2>Adicionar Produtos</h2>
+                <div class="add-product-grid">
+                    <div class="input-group search-input">
+                        <label for="clientProductCode">Cód Prod Cliente:</label>
+                        <input type="text" id="clientProductCode" placeholder="Cód Cliente" oninput="updateProductDetailsOnClientCodeChange()">
+                        <button class="btn-secondary" onclick="openProductCatalogModal()"><i class="icon-search"></i></button>
+                    </div>
+                    <div class="input-group">
+                        <label for="mappedProductCodeDisplay">Cód Produto:</label>
+                        <input type="text" id="mappedProductCodeDisplay" readonly value="--">
+                    </div>
+                    <div class="input-group full-width">
+                        <label for="productDescriptionDisplay">Descrição:</label>
+                        <input type="text" id="productDescriptionDisplay" readonly value="--">
+                    </div>
+                    <div class="input-group">
+                        <label for="productQuantity">Quantidade:</label>
+                        <input type="number" id="productQuantity" value="1" min="1" oninput="handleQuantityChange()">
+                        <div id="validationFeedback" class="text-xs mt-1"></div>
+                    </div>
+                    <div class="input-group" id="productValueGroup">
+                        <label for="productValueDisplay">Valor Unit.:</label>
+                        <input type="text" id="productValueDisplay" readonly value="R$ 0,00">
+                    </div>
+                    <div class="input-group" id="totalM3Group">
+                        <label for="totalM3Display">M³ Total:</label>
+                        <input type="text" id="totalM3Display" readonly value="0.00 m³">
+                    </div>
+                    <div class="input-group" id="valorTotalGroup">
+                        <label for="valorTotalDisplay">Valor Total:</label>
+                        <input type="text" id="valorTotalDisplay" readonly value="R$ 0,00">
+                    </div>
+                    <div class="input-group" id="productStockGroup">
+                        <label for="productStockDisplay">Estoque:</label>
+                        <input type="text" id="productStockDisplay" readonly value="--">
+                    </div>
+                    <div class="add-button-container">
+                        <button id="addProductBtn" class="btn-primary" onclick="addProduct()">Adicionar Produto</button>
+                    </div>
+                </div>
+                <div id="addProductMessage" class="validation-message"></div>
+            </div>
+
+            <div class="products-added-section">
+                <div id="productList">
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn-secondary" onclick="backToOrderCenter()">Voltar</button>
+                <button class="btn-primary" onclick="submitOrderForm()">Enviar Solicitação</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="summaryScreen" class="page">
+        <header class="header">
+            <div class="header-left">
+                <h1>Resumo da Solicitação</h1>
+                <p>Confira a divisão dos produtos por filial e fornecedor.</p>
+            </div>
+            <div class="header-right">
+                <span class="header-icon" onclick="showScreenInfo()"><i class="icon-question"></i></span>
+                <span class="header-icon" onclick="SharedFunctions.openFlowchartModal()"><i class="icon-flow"></i></span>
+            </div>
+        </header>
+        <div class="container">
+            <div id="unifiedSummaryContent">
+            </div>
+            <div class="form-actions">
+                <button class="btn-secondary" onclick="backToProductEntry()">Voltar e Ajustar</button>
+                <button class="btn-primary" onclick="generateUnifiedOrders()">Confirmar e Gerar Pedidos</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="purchaseOrderScreen" class="page">
+        <header class="header">
+            <div class="header-left">
+                <h1>Solicitação Gerada com Sucesso!</h1>
+                <p>Sua solicitação foi enviada para o time de Compras Internacionais.</p>
+            </div>
+            <div class="header-right">
+                <span class="header-icon" onclick="showScreenInfo()"><i class="icon-question"></i></span>
+                <span class="header-icon" onclick="SharedFunctions.openFlowchartModal()"><i class="icon-flow"></i></span>
+            </div>
+        </header>
+        <div class="container">
+            <div class="form-section">
+                <h2 class="text-xl font-semibold mb-4">Detalhes da Ordem de Compra (PO)</h2>
+                <div id="poDetails" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                </div>
+            </div>
+            <div class="form-actions">
+                <button class="btn-primary" onclick="backToOrderCenter()">Voltar para Central de Pedidos</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modais (Compartilhados, mas definidos aqui para acesso direto) -->
+    <div id="messageModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-btn" id="messageModalCloseBtn">&times;</button>
+            <h3 id="messageModalTitle"></h3>
+            <div id="messageModalContent"></div>
+            <div class="modal-actions">
+                <button class="btn-primary" id="messageModalConfirmBtn">OK</button>
+                <button class="btn-secondary" id="messageModalCancelBtn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="productCatalogModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeProductCatalogModal()">&times;</button>
+            <h3>Catálogo de Produtos</h3>
+            <div class="search-bar">
+                <input type="text" id="productCatalogSearchInput" placeholder="Buscar por código ou descrição..." onkeyup="filterProductCatalog()">
+                <button class="btn-primary" onclick="filterProductCatalog()">Buscar</button>
+            </div>
+            <div class="product-catalog-table-container">
+                <div id="productCatalogList">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeProductCatalogModal()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="nfePdfViewer" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="document.getElementById('nfePdfViewer').classList.remove('active');">&times;</button>
+            <h3>Visualizar NF-e</h3>
+            <pre id="nfePdfContent" class="whitespace-pre-wrap"></pre>
+            <div class="modal-actions">
+                <button class="btn-primary" onclick="document.getElementById('nfePdfViewer').classList.remove('active');">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="poPdfViewer" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="document.getElementById('poPdfViewer').classList.remove('active');">&times;</button>
+            <h3>Visualizar PDF da PO</h3>
+            <pre id="poPdfContent" class="whitespace-pre-wrap"></pre>
+            <div class="modal-actions">
+                <button class="btn-primary" onclick="document.getElementById('poPdfViewer').classList.remove('active');">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flowchart Modal Structure -->
+    <div id="flowchartModal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="modal-close-btn" onclick="SharedFunctions.closeFlowchartModal()">&times;</span>
+            <img id="flowchartImage" src="https://raw.githubusercontent.com/SamuelJuniorrr/importexport/refs/heads/main/fluxograma.png" alt="Fluxograma do Processo">
+        </div>
+    </div>
+
+    <script src="common.js"></script>
+    <script>
+        // Importa as variáveis e funções compartilhadas
+        const {
+            productsInCurrentOrder, simulatedSupplierOrders, simulatedColombiaOrder, currentOrderDetails,
+            productDatabase, universalClientCodeToProductCodeMap, supplierCodeMap, supplierNameMap,
+            orders, generatedPurchaseOrders, nextParentRequestCounter, nextPurchaseOrderIdCounter, nextSapOrderIdCounter,
+            MAX_CUBAGE_20HC, MAX_CUBAGE_40HC
+        } = SharedData;
+
+        const {
+            showMessage, getOrGenerateSupplierCode, getSupplierNameFromCode,
+            openFlowchartModal, closeFlowchartModal, toggleCollapsible, displayFileName,
+            synchronizeOrdersAndPOs, logout, restartFlow, assignClientName
+        } = SharedFunctions;
+
+        let currentScreen = 'central-pedidos-page'; // Tela inicial do cliente
+        let currentUserClientName = "Cliente Mexico"; // Nome do cliente logado
+
+        // Fluxos de rastreamento
+        const hongKongTrackingFlow = [
+            { name: 'Pendente', class: 'pending', description: 'Pedido criado, aguardando Compras Internacionais iniciar o processo.' },
+            { name: 'Em Negociação', class: 'negotiation', description: 'Pedido enviado ao fornecedor, aguardando negociação' },
+            { name: 'Aguardando Aprovação', class: 'waiting-approval', description: 'Pedido recebido, Aguardando aprovação da Gerencia' },
+            { name: 'Rejeitado', class: 'rejected', isFinal: true },
+            { name: 'Cancelado', class: 'cancelled', isFinal: true },
+            { name: 'Aprovado', class: 'approved', description: 'Pedido Aprovado (via retorno da Gerência)' },
+            { name: 'Em Produção', class: 'production', description: 'Pedido Aprovado, em produção pelo fornecedor' },
+            { name: 'Carga Pronta', class: 'ready-cargo', description: 'Mercadoria pronta para embarque' },
+            { name: 'Saída do Porto de Embarque (ATD)', class: 'atd', description: 'Pedido embarcado' },
+            { name: 'Documentação Pendente', class: 'pending-doc', description: 'Providenciando documentação de embarque (CI, PL, TELEX RELEASE, COO, Serial Numbers, conforme necessidade do cliente)' },
+            { name: 'Documentação OK', class: 'doc-ok', description: 'Toda documentação de embarque ok, processo finalizado no DIMPEX' },
+            { name: 'Chegada no Porto de Destino (ATA)', class: 'ata', isFinal: true },
+            { name: 'Finalizado', class: 'finished', isFinal: true }
+        ];
+
+        const colombiaTrackingFlow = [
+            { name: 'Pendente', class: 'pending' },
+            { name: 'Em Separação', class: 'separation' },
+            { name: 'Em Conferência', class: 'conference' },
+            { name: 'Em Rota de Entrega', class: 'in-transit' },
+            { name: 'Entregue', class: 'delivered', isFinal: true },
+            { name: 'Aprovado', class: 'approved' },
+            { name: 'Rejeitado', class: 'rejected', isFinal: true },
+            { name: 'Cancelado', class: 'cancelled', isFinal: true }
+        ];
+
+        // Função para exibir informações da tela (ajustada para o cliente)
+        function showScreenInfo() {
+            let info = '';
+            switch (currentScreen) {
+                case 'central-pedidos-page':
+                    info = `
+                        <h2 style="font-size:1.3rem; font-weight:bold; margin-bottom:10px;">📂 Central de Pedidos</h2>
+                        <p>Bem-vindo à <b>Central de Pedidos</b>! Aqui você pode gerenciar e acompanhar todas as solicitações do início ao fim.</p>
+                        <hr style="margin:16px 0;">
+                        <h3 style="font-size:1.1rem; font-weight:bold;">🔍 Busca e Filtros</h3>
+                        <ul style="margin-bottom:10px;">
+                        <li>Filtre pedidos por <b>Status</b>, <b>Fornecedor</b> (código), <b>País de Origem</b> (Colômbia ou Hong Kong) ou <b>Cliente</b>.</li>
+                        <li>Utilize a busca rápida por número do pedido, ID principal ou nome do cliente.</li>
+                        </ul>
+                        <h3 style="font-size:1.1rem; font-weight:bold;">📋 Visualização dos Pedidos</h3>
+                        <ul style="margin-bottom:10px;">
+                        <li>Veja todos os pedidos em uma tabela detalhada.</li>
+                        <li>Clique no número do pedido para acessar os detalhes completos.</li>
+                        </ul>
+                        <h3 style="font-size:1.1rem; font-weight:bold;">🆕 Nova Solicitação</h3>
+                        <ul style="margin-bottom:10px;">
+                        <li>Clique em <b>Nova Solicitação</b> para iniciar um novo pedido, escolhendo a filial de destino (<b>Hong Kong</b> ou <b>Colômbia</b>).</li>
+                        </ul>
+                        <h3 style="font-size:1.1rem; font-weight:bold;">🟢 Dicas Visuais</h3>
+                        <ul>
+                        <li><b>Cores dos status:</b>
+                            <span style="color:#16a34a;">🟢 Aprovado</span> |
+                            <span style="color:#eab308;">🟡 Pendente</span> |
+                            <span style="color:#dc2626;">🔴 Rejeitado</span> |
+                            <span style="color:#3b82f6;">🔵 Em andamento</span> |
+                            <span style="color:#6b7280;">⚪ Cancelado</span>
+                        </li>
+                        <li><b>Ícones de bandeira:</b> Indicam o país de origem do pedido.</li>
+                        </ul>
+                        <hr style="margin:16px 0;">
+                        <p style="font-size:0.95rem;">Se precisar de ajuda, clique novamente neste ícone ou consulte o manual do usuário.</p>
+                    `;
+                    break;
+                case 'orderDetailsScreen':
+                    info = `
+                        <h2 style="font-size:1.3rem; font-weight:bold; margin-bottom:10px;">📄 Detalhes do Pedido</h2>
+                        <p>Veja todas as informações detalhadas do pedido selecionado:</p>
+                        <hr style="margin:16px 0;">
+                        <ul style="margin-bottom:10px;">
+                        <li><b>Dados Gerais:</b> Número do pedido, ID principal, origem, fornecedor, valores e datas.</li>
+                        <li><b>Status do Pedido:</b> Acompanhe o andamento por meio do rastreamento visual com etapas e cores.</li>
+                        <li><b>Produtos:</b> Lista completa de itens, quantidades e valores.</li>
+                        <li><b>Ações:</b> Utilize o botão para voltar à Central de Pedidos.</li>
+                        </ul>
+                        <hr style="margin:16px 0;">
+                        <p style="font-size:0.95rem;"><b>Dica:</b> O rastreamento mostra cada etapa do fluxo logístico do pedido.</p>
+                    `;
+                    break;
+                case 'newOrderFormScreen':
+                    info = `
+                        <h2 style="font-size:1.3rem; font-weight:bold; margin-bottom:10px;">📝 Nova Solicitação de Compra</h2>
+                        <p>Crie uma nova solicitação de compra. Adicione produtos e selecione a filial de origem para cada uno.</p>
+                        <hr style="margin:16px 0;">
+                        <ul style="margin-bottom:10px;">
+                        <li><b>Pedido Fácil:</b> Adicione produtos rapidamente via upload de planilha ou colando códigos (para grandes volumes).</li>
+                        <li><b>Pedido Manual:</b> Insira produtos individualmente, consultando o catálogo se necessário. A <b>Filial</b> (Hong Kong ou Colômbia) será selecionada na tabela de produtos adicionados.</li>
+                        <li><b>Validação:</b> O sistema valida automaticamente a quantidade mínima de compra (MOQ) para Hong Kong e o estoque disponível para Colômbia, com base na filial do produto.</li>
+                        </ul>
+                        <hr style="margin:16px 0;">
+                        <p style="font-size:0.95rem;"><b>Dica:</b> A validação de estoque e MOQ é feita por produto, de acordo com a filial do produto!</p>
+                    `;
+                    break;
+                case 'summaryScreen':
+                    info = `
+                        <h2 style="font-size:1.3rem; font-weight:bold; margin-bottom:10px;">📊 Resumo da Solicitação</h2>
+                        <p>Revise a divisão dos produtos por filial e fornecedor antes de confirmar.</p>
+                        <hr style="margin:16px 0;">
+                        <ul style="margin-bottom:10px;">
+                        <li><b>Pedidos Hong Kong:</b> Agrupados por fornecedor, com validação de MOQ e comparação de custos.</li>
+                        <li><b>Pedidos Colômbia:</b> Um único pedido para todos os itens, com detalhes da NF-e simulada.</li>
+                        <li><b>Ações:</b> Volte para ajustar os produtos ou confirme para gerar os pedidos de compra.</li>
+                        </ul>
+                        <hr style="margin:16px 0;">
+                        <p style="font-size:0.95rem;"><b>Dica:</b> Verifique cuidadosamente as informações de MOQ e estoque antes de confirmar.</p>
+                    `;
+                    break;
+                case 'purchaseOrderScreen':
+                    info = `
+                        <h2 style="font-size:1.3rem; font-weight:bold; margin-bottom:10px;">✅ Solicitação Gerada</h2>
+                        <p>Sua solicitação foi gerada e enviada para Compras Internacionais.</p>
+                        <hr style="margin:16px 0;">
+                        <ul style="margin-bottom:10px;">
+                        <li>Veja os detalhes da PO (Purchase Order).</li>
+                        <li>Aguarde a negociação e aprovação do gestor.</li>
+                        <li>Utilize o botão para voltar à Central de Pedidos.</li>
+                        </ul>
+                        <hr style="margin:16px 0;">
+                        <p style="font-size:0.95rem;"><b>Dica:</b> Acompanhe o status do pedido na Central de Pedidos.</p>
+                    `;
+                    break;
+                default:
+                    info = '<p>Esta tela faz parte do fluxo do portal. Para mais informações, consulte o manual do usuário ou o suporte.</p>';
+            }
+            showMessage('Informações da Tela', info, 'info');
+        }
+
+        // Função para mostrar uma tela específica
+        function showScreen(screenId) {
+            document.querySelectorAll('.page').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+            currentScreen = screenId;
+
+            if (screenId === 'newOrderFormScreen') {
+                resetNewOrderForm();
+            }
+        }
+
+        // Funções de navegação
+        function backToOrderCenter() {
+            showScreen('central-pedidos-page');
+            renderOrdersTable();
+        }
+
+        function backToProductEntry() {
+            showScreen('newOrderFormScreen');
+            renderProductList();
+        }
+
+        // Funções de preenchimento de filtros
+        function populateSupplierFilter() {
+            const supplierFilterSelect = document.getElementById('fornecedor');
+            supplierFilterSelect.innerHTML = '<option value="Todos">Todos</option>';
+
+            const uniqueSuppliers = new Set();
+            SharedData.orders.forEach(order => {
+                if (order.supplier) {
+                    uniqueSuppliers.add(order.supplier);
+                }
+            });
+
+            const sortedSupplierCodes = Array.from(Object.keys(SharedData.supplierNameMap)).sort((a, b) => parseInt(a) - parseInt(b));
+
+            sortedSupplierCodes.forEach(supplierCode => {
+                const option = document.createElement('option');
+                option.value = supplierCode;
+                option.innerText = `${supplierCode}`;
+                supplierFilterSelect.appendChild(option);
+            });
+        }
+
+        function populateOriginCountryFilter() {
+            const originCountryFilterSelect = document.getElementById('paisOrigem');
+            originCountryFilterSelect.innerHTML = '<option value="Todos">Todos</option>';
+
+            const uniqueCountries = new Set();
+            SharedData.orders.forEach(order => {
+                if (order.originCountry) {
+                    uniqueCountries.add(order.originCountry);
+                }
+            });
+
+            Array.from(uniqueCountries).sort().forEach(country => {
+                const option = document.createElement('option');
+                option.value = country;
+                option.innerText = country;
+                originCountryFilterSelect.appendChild(option);
+            });
+        }
+
+        // Renderização da tabela de pedidos
+        function renderOrdersTable() {
+            const tbody = document.querySelector('#central-pedidos-page table tbody');
+            tbody.innerHTML = '';
+
+            const statusFilter = document.getElementById('status').value;
+            const supplierFilterCode = document.getElementById('fornecedor').value;
+            const originCountryFilter = document.getElementById('paisOrigem').value;
+            const orderSearchQuery = document.getElementById('search').value.toLowerCase();
+
+            const getFlagImage = (country) => {
+                if (!country || typeof country !== 'string') {
+                    return '<span class="flag-icon">🚩</span>';
+                }
+                switch(country.toLowerCase()) {
+                    case 'colômbia':
+                        return '<img src="https://e7.pngegg.com/pngimages/796/10/png-clipart-flag-of-colombia-flag-of-cambodia-colombia-flag-flag-sphere-thumbnail.png" alt="Bandeira da Colômbia" class="flag-icon">';
+                    case 'hong kong':
+                        return '<img src="https://e7.pngegg.com/pngimages/630/750/png-clipart-flag-of-china-association-of-southeast-asian-nations-national-flag-asean%E3%81%AE%E7%B4%8B%E7%AB%A0-china-orange-world-thumbnail.png" alt="Bandeira de Hong Kong" class="flag-icon">';
+                    default:
+                        return '<span class="flag-icon">🚩</span>';
+                }
+            };
+
+            let filteredOrders = SharedData.orders.filter(order => {
+                const matchesStatus = statusFilter === 'Todos' || order.status === statusFilter;
+                const matchesSupplier = supplierFilterCode === 'Todos' || SharedFunctions.getOrGenerateSupplierCode(order.supplier) === supplierFilterCode;
+                const matchesOriginCountry = originCountryFilter === 'Todos' || order.originCountry === originCountryFilter;
+                const matchesSearch = orderSearchQuery === '' ||
+                                      order.orderId.toLowerCase().includes(orderSearchQuery) ||
+                                      (order.parentOrderId && order.parentOrderId.toLowerCase().includes(orderSearchQuery)) ||
+                                      (order.clientFlag && order.clientFlag.toLowerCase().includes(orderSearchQuery));
+                return matchesStatus && matchesSupplier && matchesOriginCountry && matchesSearch;
+            });
+
+            filteredOrders.sort((a, b) => {
+                const idA = (a.parentOrderId && typeof a.parentOrderId === 'string') ? parseInt(a.parentOrderId.replace('SOL-', '')) : 0;
+                const idB = (b.parentOrderId && typeof b.parentOrderId === 'string') ? parseInt(b.parentOrderId.replace('SOL-', '')) : 0;
+                return idA - idB;
+            });
+
+            if (filteredOrders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-gray-500">Nenhum pedido encontrado com os filtros aplicados.</td></tr>`;
+                return;
+            }
+
+            filteredOrders.forEach(order => {
+                const row = document.createElement('tr');
+
+                let statusIndicatorClass = '';
+                switch (order.status) {
+                    case 'Aprovado':
+                    case 'Carga Pronta':
+                    case 'Documentação OK':
+                    case 'Chegada no Porto de Destino (ATA)':
+                    case 'Entregue':
+                    case 'Negociado':
+                    case 'Finalizado':
+                    case 'Em Produção':
+                        statusIndicatorClass = 'green';
+                        break;
+                    case 'Pendente':
+                    case 'Aguardando Aprovação':
+                    case 'Em Negociação':
+                    case 'Documentação Pendente':
+                        statusIndicatorClass = 'yellow';
+                        break;
+                    case 'Rejeitado':
+                        statusIndicatorClass = 'red';
+                        break;
+                    case 'Saída do Porto de Embarque (ATD)':
+                    case 'Em Separação':
+                    case 'Em Conferência':
+                    case 'Em Rota de Entrega':
+                        statusIndicatorClass = 'blue';
+                        break;
+                    case 'Cancelado':
+                        statusIndicatorClass = 'gray';
+                        break;
+                    default:
+                        statusIndicatorClass = 'yellow';
+                }
+
+                const flagImageHtml = getFlagImage(order.originCountry);
+                const displaySupplierInfo = order.supplier
+                    ? SharedFunctions.getOrGenerateSupplierCode(order.supplier)
+                    : 'N/A';
+
+                row.innerHTML = `
+                    <td>${order.parentOrderId || 'N/A'}</td>
+                    <td><a href="#" class="pedido-link" onclick="viewOrderDetails('${order.orderId}')">${order.orderId}</a></td>
+                    <td>${flagImageHtml}</td>
+                    <td>${order.originCountry}</td>
+                    <td>${displaySupplierInfo}</td>
+                    <td>R$ ${(order.totalValue || 0).toFixed(2).replace('.', ',')}</td>
+                    <td><span class="status-indicator ${statusIndicatorClass}"></span>${order.status}</td>
+                    <td>${order.requestDate}</td>
+                    <td>${order.lastUpdateDate}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Visualização de detalhes do pedido
+        function viewOrderDetails(orderId) {
+            SharedData.currentOrderDetails = SharedData.orders.find(order => order.orderId === orderId);
+            if (!SharedData.currentOrderDetails) {
+                showMessage('Erro', 'Detalhes do pedido não encontrados.', 'error');
+                return;
+            }
+
+            document.getElementById('currentOrderId').innerText = SharedData.currentOrderDetails.orderId;
+            document.getElementById('detailOrderId').innerText = SharedData.currentOrderDetails.orderId;
+            document.getElementById('detailParentOrderId').innerText = SharedData.currentOrderDetails.parentOrderId || 'N/A';
+
+            const getFlagImageForDetails = (country) => {
+                if (!country || typeof country !== 'string') {
+                    return '<span class="mr-2 flag-icon">🚩</span>';
+                }
+                switch(country.toLowerCase()) {
+                    case 'colômbia':
+                        return '<img src="https://e7.pngegg.com/pngimages/796/10/png-clipart-flag-of-colombia-flag-of-cambodia-colombia-flag-flag-sphere-thumbnail.png" alt="Bandeira da Colômbia" class="flag-icon inline-block mr-2">';
+                    case 'hong kong':
+                        return '<img src="https://e7.pngegg.com/pngimages/630/750/png-clipart-flag-of-china-association-of-southeast-asian-nations-national-flag-asean%E3%81%AE%E7%B4%8B%E7%AB%A0-china-orange-world-thumbnail.png" alt="Bandeira de Hong Kong" class="flag-icon inline-block mr-2">';
+                    default:
+                        return '<span class="mr-2 flag-icon">🚩</span>';
+                }
+            };
+            document.getElementById('detailOriginDisplay').innerHTML = `${getFlagImageForDetails(SharedData.currentOrderDetails.originCountry)}${SharedData.currentOrderDetails.originCountry}`;
+
+            const detailSupplierElement = document.getElementById('detailSupplier');
+            detailSupplierElement.innerText = SharedData.currentOrderDetails.supplier
+                ? SharedFunctions.getOrGenerateSupplierCode(SharedData.currentOrderDetails.supplier)
+                : 'N/A';
+
+            document.getElementById('detailTotalValue').innerText = `R$ ${SharedData.currentOrderDetails.totalValue.toFixed(2).replace('.', ',')}`;
+            document.getElementById('detailStatus').innerText = SharedData.currentOrderDetails.status;
+            document.getElementById('detailRequestDate').innerText = SharedData.currentOrderDetails.requestDate;
+            document.getElementById('detailLastUpdateDate').innerText = SharedData.currentOrderDetails.lastUpdateDate;
+
+
+            const productsTableBody = document.getElementById('orderDetailsProductsTableBody');
+            productsTableBody.innerHTML = '';
+
+            SharedData.currentOrderDetails.products.forEach(product => {
+                const row = document.createElement('tr');
+                const itemTotalPrice = (product.quantity * product.unitPrice).toFixed(2);
+                row.innerHTML = `
+                    <td>${product.code}</td>
+                    <td>${product.description}</td>
+                    <td>${product.quantity}</td>
+                    <td>R$ ${product.unitPrice.toFixed(2).replace('.', ',')}</td>
+                    <td>R$ ${itemTotalPrice.replace('.', ',')}</td>
+                `;
+                productsTableBody.appendChild(row);
+            });
+
+            renderTracking(SharedData.currentOrderDetails);
+            showScreen('orderDetailsScreen');
+        }
+
+        // Renderização do rastreamento do pedido
+        function renderTracking(order) {
+            const trackingSection = document.getElementById('orderTrackingSection');
+            trackingSection.innerHTML = '';
+
+            let flow = [];
+            if (order.originCountry === 'Hong Kong') {
+                flow = hongKongTrackingFlow;
+            } else if (order.originCountry === 'Colômbia') {
+                flow = colombiaTrackingFlow;
+            } else {
+                trackingSection.innerHTML = '<p class="text-gray-500 text-center">Rastreamento não disponível para esta origem.</p>';
+                return;
+            }
+
+            let currentStatusIndex = flow.findIndex(step => step.name === order.status);
+
+            const isTerminalStatus = ['Rejeitado', 'Cancelado', 'Finalizado', 'Entregue'].includes(order.status);
+
+            let trackingHtml = '<div class="tracking-steps">';
+
+            flow.forEach((step, index) => {
+                let stepClass = '';
+                let circleContent = '';
+
+                if (isTerminalStatus) {
+                    if (index < currentStatusIndex) {
+                        stepClass = 'completed';
+                    } else if (index === currentStatusIndex) {
+                        stepClass = 'active';
+                    } else {
+                        stepClass = 'future';
+                    }
+                } else {
+                    if (index < currentStatusIndex) {
+                        stepClass = 'completed';
+                    } else if (index === currentStatusIndex) {
+                        stepClass = 'active';
+                    } else {
+                        stepClass = 'future';
+                    }
+                }
+
+                if (stepClass === 'completed' || stepClass === 'active') {
+                    if (step.class) {
+                        stepClass += ` ${step.class}`;
+                    }
+                }
+
+                if (stepClass.includes('completed')) {
+                    circleContent = '&#10003;';
+                } else if (stepClass.includes('active')) {
+                    circleContent = (index + 1).toString();
+                }
+
+                trackingHtml += `
+                    <div class="tracking-step ${stepClass}">
+                        <div class="circle">${circleContent}</div>
+                        <span>${step.name}</span>
+                    </div>
+                `;
+            });
+            trackingHtml += '</div>';
+            trackingSection.innerHTML = trackingHtml;
+        }
+
+        // Reset do formulário de nova solicitação
+        function resetNewOrderForm() {
+            document.getElementById('clientOrderNumber').value = '';
+            SharedData.productsInCurrentOrder = [];
+            renderProductList();
+
+            document.getElementById('easyOrderTab').classList.add('active');
+            document.getElementById('manualOrderTab').classList.remove('active');
+
+            document.getElementById('clientProductCode').value = '';
+            document.getElementById('mappedProductCodeDisplay').value = '--';
+            document.getElementById('productDescriptionDisplay').value = '--';
+            document.getElementById('productQuantity').value = '1';
+            document.getElementById('validationFeedback').innerText = '';
+            document.getElementById('productValueDisplay').value = 'R$ 0,00';
+            document.getElementById('totalM3Display').value = '0.00 m³';
+            document.getElementById('valorTotalDisplay').value = '0.00 m³';
+            document.getElementById('productStockDisplay').value = '--';
+
+            document.getElementById('fileUpload').value = '';
+            document.getElementById('fileNameDisplay').innerText = 'Nenhum arquivo selecionado';
+            document.getElementById('pasteCodes').value = '';
+            document.getElementById('addProductMessage').style.display = 'none';
+
+            switchOrderFormTab('easy');
+        }
+
+        // Exibição de campos de produto com base na filial
+        function updateManualProductFieldsVisibility(productBranch) {
+            const totalM3Group = document.getElementById('totalM3Group');
+            const valorTotalGroup = document.getElementById('valorTotalGroup');
+            const productStockGroup = document.getElementById('productStockGroup');
+
+            if (productBranch === 'Hong Kong') {
+                totalM3Group.style.display = 'block';
+                valorTotalGroup.style.display = 'none';
+                productStockGroup.style.display = 'none';
+            } else if (productBranch === 'Colômbia') {
+                totalM3Group.style.display = 'block'; // Cubagem é sempre relevante
+                valorTotalGroup.style.display = 'block';
+                productStockGroup.style.display = 'block';
+            } else {
+                totalM3Group.style.display = 'none';
+                valorTotalGroup.style.display = 'none';
+                productStockGroup.style.display = 'none';
+            }
+        }
+
+        // Troca de abas no formulário de nova solicitação
+        function switchOrderFormTab(tabType) {
+            const manualTabContent = document.getElementById('manualOrderTab');
+            const easyTabContent = document.getElementById('easyOrderTab');
+            const tabButtonsContainer = document.getElementById('orderFormTabButtons');
+
+            manualTabContent.classList.remove('active');
+            easyTabContent.classList.remove('active');
+
+            Array.from(tabButtonsContainer.children).forEach(button => {
+                button.classList.remove('active');
+            });
+
+            if (tabType === 'easy') {
+                easyTabContent.classList.add('active');
+                tabButtonsContainer.children[0].classList.add('active');
+            } else if (tabType === 'manual') {
+                manualTabContent.classList.add('active');
+                tabButtonsContainer.children[1].classList.add('active');
+                updateProductDetailsOnClientCodeChange();
+            }
+        }
+
+        // Atualiza detalhes do produto ao mudar o código do cliente
+        function updateProductDetailsOnClientCodeChange() {
+            const clientProductCodeInput = document.getElementById('clientProductCode').value.trim().toUpperCase();
+            const mappedProductCodeDisplay = document.getElementById('mappedProductCodeDisplay');
+            const productDescriptionDisplay = document.getElementById('productDescriptionDisplay');
+            const productValueDisplay = document.getElementById('productValueDisplay');
+            const totalM3Display = document.getElementById('totalM3Display');
+            const valorTotalDisplay = document.getElementById('valorTotalDisplay');
+            const productStockDisplay = document.getElementById('productStockDisplay');
+            const validationFeedbackDiv = document.getElementById('validationFeedback');
+            const productQuantityInput = document.getElementById('productQuantity');
+
+            mappedProductCodeDisplay.value = '--';
+            productDescriptionDisplay.value = '--';
+            productValueDisplay.value = 'R$ 0,00';
+            totalM3Display.value = '0.00 m³';
+            valorTotalDisplay.value = '0.00 m³';
+            productStockDisplay.value = '--';
+            validationFeedbackDiv.innerText = '';
+            validationFeedbackDiv.className = 'text-xs mt-1';
+            productStockDisplay.style.color = '';
+
+            const productCode = SharedData.universalClientCodeToProductCodeMap[clientProductCodeInput];
+            const productInfo = SharedData.productDatabase[productCode];
+
+            if (productInfo) {
+                mappedProductCodeDisplay.value = productCode;
+                productDescriptionDisplay.value = productInfo.description;
+                productDescriptionDisplay.style.color = '#374151';
+                productValueDisplay.value = `R$ ${productInfo.tableValue.toFixed(2).replace('.', ',')}`;
+
+                updateManualProductFieldsVisibility(productInfo.originCountry);
+
+                if (productInfo.originCountry === 'Hong Kong') {
+                    totalM3Display.value = `${(productInfo.cubageUnit * parseInt(productQuantityInput.value || 1)).toFixed(2).replace('.', ',')} m³`;
+                } else if (productInfo.originCountry === 'Colômbia') {
+                    productStockDisplay.value = productInfo.simulatedStock > 0 ? 'Sim' : 'Não';
+                    productStockDisplay.style.color = productInfo.simulatedStock > 0 ? '#16a34a' : '#dc2626';
+                    valorTotalDisplay.value = `R$ ${(productInfo.tableValue * parseInt(productQuantityInput.value || 1)).toFixed(2).replace('.', ',')}`;
+                }
+
+                handleQuantityChange();
+            } else {
+                productDescriptionDisplay.value = 'Cód Prod Cliente não encontrado.';
+                productDescriptionDisplay.style.color = '#dc2626';
+                document.getElementById('totalM3Group').style.display = 'none';
+                document.getElementById('valorTotalGroup').style.display = 'none';
+                document.getElementById('productStockGroup').style.display = 'none';
+            }
+        }
+
+        // Lida com a mudança de quantidade do produto
+        function handleQuantityChange() {
+            const clientProductCode = document.getElementById('clientProductCode').value.trim().toUpperCase();
+            const productCode = SharedData.universalClientCodeToProductCodeMap[clientProductCode];
+            const productInfo = SharedData.productDatabase[productCode];
+            const quantity = parseInt(document.getElementById('productQuantity').value);
+            const validationFeedbackDiv = document.getElementById('validationFeedback');
+            const totalM3Display = document.getElementById('totalM3Display');
+            const valorTotalDisplay = document.getElementById('valorTotalDisplay');
+
+            validationFeedbackDiv.innerText = '';
+            validationFeedbackDiv.className = 'text-xs mt-1';
+
+            if (!productInfo) {
+                validationFeedbackDiv.innerText = 'Por favor, insira um código de produto válido.';
+                validationFeedbackDiv.className = 'validation-message status-error';
+                return;
+            }
+
+            if (isNaN(quantity) || quantity <= 0) {
+                validationFeedbackDiv.innerText = 'Quantidade inválida.';
+                validationFeedbackDiv.className = 'validation-message status-error';
+                totalM3Display.value = '0.00 m³';
+                valorTotalDisplay.value = 'R$ 0,00';
+                return;
+            }
+
+            if (productInfo.originCountry === 'Hong Kong') {
+                const totalM3 = productInfo.cubageUnit * quantity;
+                totalM3Display.value = `${totalM3.toFixed(2).replace('.', ',')} m³`;
+                if (quantity < productInfo.moq) {
+                    validationFeedbackDiv.innerText = `⚠️ Quantidade (${quantity}) abaixo do MOQ mínimo (${productInfo.moq}) para Hong Kong.`;
+                    validationFeedbackDiv.className = 'validation-message status-warning';
+                } else {
+                    validationFeedbackDiv.innerText = `✅ Quantidade (${quantity}) atende ao MOQ mínimo (${productInfo.moq}) para Hong Kong.`;
+                    validationFeedbackDiv.className = 'validation-message status-ok';
+                }
+            } else if (productInfo.originCountry === 'Colômbia') {
+                const total = productInfo.tableValue * quantity;
+                valorTotalDisplay.value = `R$ ${(total).toFixed(2).replace('.', ',')}`;
+                if (quantity > productInfo.simulatedStock) {
+                    validationFeedbackDiv.innerText = `🚫 Quantidade (${quantity}) excede o estoque disponível (${productInfo.simulatedStock}) na Colômbia.`;
+                    validationFeedbackDiv.className = 'validation-message status-error';
+                } else {
+                    validationFeedbackDiv.innerText = `✅ Quantidade (${quantity}) disponível em estoque na Colômbia.`;
+                    validationFeedbackDiv.className = 'validation-message status-ok';
+                }
+            }
+        }
+
+        // Adiciona um produto à lista
+        function addProduct() {
+            const clientProductCode = document.getElementById('clientProductCode').value.trim().toUpperCase();
+            const productCode = SharedData.universalClientCodeToProductCodeMap[clientProductCode];
+            const quantity = parseInt(document.getElementById('productQuantity').value);
+            const productInfo = SharedData.productDatabase[productCode];
+
+            if (!productInfo) {
+                displayAddProductMessage('Erro: Código de produto cliente inválido.', 'error');
+                return;
+            }
+
+            if (isNaN(quantity) || quantity <= 0) {
+                displayAddProductMessage('Erro: Por favor, insira uma quantidade válida para o produto.', 'error');
+                return;
+            }
+
+            const totalM3 = (productInfo.cubageUnit * quantity).toFixed(2);
+            const totalValue = (productInfo.tableValue * quantity).toFixed(2);
+
+            const existingProductIndex = SharedData.productsInCurrentOrder.findIndex(p => p.code === productCode);
+            if (existingProductIndex > -1) {
+                SharedData.productsInCurrentOrder[existingProductIndex].quantity += quantity;
+                SharedData.productsInCurrentOrder[existingProductIndex].totalM3 = (productInfo.cubageUnit * SharedData.productsInCurrentOrder[existingProductIndex].quantity).toFixed(2);
+                SharedData.productsInCurrentOrder[existingProductIndex].totalValue = (productInfo.tableValue * SharedData.productsInCurrentOrder[existingProductIndex].quantity).toFixed(2);
+                displayAddProductMessage(`Quantidade de "${productInfo.description}" atualizada para ${SharedData.productsInCurrentOrder[existingProductIndex].quantity}.`, 'success');
+            } else {
+                SharedData.productsInCurrentOrder.push({
+                    clientCode: clientProductCode,
+                    code: productCode,
+                    name: productInfo.description,
+                    quantity: quantity,
+                    moq: productInfo.moq,
+                    unitPrice: productInfo.unitPrice,
+                    tableValue: productInfo.tableValue,
+                    cubageUnit: productInfo.cubageUnit,
+                    totalM3: totalM3,
+                    totalValue: totalValue,
+                    supplier: productInfo.supplier,
+                    simulatedStock: productInfo.simulatedStock,
+                    originCountry: productInfo.originCountry,
+                    selectedBranch: productInfo.originCountry
+                });
+                displayAddProductMessage(`"${productInfo.description}" adicionado com sucesso.`, 'success');
+            }
+
+            renderProductList();
+            document.getElementById('clientProductCode').value = '';
+            document.getElementById('mappedProductCodeDisplay').value = '--';
+            document.getElementById('productDescriptionDisplay').value = '--';
+            document.getElementById('productQuantity').value = '1';
+            document.getElementById('productValueDisplay').value = 'R$ 0,00';
+            document.getElementById('totalM3Display').value = '0.00 m³';
+            document.getElementById('valorTotalDisplay').value = '0.00 m³';
+            document.getElementById('productStockDisplay').value = '--';
+            document.getElementById('validationFeedback').innerText = '';
+            document.getElementById('productStockDisplay').style.color = '';
+            updateManualProductFieldsVisibility('');
+        }
+
+        // Remove um produto da lista
+        function removeProduct(index) {
+            if (index >= 0 && index < SharedData.productsInCurrentOrder.length) {
+                SharedData.productsInCurrentOrder.splice(index, 1);
+                renderProductList();
+                displayAddProductMessage('Produto removido.', 'info');
+            } else {
+                displayAddProductMessage('Erro: Não foi possível remover o produto. Índice inválido.', 'error');
+            }
+        }
+
+        // Atualiza a quantidade de um produto na lista
+        function updateProductQuantityInList(index, newQuantity) {
+            const product = SharedData.productsInCurrentOrder[index];
+            const productInfoFromDB = SharedData.productDatabase[product.code];
+            const oldQuantity = product.quantity;
+            const quantity = parseInt(newQuantity);
+
+            if (isNaN(quantity) || quantity <= 0) {
+                product.quantity = oldQuantity;
+                renderProductList();
+                displayAddProductMessage('Quantidade inválida. Por favor, insira um número maior que zero.', 'error');
+                return;
+            }
+
+            product.quantity = quantity;
+            product.totalM3 = (productInfoFromDB.cubageUnit * quantity).toFixed(2);
+            product.totalValue = (productInfoFromDB.tableValue * quantity).toFixed(2);
+
+            let validationMessage = '';
+            let messageType = 'info';
+
+            if (product.selectedBranch === 'Hong Kong') {
+                if (quantity < productInfoFromDB.moq) {
+                    validationMessage = `⚠️ Quantidade (${quantity}) abaixo do MOQ mínimo (${productInfoFromDB.moq}) para Hong Kong.`;
+                    messageType = 'warning';
+                } else {
+                    validationMessage = `✅ Quantidade (${quantity}) atende ao MOQ mínimo (${productInfoFromDB.moq}) para Hong Kong.`;
+                    messageType = 'success';
+                }
+            } else if (product.selectedBranch === 'Colômbia') {
+                if (quantity > productInfoFromDB.simulatedStock) {
+                    validationMessage = `🚫 Quantidade (${quantity}) excede o estoque disponível (${productInfoFromDB.simulatedStock}) na Colômbia.`;
+                    messageType = 'error';
+                } else {
+                    validationMessage = `✅ Quantidade (${quantity}) disponível em estoque na Colômbia.`;
+                    messageType = 'success';
+                }
+            }
+            displayAddProductMessage(validationMessage, messageType);
+            renderProductList();
+        }
+
+        // Atualiza a filial selecionada para um produto
+        function updateProductSelectedBranch(index, newBranch) {
+            SharedData.productsInCurrentOrder[index].selectedBranch = newBranch;
+            renderProductList();
+        }
+
+        // Renderiza a lista de produtos adicionados
+        function renderProductList() {
+            const listDiv = document.getElementById('productList');
+            listDiv.innerHTML = '<h3 class="font-semibold text-gray-700 mb-2">Produtos Adicionados na Solicitação:</h3>';
+            if (SharedData.productsInCurrentOrder.length === 0) {
+                listDiv.innerHTML += '<div id="noProductsAdded" class="text-gray-500 text-center py-4">Nenhum produto adicionado ainda.</div>';
+                return;
+            }
+
+            let tableHtml = `<table class="data-table" id="addedProductsTable">
+                                <colgroup>
+                                    <col style="width: 10%;">
+                                    <col style="width: 10%;">
+                                    <col style="width: 20%;">
+                                    <col style="width: 8%;">
+                                    <col class="colombia-col" style="width: 10%;">
+                                    <col class="colombia-col" style="width: 10%;">
+                                    <col class="colombia-col" style="width: 10%;">
+                                    <col class="hongkong-col" style="width: 6%;">
+                                    <col class="hongkong-col" style="width: 10%;">
+                                    <col class="hongkong-col" style="width: 10%;">
+                                    <col style="width: 12%;">
+                                    <col style="width: 8%;">
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th rowspan="2">Cód Cliente</th>
+                                        <th rowspan="2">Cód Produto</th>
+                                        <th rowspan="2">Descrição</th>
+                                        <th rowspan="2">Qtd. Solicitada</th>
+                                        <th colspan="3" class="colombia-col" style="text-align: center;">Colômbia</th>
+                                        <th colspan="3" class="hongkong-col" style="text-align: center;">Hong Kong</th>
+                                        <th rowspan="2">Filial Selecionada</th>
+                                        <th rowspan="2">Ação</th>
+                                    </tr>
+                                    <tr>
+                                        <th class="colombia-col">Estoque</th>
+                                        <th class="colombia-col">Valor Unit.</th>
+                                        <th class="colombia-col">Valor Total</th>
+                                        <th class="hongkong-col">MOQ</th>
+                                        <th class="hongkong-col">Valor Unit.</th>
+                                        <th class="hongkong-col">Valor Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>`;
+
+            SharedData.productsInCurrentOrder.forEach((product, index) => {
+                const productInfoFromDB = SharedData.productDatabase[product.code];
+
+                const columbiaStockStatus = productInfoFromDB.simulatedStock > 0 ? 'Sim' : 'Não';
+                const columbiaStockColor = productInfoFromDB.simulatedStock > 0 ? 'var(--green-success)' : 'var(--red-alert)';
+                const columbiaUnitPrice = productInfoFromDB.tableValue;
+                const columbiaTotalPrice = (columbiaUnitPrice * product.quantity);
+
+                const hongKongMOQ = productInfoFromDB.moq;
+                const hongKongUnitPrice = productInfoFromDB.unitPrice;
+                const hongKongTotalPrice = (hongKongUnitPrice * product.quantity);
+
+                let rowClass = '';
+                if (product.selectedBranch === 'Hong Kong' && product.quantity < hongKongMOQ) {
+                    rowClass = 'needs-review';
+                } else if (product.selectedBranch === 'Colômbia' && product.quantity > productInfoFromDB.simulatedStock) {
+                    rowClass = 'needs-review';
+                }
+
+                tableHtml += `
+                    <tr class="${rowClass}">
+                        <td>${product.clientCode}</td>
+                        <td>${product.code}</td>
+                        <td>${product.name}</td>
+                        <td>
+                            <input type="number" value="${product.quantity}" min="1"
+                                onchange="updateProductQuantityInList(${index}, this.value)"
+                                class="w-20 text-center border rounded-md px-2 py-1 text-sm">
+                        </td>
+                        <td class="colombia-col" style="color: ${columbiaStockColor}; font-weight: bold;">${columbiaStockStatus}</td>
+                        <td class="colombia-col">R$ ${columbiaUnitPrice.toFixed(2).replace('.', ',')}</td>
+                        <td class="colombia-col">R$ ${columbiaTotalPrice.toFixed(2).replace('.', ',')}</td>
+                        <td class="hongkong-col">${hongKongMOQ}</td>
+                        <td class="hongkong-col">R$ ${hongKongUnitPrice.toFixed(2).replace('.', ',')}</td>
+                        <td class="hongkong-col">R$ ${hongKongTotalPrice.toFixed(2).replace('.', ',')}</td>
+                        <td>
+                            <select onchange="updateProductSelectedBranch(${index}, this.value)"
+                                class="border rounded-md px-2 py-1 text-sm">
+                                <option value="Colômbia" ${product.selectedBranch === 'Colômbia' ? 'selected' : ''}>Colômbia</option>
+                                <option value="Hong Kong" ${product.selectedBranch === 'Hong Kong' ? 'selected' : ''}>Hong Kong</option>
+                            </select>
+                        </td>
+                        <td><button onclick="removeProduct(${index})" class="remove-item-btn">Remover</button></td>
+                    </tr>
+                `;
+            });
+            tableHtml += `</tbody></table>`;
+            listDiv.innerHTML += tableHtml;
+        }
+
+        // Submete o formulário de pedido
+        function submitOrderForm() {
+            if (SharedData.productsInCurrentOrder.length === 0) {
+                showMessage('Erro', 'Por favor, adicione pelo menos um produto antes de enviar a solicitação.', 'error');
+                return;
+            }
+
+            let validationErrors = [];
+            SharedData.productsInCurrentOrder.forEach(product => {
+                const productInfoFromDB = SharedData.productDatabase[product.code];
+                if (product.selectedBranch === 'Hong Kong') {
+                    if (product.quantity < productInfoFromDB.moq) {
+                        validationErrors.push(`O item "${product.name}" (Qtd: ${product.quantity}) não atende ao MOQ mínimo de ${productInfoFromDB.moq} para Hong Kong. Por favor, ajuste a quantidade ou a filial.`);
+                    }
+                } else if (product.selectedBranch === 'Colômbia') {
+                    if (product.quantity > productInfoFromDB.simulatedStock) {
+                        validationErrors.push(`A quantidade (${product.quantity}) do item "${product.name}" excede o estoque disponível (${productInfoFromDB.simulatedStock}) na Colômbia. Por favor, ajuste a quantidade ou a filial.`);
+                    }
+                }
+            });
+
+            if (validationErrors.length > 0) {
+                showMessage('Erros de Validação', validationErrors.join('<br>'), 'error');
+                renderProductList();
+                return;
+            }
+
+            SharedData.currentParentOrderId = `SOL-${SharedData.nextParentRequestCounter.toString().padStart(3, '0')}`;
+            SharedData.nextParentRequestCounter++;
+
+            const productsBySelectedBranch = SharedData.productsInCurrentOrder.reduce((acc, product) => {
+                if (!acc[product.selectedBranch]) {
+                    acc[product.selectedBranch] = [];
+                }
+                acc[product.selectedBranch].push(product);
+                return acc;
+            }, {});
+
+            SharedData.simulatedSupplierOrders = {};
+            SharedData.simulatedColombiaOrder = null;
+
+            for (const branch in productsBySelectedBranch) {
+                const productsForThisBranch = productsBySelectedBranch[branch];
+                if (branch === 'Hong Kong') {
+                    submitHongKongFormLogic(productsForThisBranch);
+                } else if (branch === 'Colômbia') {
+                    submitColombiaFormLogic(productsForThisBranch);
+                }
+            }
+
+            showScreen('summaryScreen');
+            renderUnifiedSummary();
+
+            SharedData.productsInCurrentOrder = [];
+            SharedFunctions.synchronizeOrdersAndPOs();
+        }
+
+        // Lógica de submissão para pedidos de Hong Kong
+        function submitHongKongFormLogic(productsForHongKong) {
+            let moqMessages = [];
+            let validProductsAfterMoq = [];
+
+            productsForHongKong.forEach(product => {
+                if (product.quantity < product.moq) {
+                    moqMessages.push(`🚫 O item "${product.name}" (Qtd: ${product.quantity}) não atende ao MOQ mínimo de ${product.moq}. Este item será cancelado do pedido.`);
+                } else {
+                    validProductsAfterMoq.push(product);
+                }
+            });
+
+            if (validProductsAfterMoq.length === 0) {
+                if (moqMessages.length > 0) {
+                    SharedData.simulatedSupplierOrders['MOQ_FAILED'] = { messages: moqMessages };
+                }
+                return;
+            }
+
+            const productsBySupplier = validProductsAfterMoq.reduce((acc, product) => {
+                if (!acc[product.supplier]) {
+                    acc[product.supplier] = [];
+                }
+                acc[product.supplier].push(product);
+                return acc;
+            }, {});
+
+            for (const supplierName in productsBySupplier) {
+                const productsForThisSupplier = productsBySupplier[supplierName];
+
+                const poId = `PED-${SharedData.nextPurchaseOrderIdCounter.toString().padStart(3, '0')}`;
+                SharedData.nextPurchaseOrderIdCounter++;
+
+                const newPO = {
+                    id: poId,
+                    parentOrderId: SharedData.currentParentOrderId,
+                    supplier: supplierName,
+                    supplierCode: SharedFunctions.getOrGenerateSupplierCode(supplierName),
+                    date: new Date().toISOString().slice(0, 10),
+                    products: [],
+                    newSupplierPriceTotal: 0,
+                    currentInternalPriceTotal: 0,
+                    overallApprovalStatus: 'Pendente',
+                    originCountry: 'Hong Kong',
+                    totalCubage: 0
+                };
+
+                productsForThisSupplier.forEach(product => {
+                    const productWithSimulatedPrices = { ...product };
+
+                    productWithSimulatedPrices.currentInternalUnitPrice = (product.tableValue + Math.random() * 5).toFixed(2);
+                    productWithSimulatedPrices.newSupplierUnitPrice = (product.unitPrice * (1 + (Math.random() * 0.05))).toFixed(2);
+
+                    newPO.products.push(productWithSimulatedPrices);
+                    newPO.newSupplierPriceTotal = (parseFloat(newPO.newSupplierPriceTotal) + (parseFloat(productWithSimulatedPrices.newSupplierUnitPrice) * product.quantity)).toFixed(2);
+                    newPO.currentInternalPriceTotal = (parseFloat(newPO.currentInternalPriceTotal) + (parseFloat(productWithSimulatedPrices.currentInternalUnitPrice) * product.quantity)).toFixed(2);
+                    newPO.totalCubage = (parseFloat(newPO.totalCubage) + (product.cubageUnit * product.quantity));
+                });
+                newPO.totalCubage = newPO.totalCubage.toFixed(2);
+
+                SharedData.simulatedSupplierOrders[supplierName] = newPO;
+            }
+            if (moqMessages.length > 0) {
+                SharedData.simulatedSupplierOrders['MOQ_INFO'] = { messages: moqMessages };
+            }
+        }
+
+        // Lógica de submissão para pedidos da Colômbia
+        function submitColombiaFormLogic(productsForColombia) {
+            const totalValue = productsForColombia.reduce((sum, product) => sum + (product.tableValue * product.quantity), 0);
+
+            const newOrderId = `SAP-${SharedData.nextSapOrderIdCounter.toString().padStart(3, '0')}`;
+            SharedData.nextSapOrderIdCounter++;
+
+            SharedData.simulatedColombiaOrder = {
+                orderId: newOrderId,
+                parentOrderId: SharedData.currentParentOrderId,
+                clientFlag: currentUserClientName,
+                originCountry: 'Colômbia',
+                totalValue: totalValue,
+                status: 'Em Separação',
+                requestDate: new Date().toISOString().slice(0, 10),
+                lastUpdateDate: new Date().toISOString().slice(0, 10),
+                supplier: productsForColombia[0].supplier,
+                products: productsForColombia.map(p => ({
+                    code: p.code,
+                    description: p.name,
+                    quantity: p.quantity,
+                    unitPrice: p.tableValue,
+                    cubageUnit: p.cubageUnit,
+                    totalValue: (p.tableValue * p.quantity).toFixed(2)
+                }))
+            };
+        }
+
+        // Renderiza o resumo unificado dos pedidos
+        function renderUnifiedSummary() {
+            const unifiedSummaryContentDiv = document.getElementById('unifiedSummaryContent');
+            unifiedSummaryContentDiv.innerHTML = '';
+
+            if (Object.keys(SharedData.simulatedSupplierOrders).length > 0) {
+                const hongKongSection = document.createElement('div');
+                hongKongSection.className = 'summary-section';
+                hongKongSection.innerHTML = `
+                    <h2 class="text-xl font-semibold mb-4">Pedidos para Hong Kong</h2>
+                `;
+
+                if (SharedData.simulatedSupplierOrders['MOQ_INFO'] && SharedData.simulatedSupplierOrders['MOQ_INFO'].messages.length > 0) {
+                    const moqValidationDiv = document.createElement('div');
+                    moqValidationDiv.className = 'bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4';
+                    moqValidationDiv.innerHTML = `<p class="font-bold">Atenção: Problemas de MOQ detectados!</p>${SharedData.simulatedSupplierOrders['MOQ_INFO'].messages.map(msg => `<p>${msg}</p>`).join('')}`;
+                    hongKongSection.appendChild(moqValidationDiv);
+                }
+                if (SharedData.simulatedSupplierOrders['MOQ_FAILED'] && SharedData.simulatedSupplierOrders['MOQ_FAILED'].messages.length > 0) {
+                    const moqFailedDiv = document.createElement('div');
+                    moqFailedDiv.className = 'bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4';
+                    moqFailedDiv.innerHTML = `<p class="font-bold">Erro: Itens cancelados devido a falha no MOQ!</p>${SharedData.simulatedSupplierOrders['MOQ_FAILED'].messages.map(msg => `<p>${msg}</p>`).join('')}`;
+                    hongKongSection.appendChild(moqFailedDiv);
+                }
+
+                hongKongSection.innerHTML += `<h3 class="font-semibold text-gray-700 mb-3">Divisão por Fornecedor (Requisições de Compra - POs):</h3>`;
+
+                for (const supplierName in SharedData.simulatedSupplierOrders) {
+                    if (supplierName === 'MOQ_INFO' || supplierName === 'MOQ_FAILED') continue;
+
+                    const po = SharedData.simulatedSupplierOrders[supplierName];
+                    const poDiv = document.createElement('div');
+                    poDiv.className = 'supplier-summary-card';
+
+                    const totalCubage = parseFloat(po.totalCubage || 0);
+                    const percentageOccupation20HC = (totalCubage / SharedData.MAX_CUBAGE_20HC) * 100;
+                    const percentageOccupation40HC = (totalCubage / SharedData.MAX_CUBAGE_40HC) * 100;
+
+                    let cardStatusEmoji = '';
+                    if (po.overallApprovalStatus === 'Aguardando Aprovação') {
+                        cardStatusEmoji = '🟡';
+                    } else if (po.overallApprovalStatus === 'Aprovado') {
+                        cardStatusEmoji = '🟢';
+                    } else if (po.overallApprovalStatus === 'Rejeitado') {
+                        cardStatusEmoji = '🔴';
+                    } else if (po.overallApprovalStatus === 'Negociado') {
+                        cardStatusEmoji = '🟣';
+                    } else if (po.overallApprovalStatus === 'Finalizado') {
+                        cardStatusEmoji = '✅';
+                    }
+
+                    // Determine the most probable container
+                    let highlightLCL = false;
+                    let highlight20HC = false;
+                    let highlight40HC = false;
+                    let containerWarning = '';
+
+                    if (totalCubage === 0) {
+                        // No highlight needed if no cubage
+                    } else if (totalCubage <= 1) { // Small volume, likely LCL
+                        highlightLCL = true;
+                    } else if (percentageOccupation20HC <= 100) {
+                        highlight20HC = true;
+                    } else if (percentageOccupation40HC <= 100) {
+                        highlight40HC = true;
+                    } else {
+                        // If neither fits, highlight 40HC as the "least overflow" option
+                        highlight40HC = true;
+                        containerWarning = '<p class="text-red-600 mt-2 text-sm font-semibold">⚠️ A cubagem excede a capacidade de um container de 40HC. Necessário mais de um container ou solução alternativa.</p>';
+                    }
+
+                    poDiv.innerHTML = `
+                        <span class="supplier-status-indicator">${cardStatusEmoji}</span>
+                        <h4 class="font-semibold text-lg mb-2">PO Nº ${po.id} para Fornecedor: <span class="text-blue-700">${po.supplierCode} - ${po.supplier}</span></h4>
+                        <p class="text-gray-600 mb-1">ID Solicitação Principal: <strong>${po.parentOrderId}</strong></p>
+                        <p class="text-gray-600 mb-1">Data Geração: ${po.date}</p>
+                        <p class="text-gray-600 mb-4">Valor Total Pedido (Estimado): <strong>R$ ${parseFloat(po.newSupplierPriceTotal).toFixed(2).replace('.', ',')}</strong></p>
+
+                        <h5 class="font-semibold text-md mb-2">Produtos:</h5>
+                        <div class="overflow-x-auto">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Cód Produto</th>
+                                        <th>Descrição</th>
+                                        <th>Qtd.</th>
+                                        <th>Valor Unit. Interno</th>
+                                        <th>Valor Unit. Fornecedor (Atual)</th>
+                                        <th>M³ Total Item</th>
+                                        <th>Status Aprovação</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${po.products.map(p => {
+                                        const internalPrice = parseFloat(p.currentInternalUnitPrice);
+                                        const supplierPrice = parseFloat(p.newSupplierUnitPrice);
+                                        let priceClass = '';
+                                        if (supplierPrice > internalPrice) {
+                                            priceClass = 'price-difference-positive';
+                                        } else if (supplierPrice < internalPrice) {
+                                            priceClass = 'price-difference-negative';
+                                        }
+                                        return `
+                                        <tr>
+                                            <td>${p.code}</td>
+                                            <td>${p.name}</td>
+                                            <td>${p.quantity}</td>
+                                            <td>R$ ${internalPrice.toFixed(2).replace('.', ',')}</td>
+                                            <td class="${priceClass}">R$ ${supplierPrice.toFixed(2).replace('.', ',')}</td>
+                                            <td>${(p.cubageUnit * p.quantity).toFixed(2).replace('.', ',')} m³</td>
+                                            <td class="product-approval-status ${p.approvalStatus}">${p.approvalStatus}</td>
+                                        </tr>
+                                    `;
+                                    }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h5 class="font-semibold text-md mb-2 mt-4">Previsão de Cubagem por Tipo de Container:</h5>
+                        <p class="text-sm text-gray-700 mb-2">Cubagem Total do Pedido: <strong>${totalCubage.toFixed(2).replace('.', ',')} m³</strong></p>
+                        <table class="cubage-table">
+                            <thead>
+                                <tr>
+                                    <th>Tipo CTN</th>
+                                    <th>% Ocupação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="${highlightLCL ? 'highlight-container' : ''}">
+                                    <td>LCL</td>
+                                    <td>${totalCubage > 0 ? '100.00' : '0.00'}%</td>
+                                </tr>
+                                <tr class="${highlight20HC ? 'highlight-container' : ''}">
+                                    <td>CTN 20</td>
+                                    <td>${percentageOccupation20HC.toFixed(2).replace('.', ',')}%</td>
+                                </tr>
+                                <tr class="${highlight40HC ? 'highlight-container' : ''}">
+                                    <td>CTN 40HC</td>
+                                    <td>${percentageOccupation40HC.toFixed(2).replace('.', ',')}%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        ${containerWarning}
+                    `;
+                    hongKongSection.appendChild(poDiv);
+                }
+                unifiedSummaryContentDiv.appendChild(hongKongSection);
+            }
+
+            if (SharedData.simulatedColombiaOrder) {
+                const colombiaSection = document.createElement('div');
+                colombiaSection.className = 'summary-section';
+                colombiaSection.innerHTML = `
+                    <h2 class="text-xl font-semibold mb-4">Pedido para Colômbia</h2>
+                    <div class="bg-white p-6 rounded-lg shadow-md mb-6 border border-gray-200">
+                        <h3 class="font-semibold text-lg mb-2">Detalhes do Pedido de Venda</h3>
+                        <p class="mb-1">Nº Pedido de Venda SAP: <strong>${SharedData.simulatedColombiaOrder.orderId}</strong></p>
+                        <p class="mb-1">ID Solicitação Principal: <strong>${SharedData.simulatedColombiaOrder.parentOrderId}</strong></p>
+                        <p class="mb-1">Valor Total: <strong>R$ ${SharedData.simulatedColombiaOrder.totalValue.toFixed(2).replace('.', ',')}</strong></p>
+                        <h4 class="font-semibold text-md mb-2 mt-4">Produtos:</h4>
+                        <div class="overflow-x-auto">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Cód Produto</th>
+                                        <th>Descrição</th>
+                                        <th>Qtd.</th>
+                                        <th>Valor Unit.</th>
+                                        <th>Valor Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${SharedData.simulatedColombiaOrder.products.map(p => `
+                                        <tr>
+                                            <td>${p.code}</td>
+                                            <td>${p.description}</td>
+                                            <td>${p.quantity}</td>
+                                            <td>R$ ${parseFloat(p.unitPrice).toFixed(2).replace('.', ',')}</td>
+                                            <td>R$ ${parseFloat(p.totalValue).toFixed(2).replace('.', ',')}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+                unifiedSummaryContentDiv.appendChild(colombiaSection);
+            }
+
+            if (Object.keys(SharedData.simulatedSupplierOrders).length === 0 && !SharedData.simulatedColombiaOrder) {
+                unifiedSummaryContentDiv.innerHTML = '<p class="text-center text-gray-500">Nenhum pedido para exibir no resumo.</p>';
+            }
+        }
+
+        // Gera os pedidos unificados
+        function generateUnifiedOrders() {
+            for (const supplierName in SharedData.simulatedSupplierOrders) {
+                if (supplierName === 'MOQ_INFO' || supplierName === 'MOQ_FAILED') continue;
+                const po = SharedData.simulatedSupplierOrders[supplierName];
+                const existingPoIndex = SharedData.generatedPurchaseOrders.findIndex(existingPo => existingPo.id === po.id);
+                if (existingPoIndex === -1) {
+                    SharedData.generatedPurchaseOrders.push(po);
+                } else {
+                    SharedData.generatedPurchaseOrders[existingPoIndex] = po;
+                }
+
+                const orderInMainList = SharedData.orders.find(o => o.orderId === po.id);
+                if (!orderInMainList) {
+                    SharedData.orders.push({
+                        orderId: po.id,
+                        parentOrderId: po.parentOrderId,
+                        clientFlag: currentUserClientName,
+                        originCountry: po.originCountry,
+                        totalValue: parseFloat(po.newSupplierPriceTotal),
+                        status: po.overallApprovalStatus,
+                        requestDate: po.date,
+                        lastUpdateDate: new Date().toISOString().slice(0, 10),
+                        supplier: po.supplier,
+                        products: po.products.map(p => ({
+                            code: p.code,
+                            description: p.name,
+                            quantity: p.quantity,
+                            unitPrice: parseFloat(p.newSupplierUnitPrice),
+                            cubageUnit: p.cubageUnit
+                        }))
+                    });
+                } else {
+                    orderInMainList.status = po.overallApprovalStatus;
+                    orderInMainList.lastUpdateDate = new Date().toISOString().slice(0, 10);
+                }
+            }
+
+            if (SharedData.simulatedColombiaOrder) {
+                const existingColombiaOrderIndex = SharedData.generatedPurchaseOrders.findIndex(existingPo => existingPo.id === SharedData.simulatedColombiaOrder.orderId);
+                if (existingColombiaOrderIndex === -1) {
+                    SharedData.generatedPurchaseOrders.push(SharedData.simulatedColombiaOrder);
+                } else {
+                    SharedData.generatedPurchaseOrders[existingColombiaOrderIndex] = SharedData.simulatedColombiaOrder;
+                }
+
+                const orderInMainList = SharedData.orders.find(o => o.orderId === SharedData.simulatedColombiaOrder.orderId);
+                if (!orderInMainList) {
+                    SharedData.orders.push(SharedData.simulatedColombiaOrder);
+                } else {
+                    orderInMainList.status = SharedData.simulatedColombiaOrder.status;
+                    orderInMainList.lastUpdateDate = new Date().toISOString().slice(0, 10);
+                }
+            }
+
+            showMessage('Solicitação Enviada', 'Sua solicitação foi processada e os pedidos foram gerados. Você pode acompanhar o status na Central de Pedidos.', 'success', () => backToOrderCenter());
+
+            SharedData.simulatedSupplierOrders = {};
+            SharedData.simulatedColombiaOrder = null;
+            SharedFunctions.synchronizeOrdersAndPOs();
+        }
+
+        // Exibe mensagem de adição de produto
+        function displayAddProductMessage(message, type) {
+            const messageDiv = document.getElementById('addProductMessage');
+
+            messageDiv.innerText = message;
+            messageDiv.className = `validation-message ${type}`;
+            messageDiv.style.display = 'block';
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        // Abre o modal do catálogo de produtos
+        function openProductCatalogModal() {
+            const productCatalogList = document.getElementById('productCatalogList');
+            productCatalogList.innerHTML = '';
+
+            let tableHtml = `<table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Cód Prod Cliente</th>
+                                        <th>Cód Produto</th>
+                                        <th>Descrição</th>
+                                        <th>Filial Padrão</th>
+                                        <th>Preço Unit.</th>
+                                        <th>MOQ</th>
+                                        <th>Estoque</th>
+                                        <th>M³ Unit.</th>
+                                        <th>Linha</th>
+                                    </tr>
+                                </thead>
+                                <tbody>`;
+
+            for (const code in SharedData.productDatabase) {
+                const product = SharedData.productDatabase[code];
+                const displayPrice = product.tableValue !== undefined && product.tableValue !== null
+                    ? product.tableValue.toFixed(2).replace('.', ',')
+                    : 'N/A';
+
+                const stockDisplay = product.simulatedStock > 0 ? 'Sim' : 'Não';
+                const stockColor = product.simulatedStock > 0 ? 'var(--green-success)' : 'var(--red-alert)';
+
+                tableHtml += `
+                    <tr onclick="selectProductFromCatalog('${product.clientCode}')">
+                        <td class="product-code-display">${product.clientCode}</td>
+                        <td class="product-code-display">${product.code}</td>
+                        <td class="product-description-display">${product.description}</td>
+                        <td>${product.originCountry}</td>
+                        <td>R$ ${displayPrice}</td>
+                        <td>${product.moq}</td>
+                        <td><span style="color: ${stockColor}; font-weight: bold;">${stockDisplay}</span></td>
+                        <td>${product.cubageUnit.toFixed(3).replace('.', ',')}</td>
+                        <td class="product-line-display">${product.productLine}</td>
+                    </tr>
+                `;
+            }
+            tableHtml += `</tbody></table>`;
+            productCatalogList.innerHTML = tableHtml;
+
+            document.getElementById('productCatalogSearchInput').value = '';
+            document.getElementById('productCatalogModal').classList.add('active');
+        }
+
+        // Fecha o modal do catálogo de produtos
+        function closeProductCatalogModal() {
+            document.getElementById('productCatalogModal').classList.remove('active');
+        }
+
+        // Filtra o catálogo de produtos
+        function filterProductCatalog() {
+            const searchTerm = document.getElementById('productCatalogSearchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#productCatalogList tbody tr');
+
+            rows.forEach(row => {
+                const clientCode = row.children[0].innerText.toLowerCase();
+                const productCode = row.children[1].innerText.toLowerCase();
+                const description = row.children[2].innerText.toLowerCase();
+                const branch = row.children[3].innerText.toLowerCase();
+
+                if (clientCode.includes(searchTerm) || productCode.includes(searchTerm) || description.includes(searchTerm) || branch.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // Seleciona um produto do catálogo
+        function selectProductFromCatalog(clientProductCode) {
+            document.getElementById('clientProductCode').value = clientProductCode;
+            updateProductDetailsOnClientCodeChange();
+            closeProductCatalogModal();
+        }
+
+        // Lida com o upload de arquivo
+        function handleFileUpload() {
+            const fileInput = document.getElementById('fileUpload');
+            const fileNameDisplay = document.getElementById('fileNameDisplay');
+            const file = fileInput.files[0];
+            const maxFileSize = 5 * 1024 * 1024;
+
+            if (!file) {
+                displayAddProductMessage('Por favor, selecione um arquivo para upload.', 'error');
+                return;
+            }
+
+            const allowedTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel', 'text/csv'];
+            if (!allowedTypes.includes(file.type)) {
+                displayAddProductMessage('Tipo de arquivo inválido. Por favor, selecione um arquivo Excel (.xlsx, .xls) ou CSV.', 'error');
+                fileInput.value = '';
+                fileNameDisplay.innerText = 'Nenhum arquivo selecionado';
+                return;
+            }
+
+            if (file.size > maxFileSize) {
+                displayAddProductMessage('O arquivo excede o tamanho máximo permitido de 5MB.', 'error');
+                fileInput.value = '';
+                fileNameDisplay.innerText = 'Nenhum arquivo selecionado';
+                return;
+            }
+
+            const dummyProducts = [
+                { clientCode: "SKU-001", quantity: 5 },
+                { clientCode: "SKU-003", quantity: 10 },
+                { clientCode: "SKU-007", quantity: 1 }
+            ];
+
+            let productsAddedCount = 0;
+            let productsSkippedCount = 0;
+            let messages = [];
+
+            dummyProducts.forEach(item => {
+                const productCode = SharedData.universalClientCodeToProductCodeMap[item.clientCode.toUpperCase()];
+                const productInfo = SharedData.productDatabase[productCode];
+
+                if (productInfo) {
+                    const existingProductIndex = SharedData.productsInCurrentOrder.findIndex(p => p.code === productCode);
+                    const totalM3 = (productInfo.cubageUnit * item.quantity).toFixed(2);
+                    const totalValue = (productInfo.tableValue * item.quantity).toFixed(2);
+
+                    if (existingProductIndex > -1) {
+                        SharedData.productsInCurrentOrder[existingProductIndex].quantity += item.quantity;
+                        SharedData.productsInCurrentOrder[existingProductIndex].totalM3 = (productInfo.cubageUnit * SharedData.productsInCurrentOrder[existingProductIndex].quantity).toFixed(2);
+                        SharedData.productsInCurrentOrder[existingProductIndex].totalValue = (productInfo.tableValue * SharedData.productsInCurrentOrder[existingProductIndex].quantity).toFixed(2);
+                        messages.push(`Quantidade de "${productInfo.description}" atualizada para ${SharedData.productsInCurrentOrder[existingProductIndex].quantity}.`);
+                    } else {
+                        SharedData.productsInCurrentOrder.push({
+                            clientCode: item.clientCode,
+                            code: productCode,
+                            name: productInfo.description,
+                            quantity: item.quantity,
+                            moq: productInfo.moq,
+                            unitPrice: productInfo.unitPrice,
+                            tableValue: productInfo.tableValue,
+                            cubageUnit: productInfo.cubageUnit,
+                            totalM3: totalM3,
+                            totalValue: totalValue,
+                            supplier: productInfo.supplier,
+                            simulatedStock: productInfo.simulatedStock,
+                            originCountry: productInfo.originCountry,
+                            selectedBranch: productInfo.originCountry
+                        });
+                        productsAddedCount++;
+                        messages.push(`"${productInfo.description}" adicionado.`);
+                    }
+                } else {
+                    messages.push(`Produto com código de cliente "${item.clientCode}" não encontrado e foi ignorado.`);
+                    productsSkippedCount++;
+                }
+            });
+
+            renderProductList();
+            fileInput.value = '';
+            fileNameDisplay.innerText = 'Nenhum arquivo selecionado';
+
+            let finalMessage = `Upload de "${file.name}" concluído! ${productsAddedCount} produto(s) adicionado(s).`;
+            if (productsSkippedCount > 0) {
+                finalMessage += ` ${productsSkippedCount} item(ns) ignorado(s).`;
+            }
+            displayAddProductMessage(messages.join('<br>') || finalMessage, productsSkippedCount > 0 ? 'warning' : 'success');
+        }
+
+        // Processa códigos colados
+        function processPastedCodes() {
+            const pasteCodesTextarea = document.getElementById('pasteCodes');
+            const pastedText = pasteCodesTextarea.value.trim();
+
+            if (!pastedText) {
+                displayAddProductMessage('Por favor, cole os códigos e quantidades na caixa de texto.', 'error');
+                return;
+            }
+
+            const normalizedText = pastedText.replace(/\n/g, ';');
+            const items = normalizedText.split(';').map(item => item.trim()).filter(item => item !== '');
+
+            let productsAddedCount = 0;
+            let productsSkippedCount = 0;
+            let messages = [];
+
+            items.forEach(itemString => {
+                const parts = itemString.split(',');
+                if (parts.length === 2) {
+                    const clientCode = parts[0].trim().toUpperCase();
+                    const quantity = parseInt(parts[1].trim());
+
+                    const productCode = SharedData.universalClientCodeToProductCodeMap[clientCode];
+                    const productInfo = SharedData.productDatabase[productCode];
+
+                    if (productInfo && !isNaN(quantity) && quantity > 0) {
+                        const existingProductIndex = SharedData.productsInCurrentOrder.findIndex(p => p.code === productCode);
+                        const totalM3 = (productInfo.cubageUnit * quantity).toFixed(2);
+                        const totalValue = (productInfo.tableValue * quantity).toFixed(2);
+
+                        if (existingProductIndex > -1) {
+                            SharedData.productsInCurrentOrder[existingProductIndex].quantity += quantity;
+                            SharedData.productsInCurrentOrder[existingProductIndex].totalM3 = (productInfo.cubageUnit * SharedData.productsInCurrentOrder[existingProductIndex].quantity).toFixed(2);
+                            SharedData.productsInCurrentOrder[existingProductIndex].totalValue = (productInfo.tableValue * SharedData.productsInCurrentOrder[existingProductIndex].quantity).toFixed(2);
+                            messages.push(`Quantidade de "${productInfo.description}" atualizada para ${SharedData.productsInCurrentOrder[existingProductIndex].quantity}.`);
+                        } else {
+                            SharedData.productsInCurrentOrder.push({
+                                clientCode: clientCode,
+                                code: productCode,
+                                name: productInfo.description,
+                                quantity: quantity,
+                                moq: productInfo.moq,
+                                unitPrice: productInfo.unitPrice,
+                                tableValue: productInfo.tableValue,
+                                cubageUnit: productInfo.cubageUnit,
+                                totalM3: totalM3,
+                                totalValue: totalValue,
+                                supplier: productInfo.supplier,
+                                simulatedStock: productInfo.simulatedStock,
+                                originCountry: productInfo.originCountry,
+                                selectedBranch: productInfo.originCountry
+                            });
+                            productsAddedCount++;
+                            messages.push(`"${productInfo.description}" adicionado.`);
+                        }
+                    } else {
+                        messages.push(`Formato inválido ou produto/quantidade não encontrado para: "${itemString}".`);
+                        productsSkippedCount++;
+                    }
+                } else {
+                    messages.push(`Formato inválido para: "${itemString}". Esperado "CODIGO,QUANTIDADE".`);
+                    productsSkippedCount++;
+                }
+            });
+
+            renderProductList();
+            pasteCodesTextarea.value = '';
+
+            let finalMessage = `${productsAddedCount} produto(s) processado(s) com sucesso.`;
+            if (productsSkippedCount > 0) {
+                finalMessage += ` ${productsSkippedCount} item(ns) ignorado(s).`;
+            }
+            displayAddProductMessage(messages.join('<br>') || finalMessage, productsSkippedCount > 0 ? 'warning' : 'success');
+        }
+
+        // Baixa o modelo de planilha
+        function downloadSpreadsheetModel() {
+            const csvContent = "data:text/csv;charset=utf-8,CodigoCliente,Quantidade\nSKU-001,10\nSKU-003,5\n";
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "modelo_planilha_fluig.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            displayAddProductMessage('Modelo de planilha baixado com sucesso!', 'success');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inicializa os contadores e os códigos de fornecedor ao carregar a página
+            SharedFunctions.initializeCounters();
+            populateSupplierFilter();
+            populateOriginCountryFilter();
+            renderOrdersTable();
+
+            document.getElementById('novaSolicitacao').addEventListener('click', () => showScreen('newOrderFormScreen'));
+            document.getElementById('logoutButton').addEventListener('click', SharedFunctions.logout);
+        });
+    </script>
+</body>
+</html>
