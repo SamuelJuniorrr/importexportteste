@@ -3,201 +3,1494 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Fluig - Central de Compras</title>
-    <!-- Link para o arquivo CSS externo -->
-    <link rel="stylesheet" href="styles.css">
+    <title>Portal Fluig - Compras</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --text-color: #333;
+            --light-gray: #f8f9fa;
+            --border-color: #dee2e6;
+            --header-bg: #fff;
+            --table-header-bg: #e9ecef;
+            --shadow: 0 2px 4px rgba(0,0,0,0.05);
+            --red-alert: #dc3545;
+            --green-success: #28a745;
+            --orange-warning: #ffc107;
+            --colombia-bg: #e6f7ff;
+            --hongkong-bg: #fff3e0;
+            --colombia-border: #90cdf4;
+            --hongkong-border: #ffcc80;
+            --highlight-container-bg: #d1e7dd;
+            --highlight-container-border: #28a745;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            color: var(--text-color);
+        }
+
+        body {
+            background-color: var(--light-gray);
+            line-height: 1.6;
+            font-size: 14px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .page {
+            display: none;
+            width: 100%;
+            flex-grow: 1;
+        }
+
+        .page.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .header {
+            background-color: var(--header-bg);
+            padding: 15px 40px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            background-color: #e0e0e0;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #666;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.2s ease-in-out;
+            white-space: nowrap;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.2s ease-in-out;
+            white-space: nowrap;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .input-group input[type="text"],
+        .input-group input[type="password"],
+        .input-group input[type="number"],
+        .input-group input[type="file"],
+        .input-group select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s ease-in-out;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus,
+        textarea:focus {
+            border-color: var(--primary-color);
+        }
+
+        .icon-user::before { content: '👤'; }
+        .icon-lock::before { content: '🔒'; }
+        .icon-search::before { content: '🔍'; }
+        .icon-plus::before { content: '➕'; }
+        .icon-question::before { content: '?'; }
+        .icon-flow::before { content: '!'; }
+
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            flex-grow: 1;
+        }
+
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex-grow: 1;
+            min-width: 150px;
+        }
+
+        .filter-group label {
+            font-weight: 500;
+            color: #555;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 8px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 14px;
+            min-width: 120px;
+        }
+
+        .search-group {
+            flex-grow: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            min-width: 250px;
+        }
+
+        .search-input-wrapper {
+            display: flex;
+            width: 100%;
+        }
+
+        .search-group input {
+            flex-grow: 1;
+            border-right: none;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .search-icon-btn {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            border-left: none;
+            border-radius: 0 5px 5px 0;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            background-color: #fff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table thead th {
+            background-color: var(--table-header-bg);
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            color: #555;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border-color);
+            white-space: nowrap;
+        }
+
+        table tbody td {
+            padding: 10px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 13px;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        table tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .pedido-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .pedido-link:hover {
+            text-decoration: underline;
+        }
+
+        .flag-icon {
+            width: 16px;
+            height: 11px;
+            vertical-align: middle;
+            margin-right: 5px;
+            border: 1px solid #eee;
+        }
+
+        .footer-button {
+            text-align: right;
+            margin-top: 20px;
+            padding: 10px 0;
+        }
+
+        .form-section {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tab-buttons {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .tab-button {
+            background-color: transparent;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .tab-button.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 20px 0;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .tab-content h2 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .tab-content p {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .accordion {
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .accordion-item {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .accordion-item:last-child {
+            border-bottom: none;
+        }
+
+        .accordion-header {
+            width: 100%;
+            background-color: #f7f7f7;
+            padding: 12px 15px;
+            text-align: left;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .accordion-header:hover {
+            background-color: #ececec;
+        }
+
+        .accordion-header .arrow {
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .accordion-header.active .arrow {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            padding: 15px;
+            background-color: #fff;
+            border-top: 1px solid var(--border-color);
+            display: none;
+        }
+
+        .accordion-content.active {
+            display: block;
+        }
+
+        #uploadPlanilhaInput,
+        #copiarColarTextarea {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .how-to-use-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .how-to-use-item {
+            background-color: #f0f5fa;
+            border: 1px dashed #cce0f0;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .how-to-use-item h4 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .how-to-use-item p {
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .how-to-use-item a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .how-to-use-item a:hover {
+            text-decoration: underline;
+        }
+
+        .add-product-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            align-items: end;
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background-color: #fefefe;
+        }
+
+        .add-product-grid .input-group {
+            margin-bottom: 0;
+        }
+
+        .add-product-grid .input-group input[type="text"],
+        .add-product-grid .input-group input[type="number"],
+        .add-product-grid .input-group select {
+            width: 100%;
+        }
+
+        .add-product-grid .input-group.full-width {
+            grid-column: span 2;
+        }
+
+        .add-product-grid .input-group.search-input {
+            display: flex;
+            align-items: center;
+        }
+        .add-product-grid .input-group.search-input input {
+            border-right: none;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+        .add-product-grid .input-group.search-input button {
+            border-left: none;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            padding: 10px 12px;
+            height: 38px;
+        }
+
+        .add-button-container {
+            grid-column: span 4;
+            text-align: right;
+            margin-top: 10px;
+        }
+
+        .products-added-section {
+            margin-top: 30px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+
+        .products-added-section h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        #noProductsMessage {
+            text-align: center;
+            color: #888;
+            padding: 20px;
+            border: 1px dashed var(--border-color);
+            border-radius: 5px;
+        }
+
+        #addedProductsTable {
+            width: 100%;
+            margin-top: 15px;
+            table-layout: auto;
+        }
+
+        #addedProductsTable th,
+        #addedProductsTable td {
+            padding: 10px 8px;
+            text-align: left;
+            border: 1px solid #eee;
+            font-size: 12px;
+            word-wrap: break-word;
+        }
+
+        #addedProductsTable th {
+            background-color: var(--table-header-bg);
+            font-weight: 600;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        #addedProductsTable td {
+            white-space: normal;
+        }
+
+        #addedProductsTable .remove-item-btn {
+            background-color: var(--red-alert);
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        #addedProductsTable .remove-item-btn:hover {
+            background-color: #c82333;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .product-details {
+            display: none;
+        }
+
+        .validation-message {
+            color: var(--red-alert);
+            font-size: 13px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .success-message {
+            color: var(--green-success);
+            font-size: 13px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .status-ok { color: var(--green-success); font-weight: bold; }
+        .status-warning { color: var(--orange-warning); font-weight: bold; }
+        .status-error { color: var(--red-alert); font-weight: bold; }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        .status-indicator.green { background-color: var(--green-success); }
+        .status-indicator.yellow { background-color: var(--orange-warning); }
+        .status-indicator.red { background-color: var(--red-alert); }
+        .status-indicator.blue { background-color: var(--primary-color); }
+        .status-indicator.gray { background-color: var(--secondary-color); }
+        .status-indicator.purple { background-color: #800080; }
+
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #888;
+        }
+
+        .modal-content h3 {
+            margin-bottom: 20px;
+            font-size: 20px;
+            color: var(--primary-color);
+        }
+
+        .modal-content pre {
+            background-color: var(--light-gray);
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-content .modal-actions {
+            margin-top: 25px;
+            text-align: right;
+        }
+
+        #productCatalogModal .modal-content {
+            max-width: 800px;
+        }
+
+        #productCatalogModal .modal-content .search-bar {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        #productCatalogModal .modal-content .search-bar input {
+            flex-grow: 1;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+        }
+
+        #productCatalogModal .modal-content .product-catalog-table-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+        }
+
+        #productCatalogModal .modal-content .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #productCatalogModal .modal-content .data-table th,
+        #productCatalogModal .modal-content .data-table td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        #productCatalogModal .modal-content .data-table th {
+            background-color: #f7f7f7;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        #productCatalogModal .modal-content .data-table tbody tr:hover {
+            background-color: #f5f5f5;
+            cursor: pointer;
+        }
+
+        .needs-review {
+            background-color: #fff3cd !important;
+            border: 1px solid #ffc107 !important;
+        }
+
+        .summary-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .summary-section:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+
+        .summary-section h2 {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .supplier-summary-card {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .supplier-status-indicator {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+        }
+
+        .price-difference-positive {
+            color: var(--red-alert);
+            font-weight: bold;
+        }
+
+        .price-difference-negative {
+            color: var(--green-success);
+            font-weight: bold;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px 20px;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+            border-bottom: 1px dashed #e9ecef;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 500;
+            color: #555;
+            flex-basis: 40%;
+            text-align: left;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: #333;
+            flex-basis: 60%;
+            text-align: right;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .tracking-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 20px 0;
+            position: relative;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+            white-space: nowrap;
+            min-height: 120px;
+        }
+
+        .tracking-steps::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 20px;
+            right: 20px;
+            height: 2px;
+            background-color: #e0e0e0;
+            z-index: 1;
+        }
+
+        .tracking-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            min-width: 100px;
+            position: relative;
+            z-index: 2;
+            padding: 0 10px;
+        }
+
+        .tracking-step .circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #666;
+            margin-bottom: 10px;
+            flex-shrink: 0;
+        }
+
+        .tracking-step span {
+            font-size: 12px;
+            text-align: center;
+            color: #666;
+            word-wrap: break-word;
+            white-space: normal;
+        }
+
+        .tracking-step.completed .circle {
+            background-color: var(--green-success);
+            color: #fff;
+        }
+        .tracking-step.active .circle {
+            background-color: var(--primary-color);
+            color: #fff;
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3);
+        }
+        .tracking-step.pending .circle {
+            background-color: var(--orange-warning);
+            color: #fff;
+        }
+        .tracking-step.rejected .circle,
+        .tracking-step.cancelled .circle {
+            background-color: var(--red-alert);
+            color: #fff;
+        }
+        .tracking-step.approved .circle,
+        .tracking-step.production .circle,
+        .tracking-step.ready-cargo .circle,
+        .tracking-step.atd .circle,
+        .tracking-step.pending-doc .circle,
+        .tracking-step.doc-ok .circle,
+        .tracking-step.ata .circle,
+        .tracking-step.finished .circle {
+            background-color: var(--green-success);
+            color: #fff;
+        }
+        .tracking-step.negotiation .circle,
+        .tracking-step.waiting-approval .circle {
+            background-color: var(--orange-warning);
+            color: #fff;
+        }
+        .tracking-step.separation .circle,
+        .tracking-step.conference .circle,
+        .tracking-step.in-transit .circle,
+        .tracking-step.delivered .circle {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+
+        .tracking-step.completed span {
+            color: #333;
+            font-weight: 500;
+        }
+        .tracking-step.active span {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        .tracking-step.rejected span,
+        .tracking-step.cancelled span {
+            color: var(--red-alert);
+            font-weight: bold;
+        }
+
+        .colombia-col {
+            background-color: var(--colombia-bg);
+            border-left: 1px solid var(--colombia-border);
+            border-right: 1px solid var(--colombia-border);
+        }
+
+        .hongkong-col {
+            background-color: var(--hongkong-bg);
+            border-left: 1px solid var(--hongkong-border);
+            border-right: 1px solid var(--hongkong-border);
+        }
+
+        .cubage-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+
+        .cubage-table th,
+        .cubage-table td {
+            border: 1px solid var(--border-color);
+            padding: 3px 5px;
+            text-align: left;
+            font-size: 11px;
+        }
+
+        .cubage-table th {
+            background-color: var(--table-header-bg);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .cubage-table tr.highlight-container {
+            background-color: var(--highlight-container-bg);
+            border: 1px solid var(--highlight-container-border);
+            font-weight: bold;
+        }
+
+        #flowchartModal .modal-content {
+            max-width: 90%;
+            width: auto;
+            padding: 15px;
+        }
+
+        #flowchartImage {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            background-color: transparent;
+            border: none;
+            object-fit: contain;
+        }
+
+        .po-details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .po-details-card {
+            background-color: #f8f9fa;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .po-details-card h4 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .po-details-card p {
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .po-details-card .status-indicator {
+            margin-right: 8px;
+        }
+
+        .product-negotiation-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .product-negotiation-table th,
+        .product-negotiation-table td {
+            border: 1px solid #eee;
+            padding: 8px;
+            text-align: left;
+            font-size: 12px;
+        }
+
+        .product-negotiation-table th {
+            background-color: var(--table-header-bg);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .product-negotiation-table input[type="number"] {
+            width: 80px;
+            padding: 5px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .product-negotiation-table .price-difference-positive {
+            color: var(--red-alert);
+            font-weight: bold;
+        }
+
+        .product-negotiation-table .price-difference-negative {
+            color: var(--green-success);
+            font-weight: bold;
+        }
+
+        .product-negotiation-table .btn-primary,
+        .product-negotiation-table .btn-danger,
+        .product-negotiation-table .btn-secondary.review-btn {
+            padding: 4px 8px;
+            font-size: 11px;
+            margin: 2px;
+            white-space: nowrap;
+        }
+
+
+        .po-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+        }
+
+        .po-actions .btn-primary,
+        .po-actions .btn-secondary,
+        .po-actions .btn-danger {
+            padding: 8px 15px;
+            font-size: 13px;
+        }
+
+        .btn-danger {
+            background-color: var(--red-alert);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.2s ease-in-out;
+            white-space: nowrap;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .product-approval-status {
+            font-weight: bold;
+        }
+        .product-approval-status.Pendente { color: var(--orange-warning); }
+        .product-approval-status.Aprovado { color: var(--green-success); }
+        .product-approval-status.Rejeitado { color: var(--red-alert); }
+        .product-approval-status.Negociado { color: #800080; }
+
+        #approvalModal .modal-content {
+            max-width: 400px;
+            text-align: center;
+        }
+        #approvalModal .modal-content h3 {
+            color: var(--text-color);
+        }
+        #approvalModal .modal-content .modal-actions {
+            justify-content: center;
+        }
+
+        /* Estilos para o PDF simulado */
+        .pdf-viewer-modal .modal-content {
+            max-width: 90%;
+            width: 90%;
+            height: 90%;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .pdf-viewer-header {
+            background-color: #424242;
+            color: #fff;
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            min-height: 40px;
+        }
+
+        .pdf-viewer-header .title {
+            font-weight: bold;
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .pdf-viewer-toolbar {
+            background-color: #525252;
+            padding: 5px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 40px;
+        }
+
+        .pdf-viewer-toolbar button {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .pdf-viewer-toolbar button:hover {
+            background-color: #6a6a6a;
+        }
+
+        .pdf-viewer-toolbar .page-info {
+            color: #fff;
+            font-size: 13px;
+            margin: 0 10px;
+        }
+
+        .pdf-content-wrapper {
+            flex-grow: 1;
+            background-color: #e0e0e0; /* Gray background for the "page" area */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align content to top */
+            padding: 20px;
+            overflow-y: auto; /* Enable scrolling for PDF content */
+        }
+
+        .pdf-content {
+            background-color: #fff;
+            border: 1px solid #000;
+            padding: 20px;
+            width: 794px; /* A4 width at 96dpi */
+            min-height: 1122px; /* A4 height at 96dpi */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            font-family: 'Roboto', sans-serif;
+            font-size: 10px;
+            line-height: 1.2;
+            color: #000; /* Ensure text is black */
+        }
+
+        .pdf-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+
+        .pdf-content td, .pdf-content th {
+            border: 1px solid #000;
+            padding: 5px;
+            vertical-align: top;
+            color: #000; /* Ensure text is black */
+        }
+
+        .pdf-content .header-section td {
+            font-size: 10px;
+        }
+
+        .pdf-content .header-section .label {
+            font-weight: bold;
+        }
+
+        .pdf-products-table th, .pdf-products-table td {
+            font-size: 9px;
+            text-align: center;
+        }
+        .pdf-products-table th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+        .pdf-products-table .description-col {
+            text-align: left;
+        }
+        .pdf-products-table .total-row td {
+            font-weight: bold;
+            text-align: right;
+            background-color: #f0f0f0;
+        }
+        .pdf-products-table .total-row td:first-child {
+            text-align: left;
+        }
+
+        .pdf-footer-signature {
+            margin-top: 30px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 10px;
+        }
+    </style>
 </head>
 <body>
 
-    <!-- Central de Compras - Página Principal do Compras -->
-    <div id="purchasingCenterScreen" class="page active">
+    <div id="purchasing-central-page" class="page active">
         <header class="header">
             <div class="header-left">
-                <h1>Central de Compras</h1>
+                <h1>Central de Pedidos de Compra (POs)</h1>
             </div>
             <div class="header-right">
                 <span class="header-icon" onclick="showScreenInfo()"><i class="icon-question"></i></span>
-                <span class="header-icon" onclick="openFlowchartModal()"><i class="icon-flow"></i></span> <!-- Botão Fluxo -->
+                <span class="header-icon" onclick="openFlowchartModal()"><i class="icon-flow"></i></span>
                 <button class="btn-secondary" id="purchasingLogoutButton">Sair (Logout)</button>
             </div>
         </header>
 
         <div class="container">
-            <div class="filters">
-                <div class="filter-group">
-                    <label for="poSupplierFilter">Fornecedor:</label>
-                    <select id="poSupplierFilter" onchange="renderPurchasingCenterTables()">
-                        <option value="Todos">Todos</option>
-                        <!-- Opções de fornecedor serão populadas via JS -->
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label for="poOriginCountryFilter">País Origem:</label>
-                    <select id="poOriginCountryFilter" onchange="renderPurchasingCenterTables()">
-                        <option value="Todos">Todos</option>
-                        <!-- Opções de país de origem serão populadas via JS -->
-                    </select>
-                </div>
-                <div class="filter-group search-group">
-                    <label for="poSearch">Buscar por Nº PO ou ID Solicitação:</label>
-                    <div class="search-input-wrapper">
-                        <input type="text" id="poSearch" placeholder="Buscar por Nº PO ou ID Solicitação">
-                        <button class="search-icon-btn" onclick="renderPurchasingCenterTables()"><i class="icon-search"></i></button>
-                    </div>
-                </div>
-            </div>
-
             <div class="tab-buttons" id="purchasingTabButtons">
-                <button class="tab-button active" onclick="switchPurchasingTab('newRequests')">Novas Solicitações</button>
-                <button class="tab-button" onclick="switchPurchasingTab('negotiationsInProgress')">Negociações em Andamento</button>
-                <button class="tab-button" onclick="switchPurchasingTab('pendingManagement')">Pendente Gerência</button>
-                <button class="tab-button" onclick="switchPurchasingTab('approvedManagement')">Aprovado Gerência</button>
+                <button class="tab-button active" id="newRequestsButton">Novas Solicitações</button>
+                <button class="tab-button" id="inNegotiationButton">Negociações em Andamento</button>
+                <button class="tab-button" id="pendingManagementButton">Pendente Gerência</button>
+                <button class="tab-button" id="approvedManagementButton">Retorno Gerência</button>
             </div>
 
             <div id="newRequestsTab" class="tab-content active">
+                <h2 class="text-xl font-semibold mb-4">Novas Solicitações de Compra</h2>
+                <div class="filters">
+                    <div class="filter-group">
+                        <label for="poStatusFilter">Status da PO:</label>
+                        <select id="poStatusFilter" onchange="renderPurchasingOrdersTable()">
+                            <option value="Todos">Todos</option>
+                            <option value="Pendente">Pendente</option>
+                            <option value="Negociado">Negociado</option>
+                            <option value="Aguardando Aprovação">Aguardando Aprovação</option>
+                            <option value="Aprovado">Aprovado</option>
+                            <option value="Rejeitado">Rejeitado</option>
+                            <option value="Em Produção">Em Produção</option>
+                            <option value="Carga Pronta">Carga Pronta</option>
+                            <option value="Saída do Porto de Embarque (ATD)">Saída do Porto de Embarque (ATD)</option>
+                            <option value="Documentação Pendente">Documentação Pendente</option>
+                            <option value="Documentação OK">Documentação OK</option>
+                            <option value="Chegada no Porto de Destino (ATA)">Chegada no Porto de Destino (ATA)</option>
+                            <option value="Finalizado">Finalizado</option>
+                            <option value="Cancelado">Cancelado</option>
+                            <option value="Em Separação">Em Separação</option>
+                            <option value="Em Conferência">Em Conferência</option>
+                            <option value="Em Rota de Entrega">Em Rota de Entrega</option>
+                            <option value="Entregue">Entregue</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="poSupplierFilter">Fornecedor:</label>
+                        <select id="poSupplierFilter" onchange="renderPurchasingOrdersTable()">
+                            <option value="Todos">Todos</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="poOriginCountryFilter">País Origem:</label>
+                        <select id="poOriginCountryFilter" onchange="renderPurchasingOrdersTable()">
+                            <option value="Todos">Todos</option>
+                            <option value="Hong Kong">Hong Kong</option>
+                            <option value="Colômbia">Colômbia</option>
+                        </select>
+                    </div>
+                    <div class="filter-group search-group">
+                        <label for="poSearch">Buscar por Nº PO ou ID Principal:</label>
+                        <div class="search-input-wrapper">
+                            <input type="text" id="poSearch" placeholder="Buscar por Nº PO ou ID Principal">
+                            <button class="search-icon-btn" onclick="renderPurchasingOrdersTable()"><i class="icon-search"></i></button>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="table-container">
-                    <table>
+                    <table id="purchasingOrdersTable">
                         <thead>
                             <tr>
-                                <th>ID SOLICITAÇÃO PRINCIPAL</th>
+                                <th>ID Principal</th>
                                 <th>Nº PO</th>
-                                <th>FORNECEDOR (CÓDIGO)</th>
-                                <th>PAÍS ORIGEM</th>
-                                <th>VALOR TOTAL (FORNECEDOR)</th>
-                                <th>STATUS DA PO</th>
-                                <th>DATA GERAÇÃO</th>
-                                <th>AÇÃO</th>
+                                <th>Fornecedor</th>
+                                <th>País Origem</th>
+                                <th>Valor Total (Fornecedor)</th>
+                                <th>Status da PO</th>
+                                <th>Data Geração</th>
+                                <th>Última Atualização</th>
+                                <th>Ações</th>
                             </tr>
                         </thead>
-                        <tbody id="newRequestsTableBody">
-                            <!-- New Requests POs will be rendered here -->
+                        <tbody>
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <div id="negotiationsInProgressTab" class="tab-content">
+            <div id="inNegotiationTab" class="tab-content">
+                <h2 class="text-xl font-semibold mb-4">Negociações em Andamento</h2>
                 <div class="table-container">
-                    <table>
+                    <table id="inNegotiationTable">
                         <thead>
                             <tr>
-                                <th>ID SOLICITAÇÃO PRINCIPAL</th>
+                                <th>ID Principal</th>
                                 <th>Nº PO</th>
-                                <th>FORNECEDOR (CÓDIGO)</th>
-                                <th>PAÍS ORIGEM</th>
-                                <th>VALOR TOTAL (FORNECEDOR)</th>
-                                <th>STATUS DA PO</th>
-                                <th>DATA GERAÇÃO</th>
-                                <th>AÇÃO</th>
+                                <th>Fornecedor</th>
+                                <th>País Origem</th>
+                                <th>Valor Total (Fornecedor)</th>
+                                <th>Status da PO</th>
+                                <th>Data Geração</th>
+                                <th>Última Atualização</th>
+                                <th>Ações</th>
                             </tr>
                         </thead>
-                        <tbody id="negotiationsInProgressTableBody">
-                            <!-- Negotiations In Progress POs will be rendered here -->
+                        <tbody>
                         </tbody>
                     </table>
                 </div>
             </div>
 
             <div id="pendingManagementTab" class="tab-content">
+                <h2 class="text-xl font-semibold mb-4">Pendente Gerência</h2>
                 <div class="table-container">
-                    <table>
+                    <table id="pendingManagementTable">
                         <thead>
                             <tr>
-                                <th>ID SOLICITAÇÃO PRINCIPAL</th>
+                                <th>ID Principal</th>
                                 <th>Nº PO</th>
-                                <th>FORNECEDOR (CÓDIGO)</th>
-                                <th>PAÍS ORIGEM</th>
-                                <th>VALOR TOTAL (FORNECEDOR)</th>
-                                <th>STATUS DA PO</th>
-                                <th>DATA GERAÇÃO</th>
-                                <th>AÇÃO</th>
+                                <th>Fornecedor</th>
+                                <th>País Origem</th>
+                                <th>Valor Total (Fornecedor)</th>
+                                <th>Status da PO</th>
+                                <th>Data Geração</th>
+                                <th>Última Atualização</th>
+                                <th>Ações</th>
                             </tr>
                         </thead>
-                        <tbody id="pendingManagementTableBody">
-                            <!-- Pending Management POs will be rendered here -->
+                        <tbody>
                         </tbody>
                     </table>
                 </div>
             </div>
 
             <div id="approvedManagementTab" class="tab-content">
+                <h2 class="text-xl font-semibold mb-4">Retorno Gerência</h2>
                 <div class="table-container">
-                    <table>
+                    <table id="approvedManagementTable">
                         <thead>
                             <tr>
-                                <th>ID SOLICITAÇÃO PRINCIPAL</th>
+                                <th>ID Principal</th>
                                 <th>Nº PO</th>
-                                <th>FORNECEDOR (CÓDIGO)</th>
-                                <th>PAÍS ORIGEM</th>
-                                <th>VALOR TOTAL (FORNECEDOR)</th>
-                                <th>STATUS DA PO</th>
-                                <th>DATA GERAÇÃO</th>
-                                <th>STATUS FINAL</th>
+                                <th>Fornecedor</th>
+                                <th>País Origem</th>
+                                <th>Valor Total (Fornecedor)</th>
+                                <th>Status da PO</th>
+                                <th>Data Geração</th>
+                                <th>Última Atualização</th>
+                                <th>Ações</th>
                             </tr>
                         </thead>
-                        <tbody id="approvedManagementTableBody">
-                            <!-- Approved/Rejected POs will be rendered here -->
+                        <tbody>
                         </tbody>
                     </table>
                 </div>
             </div>
+
         </div>
     </div>
 
-    <!-- Detalhes do Pedido de Compra (PO) -->
-    <div id="purchaseOrderDetailsScreen" class="page">
+    <div id="purchasingOrderDetailsScreen" class="page">
         <header class="header">
             <div class="header-left">
-                <h1>Detalhes do Pedido de Compra (PO) <span id="currentPoId"></span></h1>
+                <h1>Detalhes da PO <span id="currentPoId"></span></h1>
             </div>
             <div class="header-right">
                 <span class="header-icon" onclick="showScreenInfo()"><i class="icon-question"></i></span>
-                <span class="header-icon" onclick="openFlowchartModal()"><i class="icon-flow"></i></span> <!-- Botão Fluxo -->
+                <span class="header-icon" onclick="openFlowchartModal()"><i class="icon-flow"></i></span>
             </div>
         </header>
         <div class="container">
             <div class="form-section">
-                <h2 class="text-xl font-semibold mb-4">Informações Gerais da PO</h2>
-                <div class="details-grid">
-                    <div class="detail-row">
-                        <div class="detail-label">Nº PO:</div>
-                        <div class="detail-value" id="poDetailId"></div>
+                <h2 class="text-xl font-semibold mb-4">Informações da PO</h2>
+                <div class="po-details-grid">
+                    <div class="po-details-card">
+                        <h4>Dados Gerais Cliente</h4>
+                        <p><strong>CLIENTE:</strong> <span id="detailPoClientName"></span></p>
+                        <p><strong>BILL TO:</strong> <span id="detailPoBillTo"></span></p>
+                        <p><strong>SHIP TO:</strong> <span id="detailPoShipTo"></span></p>
+                        <p><strong>E-MAIL:</strong> <span id="detailPoClientEmail"></span></p>
+                        <p><strong>ID Principal:</strong> <span id="detailPoParentOrderId"></span></p>
+                        <p><strong>Nº PO:</strong> <span id="detailPoId"></span></p>
+                        <p><strong>Data Geração:</strong> <span id="detailPoDate"></span></p>
                     </div>
-                    <div class="detail-row">
-                        <div class="detail-label">ID Solicitação Principal:</div>
-                        <div class="detail-value" id="poDetailParentOrderId"></div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label">Fornecedor:</div>
-                        <div class="detail-value" id="poDetailSupplier"></div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label">País de Origem:</div>
-                        <div class="detail-value" id="poDetailOriginCountry"></div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label">Valor Total (Fornecedor):</div>
-                        <div class="detail-value" id="poDetailNewSupplierPriceTotal"></div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label">Valor Total (Interno):</div>
-                        <div class="detail-value" id="poDetailCurrentInternalPriceTotal"></div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label">Status Geral da PO:</div>
-                        <div class="detail-value" id="poDetailOverallApprovalStatus"></div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label">Data de Geração:</div>
-                        <div class="detail-value" id="poDetailDate"></div>
+                    <div class="po-details-card">
+                        <h4>Dados do Pedido</h4>
+                        <p><strong>Fornecedor:</strong> <span id="detailPoSupplier"></span></p>
+                        <div class="input-group">
+                            <label for="detailPoOrderNumber">Order Number:</label>
+                            <input type="text" id="detailPoOrderNumber" onchange="updatePoField('orderNumber', this.value)">
+                        </div>
+                        <p><strong>EMAIL:</strong> <span id="detailPoSupplierEmail"></span></p>
+                        <div class="input-group">
+                            <label for="detailPoTerms">Terms:</label>
+                            <input type="text" id="detailPoTerms" onchange="updatePoField('terms', this.value)">
+                        </div>
+                        <div class="input-group">
+                            <label for="detailPoFreight">FREIGHT:</label>
+                            <input type="text" id="detailPoFreight" onchange="updatePoField('freight', this.value)">
+                        </div>
+                        <div class="input-group">
+                            <label for="detailPoETD">ETD:</label>
+                            <input type="date" id="detailPoETD" onchange="updatePoField('etd', this.value)">
+                        </div>
+                        <div class="input-group">
+                            <label for="detailPoETA">ETA:</label>
+                            <input type="date" id="detailPoETA" onchange="updatePoField('eta', this.value)">
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="form-section">
-                <h2 class="text-xl font-semibold mb-4">Produtos na PO</h2>
+                <h2 class="text-xl font-semibold mb-4">Resumo do Pedido</h2>
+                <div class="po-details-grid">
+                    <div class="po-details-card">
+                        <h4>Status e Valores</h4>
+                        <p><strong>Status Geral:</strong> <span id="detailPoOverallStatus"></span></p>
+                        <p><strong>Valor Total (Interno):</strong> <span id="detailPoCurrentInternalPriceTotal"></span></p>
+                        <p><strong>Valor Total (Fornecedor):</strong> <span id="detailPoNewSupplierPriceTotal"></span></p>
+                        <p><strong>Diferença de Preço:</strong> <span id="detailPoPriceDifference"></span></p>
+                        <p><strong>Cubagem Total:</strong> <span id="detailPoTotalCubage"></span></p>
+                        <p><strong>Última Atualização:</strong> <span id="detailPoLastUpdate"></span></p>
+                    </div>
+                    <div class="po-details-card">
+                        <h4>Previsão de Cubagem por Tipo de Container</h4>
+                        <p class="text-sm text-gray-700 mb-2">Cubagem Total da PO: <strong id="cubageSummaryTotal"></strong></p>
+                        <table class="cubage-table" id="cubageSummaryTable">
+                            <thead>
+                                <tr>
+                                    <th>Tipo CTN</th>
+                                    <th>% Ocupação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                        <div id="cubageWarning" class="text-red-600 mt-2 text-sm font-semibold"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="text-xl font-semibold mb-4">Produtos da PO e Negociação</h2>
                 <div class="table-container">
-                    <table class="w-full">
+                    <table class="product-negotiation-table">
                         <thead>
                             <tr>
                                 <th>Cód Produto</th>
@@ -205,34 +1498,34 @@
                                 <th>Qtd.</th>
                                 <th>Valor Unit. Interno</th>
                                 <th>Valor Unit. Fornecedor (Atual)</th>
-                                <th>Status Aprovação Item</th>
+                                <th>Novo Valor Unit. Fornecedor</th>
+                                <th>Status Aprovação</th>
+                                <th>Ação</th>
                             </tr>
                         </thead>
-                        <tbody id="poDetailsProductsTableBody">
+                        <tbody id="poProductsTableBody">
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <div class="form-section" id="negotiationSection">
-                <h2 class="text-xl font-semibold mb-4">Negociação de Preços (Apenas Hong Kong)</h2>
-                <div class="input-group">
-                    <label for="negotiationNotes">Notas da Negociação:</label>
-                    <textarea id="negotiationNotes" rows="4" placeholder="Adicione notas sobre a negociação aqui..."></textarea>
-                </div>
-                <div class="form-actions">
-                    <button class="btn-primary" onclick="finalizeNegotiation()">Finalizar Negociação</button>
-                </div>
-            </div>
-
-            <div class="form-actions">
-                <button class="btn-secondary" onclick="backToPurchasingCenter()">Voltar para Central de Compras</button>
-                <button class="btn-primary" onclick="generatePOPDF(currentPurchasingPO.id)">Gerar PDF da PO</button>
+            <div class="po-actions">
+                <button class="btn-secondary" onclick="backToPurchasingCentral()">Voltar à Central</button>
+                <button class="btn-primary" id="approvePoBtn" onclick="approvePO()">Aprovar PO</button>
+                <button class="btn-danger" id="rejectPoBtn" onclick="rejectPO()">Rejeitar PO</button>
+                <button class="btn-primary" id="renegotiatePoBtn" onclick="renegotiateOrder(currentPurchasingPO.id)">Renegociar PO</button>
+                <button class="btn-primary" onclick="showPoPdf()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-pdf-fill" viewBox="0 0 16 16">
+                        <path d="M5.521 12.671L12 8l-6.479 4.671a.5.5 0 0 1-.818-.53l.659-2.705L.896 6.97a.5.5 0 0 1 .303-.815l3.679-.536L7.02 2.15a.5.5 0 0 1 .887 0l1.932 3.969 3.679.536a.5.5 0 0 1 .303.815l-4.466 3.226.659 2.705a.5.5 0 0 1-.818.53z"/>
+                        <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0M9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1M11.546 10.53L9.025 13.513 7.453 10.32a.5.5 0 0 1 .79-.1l1.375 1.48L11.8 9.53a.5.5 0 0 1 .7.606Z"/>
+                    </svg>
+                    Ver PO PDF
+                </button>
+                <button class="btn-primary" id="nfePdfBtn" onclick="showNfePdf()">Ver NF-e (Colômbia)</button>
             </div>
         </div>
     </div>
 
-    <!-- Modais Globais (usados por várias telas) -->
     <div id="messageModal" class="modal-overlay">
         <div class="modal-content">
             <button class="modal-close-btn" id="messageModalCloseBtn">&times;</button>
@@ -245,18 +1538,85 @@
         </div>
     </div>
 
-    <div id="poPdfViewer" class="modal-overlay">
+    <div id="approvalModal" class="modal-overlay">
         <div class="modal-content">
-            <button class="modal-close-btn" onclick="document.getElementById('poPdfViewer').classList.remove('active');">&times;</button>
-            <h3>Visualizar PDF da PO</h3>
-            <pre id="poPdfContent" class="whitespace-pre-wrap"></pre>
+            <button class="modal-close-btn" onclick="closeApprovalModal()">&times;</button>
+            <h3 id="approvalModalTitle"></h3>
+            <p id="approvalModalMessage"></p>
             <div class="modal-actions">
-                <button class="btn-primary" onclick="document.getElementById('poPdfViewer').classList.remove('active');">Fechar</button>
+                <button class="btn-primary" id="confirmApprovalBtn">Confirmar</button>
+                <button class="btn-secondary" onclick="closeApprovalModal()">Cancelar</button>
             </div>
         </div>
     </div>
 
-    <!-- Flowchart Modal Structure -->
+    <div id="nfePdfViewer" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="document.getElementById('nfePdfViewer').classList.remove('active');">&times;</button>
+            <h3>Visualizar NF-e</h3>
+            <pre id="nfePdfContent"></pre>
+            <div class="modal-actions">
+                <button class="btn-primary" onclick="document.getElementById('nfePdfViewer').classList.remove('active');">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="poPdfViewer" class="modal-overlay pdf-viewer-modal">
+        <div class="modal-content">
+            <div class="pdf-viewer-header">
+                <button onclick="document.getElementById('poPdfViewer').classList.remove('active');">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                    </svg>
+                </button>
+                <div class="title">Visualizador de PDF</div>
+                <button>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-gear-fill" viewBox="0 0 16 16">
+                        <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.17.31a1.464 1.464 0 0 1-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.31-.17a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.17-.31a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.31.17a1.464 1.464 0 0 1-2.105-.872zM8 10.93a2.929 2.929 0 1 0 0-5.86 2.929 2.929 0 0 0 0 5.858z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="pdf-viewer-toolbar">
+                <button title="Desenhar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                        <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 1.793 13.5L.5 14.793a.5.5 0 0 0-.128.512l.354 1.29a.5.5 0 0 0 .952.05l1.29-.354a.5.5 0 0 0 .512-.128L6.5 10.207 2.793 6.5l-2.647 2.646z"/>
+                    </svg>
+                </button>
+                <button title="Pesquisar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                    </svg>
+                </button>
+                <button title="Zoom In">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-zoom-in" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M6.5 12a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11zM13 13.5a.5.5 0 0 0 .5.5h.5a.5.5 0 0 0 .5-.5v-.5a.5.5 0 0 0-.5-.5h-.5a.5.5 0 0 0-.5.5z"/>
+                        <path fill-rule="evenodd" d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                    </svg>
+                </button>
+                <button title="Zoom Out">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-zoom-out" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M6.5 12a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11zM13 13.5a.5.5 0 0 0 .5.5h.5a.5.5 0 0 0 .5-.5v-.5a.5.5 0 0 0-.5-.5h-.5a.5.5 0 0 0-.5.5z"/>
+                        <path fill-rule="evenodd" d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                    </svg>
+                </button>
+                <button title="Página Anterior">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+                        <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+                    </svg>
+                </button>
+                <span class="page-info">1 de 1</span>
+                <button title="Próxima Página">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
+                        <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="pdf-content-wrapper">
+                <div id="poPdfContent" class="pdf-content"></div>
+            </div>
+        </div>
+    </div>
+
     <div id="flowchartModal" class="modal-overlay">
         <div class="modal-content">
             <span class="modal-close-btn" onclick="closeFlowchartModal()">&times;</span>
@@ -264,54 +1624,314 @@
         </div>
     </div>
 
-    <!-- Link para o arquivo JavaScript externo -->
-    <script src="script.js"></script>
     <script>
-        let currentPurchasingTab = 'newRequests'; // Adiciona uma variável para controlar a aba ativa
+        let currentScreen = 'purchasing-central-page';
+        let currentPurchasingPO = null;
+        let currentApprovalAction = '';
+        let activePurchasingTab = 'newRequests';
 
-        /**
-         * Exibe informações sobre a tela atual para o usuário de Compras.
-         */
+        const MAX_CUBAGE_20HC = 37.4;
+        const MAX_CUBAGE_40HC = 76.0;
+
+        const productDatabase = {
+            "PROD001": { code: "PROD001", clientCode: "SKU-001", description: "Smartphone Premium X1", moq: 3, unitPrice: 150.00, tableValue: 160.00, cubageUnit: 0.005, simulatedStock: 100, productLine: "Eletrônicos", supplier: "Fornecedor A", originCountry: "Hong Kong" },
+            "PROD002": { code: "PROD002", clientCode: "SKU-002", description: "Tablet Pro Z", moq: 2, unitPrice: 250.00, tableValue: 265.00, cubageUnit: 0.008, simulatedStock: 50, productLine: "Eletrônicos", supplier: "Fornecedor B", originCountry: "Hong Kong" },
+            "PROD003": { code: "PROD003", clientCode: "SKU-003", description: "Fone Bluetooth Max", moq: 5, unitPrice: 45.00, tableValue: 50.00, cubageUnit: 0.001, simulatedStock: 200, productLine: "Acessórios", supplier: "Fornecedor C", originCountry: "Colômbia" },
+            "PROD004": { code: "PROD004", clientCode: "SKU-004", description: "Smartwatch Sport Y", moq: 1, unitPrice: 80.00, tableValue: 85.00, cubageUnit: 0.002, simulatedStock: 120, productLine: "Vestíveis", supplier: "Fornecedor A", originCountry: "Hong Kong" },
+            "PROD005": { code: "PROD005", clientCode: "SKU-005", description: "Câmera Digital Ultra HD", moq: 2, unitPrice: 300.00, tableValue: 320.00, cubageUnit: 0.01, simulatedStock: 30, productLine: "Fotografia", supplier: "Fornecedor B", originCountry: "Hong Kong" },
+            "PROD006": { code: "PROD006", clientCode: "SKU-006", description: "Bateria Portátil Mega", moq: 10, unitPrice: 25.00, tableValue: 28.00, cubageUnit: 0.0005, simulatedStock: 300, productLine: "Acessórios", supplier: "Fornecedor C", originCountry: "Colômbia" },
+            "PROD007": { code: "PROD007", clientCode: "SKU-007", description: "Cadeira Ergonômica", moq: 1, unitPrice: 600.00, tableValue: 650.00, cubageUnit: 0.15, simulatedStock: 15, productLine: "Móveis de Escritório", supplier: "Fornecedor A", originCountry: "Hong Kong" },
+            "PROD008": { code: "PROD008", clientCode: "SKU-008", description: "Impressora 3D Industrial", moq: 1, unitPrice: 800.00, tableValue: 850.00, cubageUnit: 0.8, simulatedStock: 0, productLine: "Maquinário", supplier: "Fornecedor B", originCountry: "Hong Kong" },
+            "PROD009": { code: "PROD009", clientCode: "SKU-009", description: "Monitor Ultrawide", moq: 1, unitPrice: 350.00, tableValue: 350.00, cubageUnit: 0.05, simulatedStock: 50, productLine: "Periféricos", supplier: "Fornecedor C", originCountry: "Colômbia" },
+            "PROD010": { code: "PROD010", clientCode: "SKU-010", description: "Teclado Mecânico", moq: 1, unitPrice: 80.00, tableValue: 80.00, cubageUnit: 0.01, simulatedStock: 75, productLine: "Periféricos", supplier: "Fornecedor A", originCountry: "Hong Kong" },
+            "PROD011": { code: "PROD011", clientCode: "SKU-011", description: "Mouse Gamer", moq: 1, unitPrice: 40.00, tableValue: 40.00, cubageUnit: 0.001, simulatedStock: 150, productLine: "Periféricos", supplier: "Fornecedor B", originCountry: "Hong Kong" }
+        };
+
+        const universalClientCodeToProductCodeMap = {};
+        for (const prodCode in productDatabase) {
+            const product = productDatabase[prodCode];
+            if (product.clientCode) {
+                universalClientCodeToProductCodeMap[product.clientCode.toUpperCase()] = prodCode;
+            }
+        }
+
+        const supplierCodeMap = {};
+        const supplierNameMap = {};
+        let nextSupplierCode = 22;
+
+        const clientNames = ["Cliente Mexico", "Cliente Chile", "Cliente Paraguai", "Cliente Colombia"];
+        let clientIndex = 0;
+
+        function assignClientName(originCountry) {
+            let assignedClient = clientNames[clientIndex % clientNames.length];
+            if (originCountry === 'Colômbia' && assignedClient === 'Cliente Colombia') {
+                clientIndex++;
+                assignedClient = clientNames[clientIndex % clientNames.length];
+            }
+            clientIndex++;
+            return assignedClient;
+        }
+
+        const hongKongTrackingFlow = [
+            { name: 'Pendente', class: 'pending', description: 'Pedido criado, aguardando Compras Internacionais iniciar o processo.' },
+            { name: 'Em Negociação', class: 'negotiation', description: 'Pedido enviado ao fornecedor, aguardando negociação' },
+            { name: 'Aguardando Aprovação', class: 'waiting-approval', description: 'Pedido recebido, Aguardando aprovação da Gerencia' },
+            { name: 'Rejeitado', class: 'rejected', isFinal: true },
+            { name: 'Cancelado', class: 'cancelled', isFinal: true },
+            { name: 'Aprovado', class: 'approved', description: 'Pedido Aprovado (via retorno da Gerência)' },
+            { name: 'Em Produção', class: 'production', description: 'Pedido Aprovado, em produção pelo fornecedor' },
+            { name: 'Carga Pronta', class: 'ready-cargo', description: 'Mercadoria pronta para embarque' },
+            { name: 'Saída do Porto de Embarque (ATD)', class: 'atd', description: 'Pedido embarcado' },
+            { name: 'Documentação Pendente', class: 'pending-doc', description: 'Providenciando documentação de embarque (CI, PL, TELEX RELEASE, COO, Serial Numbers, conforme necessidade do cliente)' },
+            { name: 'Documentação OK', class: 'doc-ok', description: 'Toda documentação de embarque ok, processo finalizado no DIMPEX' },
+            { name: 'Chegada no Porto de Destino (ATA)', class: 'ata', isFinal: true },
+            { name: 'Finalizado', class: 'finished', isFinal: true }
+        ];
+
+        const colombiaTrackingFlow = [
+            { name: 'Pendente', class: 'pending' },
+            { name: 'Em Separação', class: 'separation' },
+            { name: 'Em Conferência', 'class': 'conference' },
+            { name: 'Em Rota de Entrega', class: 'in-transit' },
+            { name: 'Entregue', class: 'delivered', isFinal: true },
+            { name: 'Aprovado', class: 'approved' },
+            { name: 'Rejeitado', class: 'rejected', isFinal: true },
+            { name: 'Cancelado', class: 'cancelled', isFinal: true }
+        ];
+
+        let generatedPurchaseOrders = [
+            {
+                parentOrderId: 'SOL-001', id: 'PED-001', supplier: 'Fornecedor A', supplierCode: '22', date: '2025-06-20',
+                clientName: 'Cliente Mexico', billTo: 'Rua Exemplo, 123', shipTo: 'Av. Teste, 456', clientEmail: 'cliente.mexico@example.com',
+                orderNumber: 'AG 03/25 TYBR', supplierEmail: 'fornecedorA@example.com', terms: '20% TT balance after BL - FOB Ningbo Port', freight: '1 X 40ft regular Container', etd: '20-mai-2025', eta: '04-mai-2025',
+                products: [
+                    { code: 'PROD001', name: 'Smartphone Premium X1', quantity: 10, unitPrice: 150.00, currentInternalUnitPrice: 160.00, newSupplierUnitPrice: 155.00, approvalStatus: 'Pendente', supplierModel: 'YW4500 ??', toyamaModel: 'TC54GH-LP-16SN' }
+                ],
+                newSupplierPriceTotal: (10 * 155).toFixed(2), currentInternalPriceTotal: (10 * 160).toFixed(2), overallApprovalStatus: 'Pendente',
+                totalCubage: (10 * 0.005).toFixed(2), originCountry: 'Hong Kong', lastUpdateDate: '2025-06-20'
+            },
+            {
+                parentOrderId: 'SOL-014', id: 'PED-017', supplier: 'Fornecedor C', supplierCode: '44', date: '2025-06-30',
+                clientName: 'Cliente Chile', billTo: 'Calle Falsa, 123', shipTo: 'Av. Siempre Viva, 742', clientEmail: 'cliente.chile@example.com',
+                orderNumber: 'AG 04/25 TYBR', supplierEmail: 'fornecedorC@example.com', terms: 'Net 60', freight: 'CIF Hong Kong', etd: '20-jun-2025', eta: '05-jul-2025',
+                products: [
+                    { code: 'PROD003', name: 'Fone Bluetooth Max', quantity: 20, unitPrice: 40.00, currentInternalUnitPrice: 48.00, newSupplierUnitPrice: 42.00, approvalStatus: 'Pendente', supplierModel: 'YW4500 ??', toyamaModel: 'TC54GH-LP-16SN' }
+                ],
+                newSupplierPriceTotal: (20 * 42).toFixed(2), currentInternalPriceTotal: (20 * 48).toFixed(2), overallApprovalStatus: 'Pendente',
+                totalCubage: (20 * 0.001).toFixed(2), originCountry: 'Hong Kong', lastUpdateDate: '2025-06-30'
+            },
+            {
+                parentOrderId: 'SOL-003', id: 'PED-005', supplier: 'Fornecedor B', supplierCode: '33', date: '2025-06-24',
+                clientName: 'Cliente Paraguai', billTo: 'Rua Principal, 1', shipTo: 'Av. Secundária, 2', clientEmail: 'cliente.paraguai@example.com',
+                orderNumber: 'PO-9876', supplierEmail: 'fornecedorB@example.com', terms: 'Net 30', freight: 'EXW Hong Kong', etd: '2025-07-05', eta: '2025-07-20',
+                products: [
+                    { code: 'PROD001', name: 'Smartphone Premium X1', quantity: 2, unitPrice: 150.00, currentInternalUnitPrice: 158.00, newSupplierUnitPrice: 152.00, approvalStatus: 'Negociado', supplierModel: 'SM-X1-V1', toyamaModel: 'TX1-STD' },
+                    { code: 'PROD003', name: 'Fone Bluetooth Max', quantity: 3, unitPrice: 45.00, currentInternalUnitPrice: 48.00, newSupplierUnitPrice: 46.00, approvalStatus: 'Negociado', supplierModel: 'FB-M-V3', toyamaModel: 'TFB-MAX' }
+                ],
+                newSupplierPriceTotal: (2 * 152 + 3 * 46).toFixed(2), currentInternalPriceTotal: (2 * 158 + 3 * 48).toFixed(2), overallApprovalStatus: 'Negociado',
+                totalCubage: (2 * 0.005 + 3 * 0.001).toFixed(2), originCountry: 'Hong Kong', lastUpdateDate: '2025-07-01'
+            },
+            {
+                parentOrderId: 'SOL-015', id: 'PED-018', supplier: 'Fornecedor A', supplierCode: '22', date: '2025-06-29',
+                clientName: 'Cliente Mexico', billTo: 'Rua Exemplo, 123', shipTo: 'Av. Teste, 456', clientEmail: 'cliente.mexico@example.com',
+                orderNumber: 'PO-5432', supplierEmail: 'fornecedorA@example.com', terms: 'Net 30', freight: 'FOB Hong Kong', etd: '2025-07-10', eta: '2025-07-25',
+                products: [
+                    { code: 'PROD004', name: 'Smartwatch Sport Y', quantity: 5, unitPrice: 80.00, currentInternalUnitPrice: 85.00, newSupplierUnitPrice: 82.00, approvalStatus: 'Negociado', supplierModel: 'SW-Y-SPORT', toyamaModel: 'TSW-Y' }
+                ],
+                newSupplierPriceTotal: (5 * 82).toFixed(2), currentInternalPriceTotal: (5 * 85).toFixed(2), overallApprovalStatus: 'Negociado',
+                totalCubage: (5 * 0.002).toFixed(2), originCountry: 'Hong Kong', lastUpdateDate: '2025-07-01'
+            },
+            {
+                parentOrderId: 'SOL-008', id: 'PED-015', supplier: 'Fornecedor A', supplierCode: '22', date: '2025-06-29',
+                clientName: 'Cliente Chile', billTo: 'Calle Falsa, 123', shipTo: 'Av. Siempre Viva, 742', clientEmail: 'cliente.chile@example.com',
+                orderNumber: 'PO-1122', supplierEmail: 'fornecedorA@example.com', terms: 'Net 30', freight: 'FOB Hong Kong', etd: '', eta: '',
+                products: [
+                    { code: 'PROD001', name: 'Smartphone Premium X1', quantity: 5, unitPrice: 150.00, currentInternalUnitPrice: 158.00, newSupplierUnitPrice: 152.00, approvalStatus: 'Aguardando Aprovação', supplierModel: 'SM-X1-V1', toyamaModel: 'TX1-STD' }
+                ],
+                newSupplierPriceTotal: (5 * 152).toFixed(2), currentInternalUnitPrice: (5 * 158).toFixed(2), overallApprovalStatus: 'Aguardando Aprovação',
+                totalCubage: (5 * 0.005).toFixed(2), originCountry: 'Hong Kong', lastUpdateDate: '2025-07-02'
+            },
+            {
+                parentOrderId: 'SOL-008', id: 'PED-016', supplier: 'Fornecedor B', supplierCode: '33', date: '2025-06-29',
+                clientName: 'Cliente Paraguai', billTo: 'Rua Principal, 1', shipTo: 'Av. Secundária, 2', clientEmail: 'cliente.paraguai@example.com',
+                orderNumber: 'PO-3344', supplierEmail: 'fornecedorB@example.com', terms: 'Net 30', freight: 'EXW Hong Kong', etd: '', eta: '',
+                products: [
+                    { code: 'PROD002', name: 'Tablet Pro Z', quantity: 2, unitPrice: 250.00, currentInternalUnitPrice: 260.00, newSupplierUnitPrice: 255.00, approvalStatus: 'Aguardando Aprovação', supplierModel: 'TB-Z-PRO', toyamaModel: 'TTB-Z' }
+                ],
+                newSupplierPriceTotal: (2 * 255).toFixed(2), currentInternalUnitPrice: (2 * 260).toFixed(2), overallApprovalStatus: 'Aguardando Aprovação',
+                totalCubage: (2 * 0.008).toFixed(2), originCountry: 'Hong Kong', lastUpdateDate: '2025-07-02'
+            },
+            {
+                parentOrderId: 'SOL-016', id: 'PED-019', supplier: 'Fornecedor B', supplierCode: '33', date: '2025-06-30',
+                clientName: 'Cliente Mexico', billTo: 'Rua Exemplo, 123', shipTo: 'Av. Teste, 456', clientEmail: 'cliente.mexico@example.com',
+                orderNumber: 'PO-5566', supplierEmail: 'fornecedorB@example.com', terms: 'Net 30', freight: 'FOB Hong Kong', etd: '', eta: '',
+                products: [
+                    { code: 'PROD005', name: 'Câmera Digital Ultra HD', quantity: 1, unitPrice: 300.00, currentInternalUnitPrice: 320.00, newSupplierUnitPrice: 310.00, approvalStatus: 'Aguardando Aprovação', supplierModel: 'CD-UHD-MKII', toyamaModel: 'TCD-UHD' }
+                ],
+                newSupplierPriceTotal: (1 * 310).toFixed(2), currentInternalUnitPrice: (1 * 320).toFixed(2), overallApprovalStatus: 'Aguardando Aprovação',
+                totalCubage: (1 * 0.01).toFixed(2), originCountry: 'Hong Kong', lastUpdateDate: '2025-07-02'
+            },
+            {
+                parentOrderId: 'SOL-020', id: 'PED-021', supplier: 'Fornecedor A', supplierCode: '22', date: '2025-07-01',
+                clientName: 'Cliente Chile', billTo: 'Calle Falsa, 123', shipTo: 'Av. Siempre Viva, 742', clientEmail: 'cliente.chile@example.com',
+                orderNumber: 'PO-7788', supplierEmail: 'fornecedorA@example.com', terms: 'Net 30', freight: 'CIF Hong Kong', etd: '', eta: '',
+                products: [
+                    { code: 'PROD004', name: 'Smartwatch Sport Y', quantity: 3, unitPrice: 80.00, currentInternalUnitPrice: 85.00, newSupplierUnitPrice: 88.00, approvalStatus: 'Rejeitado', supplierModel: 'SW-Y-SPORT', toyamaModel: 'TSW-Y' }
+                ],
+                newSupplierPriceTotal: (3 * 88).toFixed(2), currentInternalUnitPrice: (3 * 85).toFixed(2), overallApprovalStatus: 'Rejeitado',
+                totalCubage: (3 * 0.002).toFixed(2), originCountry: 'Hong Kong', lastUpdateDate: '2025-07-03'
+            },
+            {
+                parentOrderId: 'SOL-005', id: 'PED-010', supplier: 'Fornecedor C', supplierCode: '44', date: '2025-06-26',
+                clientName: 'Cliente Paraguai', billTo: 'Rua Principal, 1', shipTo: 'Av. Secundária, 2', clientEmail: 'cliente.paraguai@example.com',
+                orderNumber: 'PO-9900', supplierEmail: 'fornecedorC@example.com', terms: 'Net 60', freight: 'EXW Hong Kong', etd: '2025-07-01', eta: '2025-07-15',
+                products: [
+                    { code: 'PROD005', name: 'Câmera Digital Ultra HD', quantity: 3, unitPrice: 320.00, currentInternalUnitPrice: 335.00, newSupplierUnitPrice: 320.00, approvalStatus: 'Aprovado', supplierModel: 'CD-UHD-MKII', toyamaModel: 'TCD-UHD' }
+                ],
+                newSupplierPriceTotal: (3 * 320).toFixed(2), currentInternalUnitPrice: (3 * 335).toFixed(2), overallApprovalStatus: 'Aprovado',
+                totalCubage: (3 * 0.01).toFixed(2), originCountry: 'Hong Kong', lastUpdateDate: '2025-07-03'
+            },
+            {
+                parentOrderId: 'SOL-009', id: 'PED-002', supplier: 'Fornecedor B', supplierCode: '33', date: '2025-06-21',
+                clientName: 'Cliente Colombia', billTo: 'Carrera 10, 10-10', shipTo: 'Avenida 20, 20-20', clientEmail: 'cliente.colombia@example.com',
+                orderNumber: 'PO-1234', supplierEmail: 'fornecedorB@example.com', terms: 'Net 30', freight: 'FOB Colombia', etd: '2025-06-25', eta: '2025-07-01',
+                products: [
+                    { code: 'PROD007', name: 'Cadeira Ergonômica', quantity: 2, unitPrice: 600.00, currentInternalUnitPrice: 630.00, newSupplierUnitPrice: 600.00, approvalStatus: 'Aprovado', supplierModel: 'CE-ERG-V1', toyamaModel: 'TCE-ERG' }
+                ],
+                newSupplierPriceTotal: (2 * 600).toFixed(2), currentInternalUnitPrice: (2 * 630).toFixed(2), overallApprovalStatus: 'Aprovado',
+                totalCubage: (2 * 0.15).toFixed(2), originCountry: 'Colômbia', lastUpdateDate: '2025-07-01'
+            },
+            {
+                parentOrderId: 'SOL-017', id: 'PED-020', supplier: 'Fornecedor A', supplierCode: '22', date: '2025-06-25',
+                clientName: 'Cliente Mexico', billTo: 'Rua Exemplo, 123', shipTo: 'Av. Teste, 456', clientEmail: 'cliente.mexico@example.com',
+                orderNumber: 'PO-4321', supplierEmail: 'fornecedorA@example.com', terms: 'Net 30', freight: 'FOB Hong Kong', etd: '2025-06-28', eta: '2025-07-10',
+                products: [
+                    { code: 'PROD006', name: 'Bateria Portátil Mega', quantity: 15, unitPrice: 20.00, currentInternalUnitPrice: 28.00, newSupplierUnitPrice: 22.00, approvalStatus: 'Aprovado', supplierModel: 'BP-MEGA-X', toyamaModel: 'TBP-MEGA' }
+                ],
+                newSupplierPriceTotal: (15 * 22).toFixed(2), currentInternalUnitPrice: (15 * 28).toFixed(2), overallApprovalStatus: 'Finalizado',
+                totalCubage: (15 * 0.0005).toFixed(2), originCountry: 'Hong Kong', lastUpdateDate: '2025-07-05'
+            },
+            {
+                parentOrderId: 'SOL-018', id: 'SAP-001', supplier: 'Fornecedor C', supplierCode: '44', date: '2025-07-01',
+                clientName: 'Cliente Colombia', billTo: 'Carrera 10, 10-10', shipTo: 'Avenida 20, 20-20', clientEmail: 'cliente.colombia@example.com',
+                orderNumber: 'SAP-9876', supplierEmail: 'fornecedorC@example.com', terms: 'Cash', freight: 'Terrestre', etd: '2025-07-02', eta: '2025-07-05',
+                products: [
+                    { code: 'PROD009', name: 'Monitor Ultrawide', quantity: 1, unitPrice: 350.00, currentInternalUnitPrice: 350.00, newSupplierUnitPrice: 350.00, approvalStatus: 'Aprovado', supplierModel: 'MU-29-V1', toyamaModel: 'TMU-29' },
+                    { code: 'PROD003', name: 'Fone Bluetooth Max', quantity: 3, unitPrice: 50.00, currentInternalUnitPrice: 50.00, newSupplierUnitPrice: 50.00, approvalStatus: 'Aprovado', supplierModel: 'FB-M-V3', toyamaModel: 'TFB-MAX' }
+                ],
+                newSupplierPriceTotal: (1 * 350 + 3 * 50).toFixed(2), currentInternalUnitPrice: (1 * 350 + 3 * 50).toFixed(2), overallApprovalStatus: 'Em Separação',
+                totalCubage: (1 * 0.05 + 3 * 0.001).toFixed(2), originCountry: 'Colômbia', lastUpdateDate: '2025-07-05'
+            }
+        ];
+
+        // Filter out Colombia orders
+        generatedPurchaseOrders = generatedPurchaseOrders.filter(po => po.originCountry === 'Hong Kong');
+
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.page').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+            currentScreen = screenId;
+        }
+
+        function showMessage(title, content, type = 'info', onConfirm = null, onCancel = null) {
+            const modal = document.getElementById('messageModal');
+            document.getElementById('messageModalTitle').innerText = title;
+            document.getElementById('messageModalContent').innerHTML = content;
+            const confirmBtn = document.getElementById('messageModalConfirmBtn');
+            const cancelBtn = document.getElementById('messageModalCancelBtn');
+            const closeBtn = document.getElementById('messageModalCloseBtn');
+
+            confirmBtn.onclick = () => { if (onConfirm) onConfirm(); modal.classList.remove('active'); };
+            cancelBtn.onclick = () => { if (onCancel) onCancel(); modal.classList.remove('active'); };
+            closeBtn.onclick = () => modal.classList.remove('active');
+
+            confirmBtn.classList.add('hidden');
+            cancelBtn.classList.add('hidden');
+            closeBtn.classList.remove('hidden');
+
+            if (onConfirm || onCancel) {
+                closeBtn.classList.add('hidden');
+                confirmBtn.classList.remove('hidden');
+                if (onCancel) {
+                    cancelBtn.classList.remove('hidden');
+                }
+            }
+            modal.classList.add('active');
+        }
+
+        function getOrGenerateSupplierCode(supplierName) {
+            if (!supplierCodeMap[supplierName]) {
+                let maxCode = 0;
+                for (const key in supplierCodeMap) {
+                    maxCode = Math.max(maxCode, parseInt(supplierCodeMap[key]));
+                }
+                nextSupplierCode = maxCode + 11;
+                supplierCodeMap[supplierName] = String(nextSupplierCode);
+                supplierNameMap[String(nextSupplierCode)] = supplierName;
+            }
+            return supplierCodeMap[supplierName];
+        }
+
+        function getSupplierNameFromCode(supplierCode) {
+            return supplierNameMap[supplierCode] || supplierCode;
+        }
+
         function showScreenInfo() {
             let info = '';
             switch (currentScreen) {
-                case 'purchasingCenterScreen':
+                case 'purchasing-central-page':
                     info = `
-                        <h2 style="font-size:1.3rem; font-weight:bold; margin-bottom:10px;">🛒 Central de Compras</h2>
-                        <p>Bem-vindo à <b>Central de Compras</b>! Aqui você gerencia as Ordens de Compra (POs) e as negociações com fornecedores.</p>
+                        <h2 style="font-size:1.3rem; font-weight:bold; margin-bottom:10px;">📊 Central de Pedidos de Compra (POs)</h2>
+                        <p>Gerencie e acompanhe todas as Ordens de Compra (POs) geradas, incluindo as solicitações de Hong Kong e Colômbia.</p>
                         <hr style="margin:16px 0;">
                         <h3 style="font-size:1.1rem; font-weight:bold;">🔍 Busca e Filtros</h3>
-                        <ul style="margin-bottom:10px;">
-                        <li>Filtre POs por <b>Fornecedor</b> (código) ou <b>País de Origem</b>.</li>
-                        <li>Utilize a busca rápida por número da PO ou ID da Solicitação Principal.</li>
+                        <ul>
+                            <li>Filtre as POs por <b>Status</b>, <b>Fornecedor</b> (código) ou <b>País de Origem</b>.</li>
+                            <li>Utilize a busca rápida por número da PO ou ID da Solicitação Principal.</li>
                         </ul>
-                        <h3 style="font-size:1.1rem; font-weight:bold;">📋 Visualização das POs</h3>
-                        <ul style="margin-bottom:10px;">
-                        <li>Veja todas as POs em uma tabela detalhada.</li>
-                        <li>Clique em <b>Ver Detalhes</b> para acessar informações completas e iniciar negociações.</li>
+                        <h3 style="font-size:1.1rem; font-weight:bold;">📋 Visualização e Ações</h3>
+                        <ul>
+                            <li>Clique no número da PO para ver os detalhes completos, negociar preços de itens e gerenciar o status.</li>
+                            <li>Para POs de Hong Kong, você pode <b>Aprovar</b> ou <b>Rejeitar</b> a PO, e <b>Negociar</b> os preços dos produtos.</li>
+                            <li>Para pedidos da Colômbia (identificados como SAP-XXX), você pode visualizar os detalhes e o status do rastreamento.</li>
                         </ul>
-                        <h3 style="font-size:1.1rem; font-weight:bold;">📊 Negociação</h3>
-                        <ul style="margin-bottom:10px;">
-                        <li>Para POs de Hong Kong, você pode simular a negociação de preços e finalizar o processo.</li>
-                        <li>POs da Colômbia são processadas automaticamente via SAP.</li>
+                        <h3 style="font-size:1.1rem; font-weight:bold;">🟢 Dicas Visuais</h3>
+                        <ul>
+                            <li><b>Cores dos status:</b>
+                                <span style="color:#16a34a;">🟢 Aprovado/Finalizado</span> |
+                                <span style="color:#eab308;">🟡 Pendente/Aguardando Aprovação</span> |
+                                <span style="color:#dc2626;">🔴 Rejeitado/Cancelado</span> |
+                                <span style="color:#3b82f6;">🔵 Em andamento</span> |
+                                <span style="color:#800080;">🟣 Negociado</span>
+                            </li>
                         </ul>
                         <hr style="margin:16px 0;">
-                        <p style="font-size:0.95rem;">Se precisar de ajuda, clique novamente neste ícone ou consulte o manual do usuário.</p>
+                        <p style="font-size:0.95rem;">O rastreamento e os detalhes da cubagem estão disponíveis na tela de detalhes da PO.</p>
                     `;
                     break;
-                case 'purchaseOrderDetailsScreen':
+                case 'purchasingOrderDetailsScreen':
                     info = `
                         <h2 style="font-size:1.3rem; font-weight:bold; margin-bottom:10px;">📄 Detalhes da PO</h2>
-                        <p>Visualize os detalhes de uma Ordem de Compra (PO) e gerencie a negociação.</p>
+                        <p>Visualize e interaja com os detalhes da Ordem de Compra selecionada.</p>
                         <hr style="margin:16px 0;">
-                        <ul style="margin-bottom:10px;">
-                        <li><b>Informações Gerais:</b> Dados básicos da PO, valores internos e do fornecedor.</li>
-                        <li><b>Produtos na PO:</b> Lista de itens, quantidades e status de aprovação individual.</li>
-                        <li><b>Negociação de Preços:</b> (Apenas para Hong Kong) Adicione notas e finalize a negociação.</li>
-                        <li><b>Gerar PDF:</b> Crie um PDF simulado da PO para documentação.</li>
+                        <ul>
+                            <li><b>Informações da PO:</b> Dados gerais, status e valores totais.</li>
+                            <li><b>Produtos e Negociação:</b> Lista de produtos com seus valores internos e do fornecedor. Você pode ajustar o "Novo Valor Unit. Fornecedor" para negociar.</li>
+                            <li><b>Previsão de Cubagem:</b> Detalhes sobre a cubagem total da PO e sugestões de tipo de container.</li>
+                            <li><b>Ações:</b>
+                                <ul>
+                                    <li><b>Aprovar PO:</b> Altera o status da PO para "Aprovado" e atualiza os pedidos do cliente.</li>
+                                    <li><b>Rejeitar PO:</b> Altera o status da PO para "Rejeitado" e atualiza os pedidos do cliente.</li>
+                                    <li><b>Ver PO PDF:</b> Simula a visualização do documento PDF da PO.</li>
+                                    <li><b>Ver NF-e (Colômbia):</b> Para pedidos da Colômbia, simula a visualização da Nota Fiscal Eletrônica.</li>
+                                </ul>
+                            </li>
                         </ul>
                         <hr style="margin:16px 0;">
-                        <p style="font-size:0.95rem;"><b>Dica:</b> O status de aprovação de cada item é atualizado após a negociação ou aprovação gerencial.</p>
+                        <p style="font-size:0.95rem;"><b>Dica:</b> A diferença de preço é calculada entre o valor unitário interno e o novo valor do fornecedor.</p>
                     `;
                     break;
                 default:
@@ -320,184 +1940,273 @@
             showMessage('Informações da Tela', info, 'info');
         }
 
-        /**
-         * Retorna à Central de Compras.
-         */
-        function backToPurchasingCenter() {
-            showScreen('purchasingCenterScreen');
-            renderPurchasingCenterTables(); // Re-renderiza a tabela de POs
+        function logout() {
+            currentPurchasingPO = null;
+            window.location.href = 'index.html';
         }
 
-        /**
-         * Alterna entre as abas da Central de Compras.
-         * @param {string} tabType - O tipo da aba a ser ativada ('newRequests', 'negotiationsInProgress', 'pendingManagement', 'approvedManagement').
-         */
+        function populatePoSupplierFilter() {
+            const supplierFilterSelect = document.getElementById('poSupplierFilter');
+            supplierFilterSelect.innerHTML = '<option value="Todos">Todos</option>';
+
+            const uniqueSuppliers = new Set();
+            generatedPurchaseOrders.forEach(po => {
+                if (po.supplier) {
+                    uniqueSuppliers.add(po.supplier);
+                }
+            });
+
+            Array.from(uniqueSuppliers).sort().forEach(supplierName => {
+                const option = document.createElement('option');
+                option.value = supplierName;
+                option.innerText = `${getOrGenerateSupplierCode(supplierName)} - ${supplierName}`;
+                supplierFilterSelect.appendChild(option);
+            });
+        }
+
         function switchPurchasingTab(tabType) {
-            const newRequestsTabContent = document.getElementById('newRequestsTab');
-            const negotiationsInProgressTabContent = document.getElementById('negotiationsInProgressTab');
-            const pendingManagementTabContent = document.getElementById('pendingManagementTab');
-            const approvedManagementTabContent = document.getElementById('approvedManagementTab');
-            const tabButtonsContainer = document.getElementById('purchasingTabButtons');
-
-            newRequestsTabContent.classList.remove('active');
-            negotiationsInProgressTabContent.classList.remove('active');
-            pendingManagementTabContent.classList.remove('active');
-            approvedManagementTabContent.classList.remove('active');
-
-            Array.from(tabButtonsContainer.children).forEach(button => {
+            document.querySelectorAll('#purchasingTabButtons .tab-button').forEach(button => {
                 button.classList.remove('active');
             });
-
-            currentPurchasingTab = tabType; // Atualiza a aba ativa
-
-            if (tabType === 'newRequests') {
-                newRequestsTabContent.classList.add('active');
-                tabButtonsContainer.children[0].classList.add('active');
-            } else if (tabType === 'negotiationsInProgress') {
-                negotiationsInProgressTabContent.classList.add('active');
-                tabButtonsContainer.children[1].classList.add('active');
-            } else if (tabType === 'pendingManagement') {
-                pendingManagementTabContent.classList.add('active');
-                tabButtonsContainer.children[2].classList.add('active');
-            } else if (tabType === 'approvedManagement') {
-                approvedManagementTabContent.classList.add('active');
-                tabButtonsContainer.children[3].classList.add('active');
-            }
-            renderPurchasingCenterTables(); // Re-renderiza as tabelas após a troca de aba
-        }
-
-        /**
-         * Renderiza as tabelas da Central de Compras, aplicando filtros e separando por abas.
-         */
-        function renderPurchasingCenterTables() {
-            const newRequestsTbody = document.getElementById('newRequestsTableBody');
-            const negotiationsInProgressTbody = document.getElementById('negotiationsInProgressTableBody');
-            const pendingManagementTbody = document.getElementById('pendingManagementTableBody');
-            const approvedManagementTbody = document.getElementById('approvedManagementTableBody');
-
-            // Limpa todas as tabelas antes de renderizar
-            newRequestsTbody.innerHTML = '';
-            negotiationsInProgressTbody.innerHTML = '';
-            pendingManagementTbody.innerHTML = '';
-            approvedManagementTbody.innerHTML = '';
-
-            const supplierFilterCode = document.getElementById('poSupplierFilter').value;
-            const originCountryFilter = document.getElementById('poOriginCountryFilter').value;
-            const searchInput = document.getElementById('poSearch').value.toLowerCase();
-
-            // Filtra as POs com base nos filtros globais
-            const filteredPOs = generatedPurchaseOrders.filter(po => {
-                const matchesSupplier = supplierFilterCode === 'Todos' || po.supplierCode === supplierFilterCode;
-                const matchesOriginCountry = originCountryFilter === 'Todos' || po.originCountry === originCountryFilter;
-                const matchesSearch = searchInput === '' ||
-                                      po.id.toLowerCase().includes(searchInput) ||
-                                      (po.parentOrderId && po.parentOrderId.toLowerCase().includes(searchInput));
-                return matchesSupplier && matchesOriginCountry && matchesSearch;
+            document.querySelectorAll('#purchasing-central-page .tab-content').forEach(content => {
+                content.classList.remove('active');
             });
 
-            // Separa as POs por categoria de aba
-            const newRequestsPOs = filteredPOs.filter(po => po.overallApprovalStatus === 'Pendente');
-            const negotiationsInProgressPOs = filteredPOs.filter(po => po.overallApprovalStatus === 'Negociado');
-            const pendingManagementPOs = filteredPOs.filter(po => po.overallApprovalStatus === 'Aguardando Aprovação');
-            const approvedManagementPOs = filteredPOs.filter(po => ['Aprovado', 'Rejeitado', 'Finalizado'].includes(po.overallApprovalStatus));
+            activePurchasingTab = tabType;
 
-            // Função auxiliar para renderizar uma tabela
-            const renderTable = (tbodyElement, poList, isApprovedRejectedTab = false) => {
-                if (poList.length === 0) {
-                    tbodyElement.innerHTML = `<tr><td colspan="${isApprovedRejectedTab ? 9 : 8}" class="text-center py-4 text-gray-500">Nenhuma PO encontrada.</td></tr>`;
-                    return;
+            const activeButton = document.getElementById(`${tabType}Button`);
+            if (activeButton) {
+                activeButton.classList.add('active');
+            }
+
+            const activeContent = document.getElementById(`${tabType}Tab`);
+            if (activeContent) {
+                activeContent.classList.add('active');
+            }
+
+            renderPurchasingOrdersTable();
+        }
+
+        function renderPurchasingOrdersTable() {
+            const tbodyNewRequests = document.querySelector('#purchasingOrdersTable tbody');
+            const tbodyInNegotiation = document.querySelector('#inNegotiationTable tbody');
+            const tbodyPendingManagement = document.querySelector('#pendingManagementTable tbody');
+            const tbodyApprovedManagement = document.querySelector('#approvedManagementTable tbody');
+
+            tbodyNewRequests.innerHTML = '';
+            tbodyInNegotiation.innerHTML = '';
+            tbodyPendingManagement.innerHTML = '';
+            tbodyApprovedManagement.innerHTML = '';
+
+            const statusFilter = document.getElementById('poStatusFilter').value;
+            const supplierFilter = document.getElementById('poSupplierFilter').value;
+            const originCountryFilter = document.getElementById('poOriginCountryFilter').value;
+            const searchQuery = document.getElementById('poSearch').value.toLowerCase();
+
+            let filteredPOs = generatedPurchaseOrders.filter(po => {
+                let matchesTab = false;
+                switch (activePurchasingTab) {
+                    case 'newRequests':
+                        matchesTab = po.overallApprovalStatus === 'Pendente';
+                        break;
+                    case 'inNegotiation':
+                        matchesTab = po.overallApprovalStatus === 'Negociado';
+                        break;
+                    case 'pendingManagement':
+                        matchesTab = po.overallApprovalStatus === 'Aguardando Aprovação';
+                        break;
+                    case 'approvedManagement':
+                        matchesTab = ['Aprovado', 'Rejeitado', 'Cancelado', 'Em Produção', 'Carga Pronta', 'Saída do Porto de Embarque (ATD)', 'Documentação Pendente', 'Documentação OK', 'Chegada no Porto de Destino (ATA)', 'Finalizado', 'Em Separação', 'Em Conferência', 'Em Rota de Entrega', 'Entregue'].includes(po.overallApprovalStatus);
+                        break;
+                    default:
+                        matchesTab = true;
                 }
 
-                poList.forEach(po => {
-                    const row = document.createElement('tr');
-                    let statusIndicatorClass = '';
-                    switch (po.overallApprovalStatus) {
-                        case 'Pendente':
-                            statusIndicatorClass = 'yellow';
-                            break;
-                        case 'Negociado':
-                            statusIndicatorClass = 'purple';
-                            break;
-                        case 'Aguardando Aprovação':
-                            statusIndicatorClass = 'yellow';
-                            break;
-                        case 'Aprovado':
-                        case 'Finalizado':
-                            statusIndicatorClass = 'green';
-                            break;
-                        case 'Rejeitado':
-                            statusIndicatorClass = 'red';
-                            break;
-                        default:
-                            statusIndicatorClass = 'gray';
-                    }
+                const matchesStatus = statusFilter === 'Todos' || po.overallApprovalStatus === statusFilter;
+                const matchesSupplier = supplierFilter === 'Todos' || po.supplier === supplierFilter;
+                const matchesOriginCountry = originCountryFilter === 'Todos' || po.originCountry === originCountryFilter;
+                const matchesSearch = searchQuery === '' ||
+                                      po.id.toLowerCase().includes(searchQuery) ||
+                                      (po.parentOrderId && po.parentOrderId.toLowerCase().includes(searchQuery));
 
-                    let actionColumnHtml = '';
-                    if (isApprovedRejectedTab) {
-                        actionColumnHtml = `<td>${po.overallApprovalStatus}</td>`;
+                return matchesTab && matchesStatus && matchesSupplier && matchesOriginCountry && matchesSearch;
+            });
+
+            if (filteredPOs.length === 0) {
+                const targetTbody = getTargetTbodyForActiveTab();
+                targetTbody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-gray-500">Nenhuma PO encontrada com os filtros aplicados.</td></tr>`;
+                return;
+            }
+
+            filteredPOs.sort((a, b) => {
+                const idA = (a.id && typeof a.id === 'string') ? parseInt(a.id.replace(/[^0-9]/g, '')) : 0;
+                const idB = (b.id && typeof b.id === 'string') ? parseInt(b.id.replace(/[^0-9]/g, '')) : 0;
+                return idA - idB;
+            });
+
+            filteredPOs.forEach(po => {
+                const row = document.createElement('tr');
+                let statusIndicatorClass = getStatusClass(po.overallApprovalStatus);
+                let actionButtons = '';
+
+                if (activePurchasingTab === 'newRequests') {
+                    actionButtons = `<button class="btn-primary" onclick="initiateNegotiation('${po.id}')">Iniciar Negociação</button>`;
+                } else if (activePurchasingTab === 'inNegotiation') {
+                    actionButtons = `<button class="btn-primary" onclick="viewPurchasingOrderDetails('${po.id}')">Visualizar</button>`;
+                } else if (activePurchasingTab === 'pendingManagement') {
+                    actionButtons = `<button class="btn-primary" onclick="viewPurchasingOrderDetails('${po.id}')">Visualizar</button>`;
+                } else if (activePurchasingTab === 'approvedManagement') {
+                    if (po.overallApprovalStatus === 'Aprovado') {
+                        actionButtons = `<button class="btn-primary" onclick="trackOrder('${po.id}')">Acompanhar Pedido</button>`;
+                    } else if (po.overallApprovalStatus === 'Rejeitado') {
+                        actionButtons = `<button class="btn-primary" onclick="renegotiateOrder('${po.id}')">Renegociar</button>`;
+                    } else if (po.overallApprovalStatus === 'Cancelado') {
+                        actionButtons = `<button class="btn-secondary" onclick="viewPurchasingOrderDetails('${po.id}')">Visualizar</button>`;
                     } else {
-                        actionColumnHtml = `<td><button class="btn-primary" onclick="viewPurchaseOrderDetails('${po.id}')">Ver Detalhes</button></td>`;
+                        actionButtons = `<button class="btn-primary" onclick="viewPurchasingOrderDetails('${po.id}')">Visualizar</button>`;
                     }
+                }
 
-                    row.innerHTML = `
-                        <td>${po.parentOrderId || 'N/A'}</td>
-                        <td>${po.id}</td>
-                        <td>${po.supplierCode} - ${po.supplier}</td>
-                        <td>${po.originCountry}</td>
-                        <td>R$ ${parseFloat(po.newSupplierPriceTotal).toFixed(2).replace('.', ',')}</td>
-                        <td><span class="status-indicator ${statusIndicatorClass}"></span>${po.overallApprovalStatus}</td>
-                        <td>${po.date}</td>
-                        ${actionColumnHtml}
-                    `;
-                    tbodyElement.appendChild(row);
-                });
-            };
+                row.innerHTML = `
+                    <td>${po.parentOrderId || 'N/A'}</td>
+                    <td><a href="#" class="pedido-link" onclick="viewPurchasingOrderDetails('${po.id}')">${po.id}</a></td>
+                    <td>${getOrGenerateSupplierCode(po.supplier)} - ${po.supplier}</td>
+                    <td>${po.originCountry}</td>
+                    <td>R$ ${parseFloat(po.newSupplierPriceTotal || 0).toFixed(2).replace('.', ',')}</td>
+                    <td><span class="status-indicator ${statusIndicatorClass}"></span>${po.overallApprovalStatus}</td>
+                    <td>${po.date}</td>
+                    <td>${po.lastUpdateDate || 'N/A'}</td>
+                    <td>${actionButtons}</td>
+                `;
+                getTargetTbodyForActiveTab().appendChild(row);
+            });
+        }
 
-            // Renderiza as tabelas com base na aba ativa
-            if (currentPurchasingTab === 'newRequests') {
-                renderTable(newRequestsTbody, newRequestsPOs);
-            } else if (currentPurchasingTab === 'negotiationsInProgress') {
-                renderTable(negotiationsInProgressTbody, negotiationsInProgressPOs);
-            } else if (currentPurchasingTab === 'pendingManagement') {
-                renderTable(pendingManagementTbody, pendingManagementPOs);
-            } else if (currentPurchasingTab === 'approvedManagement') {
-                renderTable(approvedManagementTbody, approvedManagementPOs, true); // Passa true para a aba de aprovados/rejeitados
+        function getTargetTbodyForActiveTab() {
+            switch (activePurchasingTab) {
+                case 'newRequests': return document.querySelector('#purchasingOrdersTable tbody');
+                case 'inNegotiation': return document.querySelector('#inNegotiationTable tbody');
+                case 'pendingManagement': return document.querySelector('#pendingManagementTable tbody');
+                case 'approvedManagement': return document.querySelector('#approvedManagementTable tbody');
+                default: return document.querySelector('#purchasingOrdersTable tbody');
             }
         }
 
-        /**
-         * Exibe os detalhes de uma Ordem de Compra (PO) específica.
-         * @param {string} poId - O ID da PO a ser visualizada.
-         */
-        function viewPurchaseOrderDetails(poId) {
+        function viewPurchasingOrderDetails(poId) {
             currentPurchasingPO = generatedPurchaseOrders.find(po => po.id === poId);
+
             if (!currentPurchasingPO) {
                 showMessage('Erro', 'Detalhes da PO não encontrados.', 'error');
                 return;
             }
 
-            document.getElementById('currentPoId').innerText = currentPurchasingPO.id;
-            document.getElementById('poDetailId').innerText = currentPurchasingPO.id;
-            document.getElementById('poDetailParentOrderId').innerText = currentPurchasingPO.parentOrderId || 'N/A';
-            document.getElementById('poDetailSupplier').innerText = `${currentPurchasingPO.supplierCode} - ${currentPurchasingPO.supplier}`;
-            document.getElementById('poDetailOriginCountry').innerText = currentPurchasingPO.originCountry;
-            document.getElementById('poDetailNewSupplierPriceTotal').innerText = `R$ ${parseFloat(currentPurchasingPO.newSupplierPriceTotal).toFixed(2).replace('.', ',')}`;
-            document.getElementById('poDetailCurrentInternalPriceTotal').innerText = `R$ ${parseFloat(currentPurchasingPO.currentInternalPriceTotal).toFixed(2).replace('.', ',')}`;
-            document.getElementById('poDetailOverallApprovalStatus').innerText = currentPurchasingPO.overallApprovalStatus;
-            document.getElementById('poDetailDate').innerText = currentPurchasingPO.date;
+            document.getElementById('detailPoClientName').innerText = currentPurchasingPO.clientName || 'N/A';
+            document.getElementById('detailPoBillTo').innerText = currentPurchasingPO.billTo || 'N/A';
+            document.getElementById('detailPoShipTo').innerText = currentPurchasingPO.shipTo || 'N/A';
+            document.getElementById('detailPoClientEmail').innerText = currentPurchasingPO.clientEmail || 'N/A';
+            document.getElementById('detailPoParentOrderId').innerText = currentPurchasingPO.parentOrderId || 'N/A';
+            document.getElementById('detailPoId').innerText = currentPurchasingPO.id;
+            document.getElementById('detailPoDate').innerText = currentPurchasingPO.date;
 
-            const productsTableBody = document.getElementById('poDetailsProductsTableBody');
-            productsTableBody.innerHTML = '';
+            document.getElementById('detailPoSupplier').innerText = `${getOrGenerateSupplierCode(currentPurchasingPO.supplier)} - ${currentPurchasingPO.supplier}`;
+            document.getElementById('detailPoOrderNumber').value = currentPurchasingPO.orderNumber || '';
+            document.getElementById('detailPoSupplierEmail').innerText = currentPurchasingPO.supplierEmail || 'N/A';
+            document.getElementById('detailPoTerms').value = currentPurchasingPO.terms || '';
+            document.getElementById('detailPoFreight').value = currentPurchasingPO.freight || '';
+            document.getElementById('detailPoETD').value = currentPurchasingPO.etd || '';
+            document.getElementById('detailPoETA').value = currentPurchasingPO.eta || '';
 
-            currentPurchasingPO.products.forEach(product => {
+            document.getElementById('detailPoOverallStatus').innerHTML = `<span class="status-indicator ${getStatusClass(currentPurchasingPO.overallApprovalStatus)}"></span>${currentPurchasingPO.overallApprovalStatus}`;
+            document.getElementById('detailPoCurrentInternalPriceTotal').innerText = `R$ ${parseFloat(currentPurchasingPO.currentInternalPriceTotal || 0).toFixed(2).replace('.', ',')}`;
+            document.getElementById('detailPoNewSupplierPriceTotal').innerText = `R$ ${parseFloat(currentPurchasingPO.newSupplierPriceTotal || 0).toFixed(2).replace('.', ',')}`;
+            
+            const currentInternalPriceTotal = parseFloat(currentPurchasingPO.currentInternalPriceTotal || 0);
+            const newSupplierPriceTotal = parseFloat(currentPurchasingPO.newSupplierPriceTotal || 0);
+            const priceDifference = (newSupplierPriceTotal - currentInternalPriceTotal);
+            let priceDifferenceClass = '';
+            if (priceDifference > 0) {
+                priceDifferenceClass = 'price-difference-positive';
+            } else if (priceDifference < 0) {
+                priceDifferenceClass = 'price-difference-negative';
+            }
+            document.getElementById('detailPoPriceDifference').innerHTML = `<span class="${priceDifferenceClass}">R$ ${priceDifference.toFixed(2).replace('.', ',')}</span>`;
+            document.getElementById('detailPoTotalCubage').innerText = `${parseFloat(currentPurchasingPO.totalCubage || 0).toFixed(2).replace('.', ',')} m³`;
+            document.getElementById('detailPoLastUpdate').innerText = currentPurchasingPO.lastUpdateDate || 'N/A';
+
+            renderPoProductsTable();
+            renderCubageSummary(currentPurchasingPO);
+            updatePoDetailsActions();
+
+            const nfeButton = document.getElementById('nfePdfBtn');
+            if (nfeButton) {
+                nfeButton.style.display = currentPurchasingPO.originCountry === 'Colômbia' ? 'inline-block' : 'none';
+            }
+
+            showScreen('purchasingOrderDetailsScreen');
+        }
+
+        function updatePoField(field, value) {
+            if (currentPurchasingPO) {
+                currentPurchasingPO[field] = value;
+                currentPurchasingPO.lastUpdateDate = new Date().toISOString().slice(0, 10);
+                // Removed showMessage for field updates for a less intrusive experience
+            }
+        }
+
+        function getStatusClass(status) {
+            switch (status) {
+                case 'Aprovado':
+                case 'Finalizado':
+                case 'Em Produção':
+                case 'Carga Pronta':
+                case 'Saída do Porto de Embarque (ATD)':
+                case 'Documentação OK':
+                case 'Chegada no Porto de Destino (ATA)':
+                case 'Entregue':
+                    return 'green';
+                case 'Pendente':
+                case 'Aguardando Aprovação':
+                case 'Documentação Pendente':
+                case 'Em Separação':
+                case 'Em Conferência':
+                case 'Em Rota de Entrega':
+                    return 'yellow';
+                case 'Rejeitado':
+                case 'Cancelado':
+                    return 'red';
+                case 'Negociado':
+                    return 'purple';
+                default:
+                    return 'yellow';
+            }
+        }
+
+        function renderPoProductsTable() {
+            const tbody = document.getElementById('poProductsTableBody');
+            tbody.innerHTML = '';
+
+            currentPurchasingPO.products.forEach((product, index) => {
                 const row = document.createElement('tr');
-                const internalPrice = parseFloat(product.currentInternalUnitPrice);
-                const supplierPrice = parseFloat(product.newSupplierUnitPrice);
+                const internalPrice = parseFloat(product.currentInternalUnitPrice || 0);
+                const supplierPrice = parseFloat(product.newSupplierUnitPrice || 0);
+
                 let priceClass = '';
                 if (supplierPrice > internalPrice) {
                     priceClass = 'price-difference-positive';
                 } else if (supplierPrice < internalPrice) {
                     priceClass = 'price-difference-negative';
+                }
+
+                let actionsHtml = '';
+                // Only allow actions if PO is in 'Pendente' or 'Negociado' status
+                if (['Pendente', 'Negociado'].includes(currentPurchasingPO.overallApprovalStatus)) {
+                    actionsHtml = `
+                        <button class="btn-primary" onclick="updateProductApprovalStatus(${index}, 'Aprovado')">Aprovar</button>
+                        <button class="btn-danger" onclick="updateProductApprovalStatus(${index}, 'Rejeitado')">Rejeitar</button>
+                        <button class="btn-secondary review-btn" onclick="reviewProduct(${index})">Revisar</button>
+                    `;
+                } else {
+                    actionsHtml = `<span class="text-gray-500">N/A</span>`;
                 }
 
                 row.innerHTML = `
@@ -506,159 +2215,428 @@
                     <td>${product.quantity}</td>
                     <td>R$ ${internalPrice.toFixed(2).replace('.', ',')}</td>
                     <td class="${priceClass}">R$ ${supplierPrice.toFixed(2).replace('.', ',')}</td>
-                    <td>${product.approvalStatus}</td>
+                    <td>
+                        <input type="number" step="0.01" value="${supplierPrice.toFixed(2)}"
+                            onchange="negotiatePrice(${index}, this.value)"
+                            ${!['Pendente', 'Negociado'].includes(currentPurchasingPO.overallApprovalStatus) ? 'disabled' : ''}>
+                    </td>
+                    <td class="product-approval-status ${product.approvalStatus}">${product.approvalStatus}</td>
+                    <td>${actionsHtml}</td>
                 `;
-                productsTableBody.appendChild(row);
+                tbody.appendChild(row);
             });
-
-            // Gerencia a visibilidade da seção de negociação
-            const negotiationSection = document.getElementById('negotiationSection');
-            if (currentPurchasingPO.originCountry === 'Hong Kong' && currentPurchasingPO.overallApprovalStatus === 'Pendente') {
-                negotiationSection.classList.remove('hidden');
-            } else {
-                negotiationSection.classList.add('hidden');
-            }
-
-            showScreen('purchaseOrderDetailsScreen');
         }
 
-        /**
-         * Simula a negociação de uma PO de Hong Kong.
-         * Esta função atualiza o status da PO para 'Negociado' e simula novas condições.
-         */
-        function finalizeNegotiation() {
-            if (!currentPurchasingPO || currentPurchasingPO.originCountry !== 'Hong Kong' || currentPurchasingPO.overallApprovalStatus !== 'Pendente') {
-                showMessage('Erro', 'Esta PO não pode ser negociada neste momento.', 'error');
+        function negotiatePrice(productIndex, newPrice) {
+            if (!currentPurchasingPO || !['Pendente', 'Negociado'].includes(currentPurchasingPO.overallApprovalStatus)) return;
+
+            const product = currentPurchasingPO.products[productIndex];
+            const oldPrice = parseFloat(product.newSupplierUnitPrice);
+            const price = parseFloat(newPrice);
+
+            if (isNaN(price) || price <= 0) {
+                showMessage('Erro', 'Por favor, insira um valor válido para o preço.', 'error');
+                document.querySelector(`#poProductsTableBody tr:nth-child(${productIndex + 1}) input[type="number"]`).value = oldPrice.toFixed(2);
                 return;
             }
 
-            const negotiationNotes = document.getElementById('negotiationNotes').value.trim();
-            if (!negotiationNotes) {
-                showMessage('Atenção', 'Por favor, adicione algumas notas de negociação antes de finalizar.', 'warning');
-                return;
-            }
+            product.newSupplierUnitPrice = price.toFixed(2);
+            product.approvalStatus = 'Negociado';
 
-            // Simula uma nova negociação de preços para cada produto
-            currentPurchasingPO.products.forEach(product => {
-                const currentSupplierPrice = parseFloat(product.newSupplierUnitPrice);
-                // Simula uma leve redução ou manutenção do preço do fornecedor
-                product.newSupplierUnitPrice = (currentSupplierPrice * (1 - (Math.random() * 0.02))).toFixed(2); // Reduz em até 2%
-                product.approvalStatus = 'Negociado'; // Atualiza o status do item
-            });
-
-            // Recalcula o valor total da PO com base nos novos preços
             currentPurchasingPO.newSupplierPriceTotal = currentPurchasingPO.products.reduce((sum, p) => sum + (parseFloat(p.newSupplierUnitPrice) * p.quantity), 0).toFixed(2);
-            currentPurchasingPO.overallApprovalStatus = 'Negociado'; // Atualiza o status geral da PO
-            currentPurchasingPO.negotiationNotes = negotiationNotes; // Salva as notas
-            currentPurchasingPO.lastUpdateDate = new Date().toISOString().slice(0, 10); // Atualiza a data de modificação
+            currentPurchasingPO.lastUpdateDate = new Date().toISOString().slice(0, 10);
 
-            showMessage('Negociação Finalizada', `A PO ${currentPurchasingPO.id} foi marcada como 'Negociado'. Agora precisa ser enviada para aprovação do Gestor.`, 'success', () => {
-                // Atualiza a exibição dos detalhes da PO
-                viewPurchaseOrderDetails(currentPurchasingPO.id);
-                synchronizeOrdersAndPOs(); // Sincroniza os dados globais
-            });
+            updateOverallPOStatus();
+            viewPurchasingOrderDetails(currentPurchasingPO.id);
+            // Removed showMessage for price negotiation
         }
 
-        /**
-         * Simula a geração de um PDF para a PO.
-         * @param {string} poId - O ID da PO para a qual gerar o PDF.
-         */
-        function generatePOPDF(poId) {
-            const po = generatedPurchaseOrders.find(p => p.id === poId);
-            if (!po) {
-                showMessage('Erro', 'PO não encontrada para gerar PDF.', 'error');
+        function updateProductApprovalStatus(productIndex, status) {
+            if (!currentPurchasingPO || !['Pendente', 'Negociado'].includes(currentPurchasingPO.overallApprovalStatus)) return;
+
+            const product = currentPurchasingPO.products[productIndex];
+            product.approvalStatus = status;
+
+            currentPurchasingPO.lastUpdateDate = new Date().toISOString().slice(0, 10);
+
+            updateOverallPOStatus();
+            viewPurchasingOrderDetails(currentPurchasingPO.id);
+            // Removed showMessage for product approval status update
+        }
+
+        function reviewProduct(productIndex) {
+            if (!currentPurchasingPO) return;
+            const product = currentPurchasingPO.products[productIndex];
+            showMessage('Revisão de Produto', `Produto "${product.name}" marcado para revisão.`, 'info');
+        }
+
+        function updateOverallPOStatus() {
+            if (!currentPurchasingPO) return;
+
+            const allProductsApproved = currentPurchasingPO.products.every(p => p.approvalStatus === 'Aprovado');
+            const anyProductRejected = currentPurchasingPO.products.some(p => p.approvalStatus === 'Rejeitado');
+            const anyProductPending = currentPurchasingPO.products.some(p => p.approvalStatus === 'Pendente');
+            const anyProductNegotiated = currentPurchasingPO.products.some(p => p.approvalStatus === 'Negociado');
+
+            if (anyProductRejected) {
+                currentPurchasingPO.overallApprovalStatus = 'Rejeitado';
+            } else if (allProductsApproved) {
+                currentPurchasingPO.overallApprovalStatus = 'Aprovado';
+            } else if (anyProductNegotiated) {
+                currentPurchasingPO.overallApprovalStatus = 'Negociado';
+            } else if (anyProductPending) {
+                currentPurchasingPO.overallApprovalStatus = 'Aguardando Aprovação';
+            }
+        }
+
+        function renderCubageSummary(po) {
+            const cubageSummaryTableBody = document.querySelector('#cubageSummaryTable tbody');
+            const cubageSummaryTotal = document.getElementById('cubageSummaryTotal');
+            const cubageWarning = document.getElementById('cubageWarning');
+
+            cubageSummaryTableBody.innerHTML = '';
+            cubageWarning.innerHTML = '';
+
+            const totalCubage = parseFloat(po.totalCubage || 0);
+            cubageSummaryTotal.innerText = `${totalCubage.toFixed(2).replace('.', ',')} m³`;
+
+            const percentageOccupation20HC = (totalCubage / MAX_CUBAGE_20HC) * 100;
+            const percentageOccupation40HC = (totalCubage / MAX_CUBAGE_40HC) * 100;
+
+            let highlightLCL = false;
+            let highlight20HC = false;
+            let highlight40HC = false;
+
+            if (totalCubage === 0) {
+            } else if (totalCubage <= 1) {
+                highlightLCL = true;
+            } else if (percentageOccupation20HC <= 100) {
+                highlight20HC = true;
+            } else if (percentageOccupation40HC <= 100) {
+                highlight40HC = true;
+            } else {
+                highlight40HC = true;
+                cubageWarning.innerHTML = '⚠️ A cubagem excede a capacidade de um container de 40HC. Necessário mais de um container ou solução alternativa.';
+            }
+
+            cubageSummaryTableBody.innerHTML = `
+                <tr class="${highlightLCL ? 'highlight-container' : ''}">
+                    <td>LCL</td>
+                    <td>${totalCubage > 0 ? '100.00' : '0.00'}%</td>
+                </tr>
+                <tr class="${highlight20HC ? 'highlight-container' : ''}">
+                    <td>CTN 20</td>
+                    <td>${percentageOccupation20HC.toFixed(2).replace('.', ',')}%</td>
+                </tr>
+                <tr class="${highlight40HC ? 'highlight-container' : ''}">
+                    <td>CTN 40HC</td>
+                    <td>${percentageOccupation40HC.toFixed(2).replace('.', ',')}%</td>
+                </tr>
+            `;
+        }
+
+        function openApprovalModal(action) {
+            if (!currentPurchasingPO) {
+                showMessage('Erro', 'Nenhuma PO selecionada para aprovação/rejeição.', 'error');
                 return;
             }
 
-            let pdfContent = `
-                --- ORDEM DE COMPRA (PO) ---
-                Nº PO: ${po.id}
-                ID Solicitação Principal: ${po.parentOrderId || 'N/A'}
-                Fornecedor: ${po.supplierCode} - ${po.supplier}
-                País de Origem: ${po.originCountry}
-                Data de Geração: ${po.date}
-                Status Geral da PO: ${po.overallApprovalStatus}
-                Valor Total (Fornecedor): R$ ${parseFloat(po.newSupplierPriceTotal).toFixed(2).replace('.', ',')}
-                Valor Total (Interno): R$ ${parseFloat(po.currentInternalPriceTotal).toFixed(2).replace('.', ',')}
-                Cubagem Total: ${po.totalCubage} m³
+            currentApprovalAction = action;
+            const modalTitle = document.getElementById('approvalModalTitle');
+            const modalMessage = document.getElementById('approvalModalMessage');
+            const confirmBtn = document.getElementById('confirmApprovalBtn');
 
-                --- PRODUTOS ---
-                ${po.products.map(p => `
-                - Cód Produto: ${p.code}
-                  Descrição: ${p.name}
-                  Quantidade: ${p.quantity}
-                  Valor Unit. Interno: R$ ${parseFloat(p.currentInternalUnitPrice).toFixed(2).replace('.', ',')}
-                  Valor Unit. Fornecedor: R$ ${parseFloat(p.newSupplierUnitPrice).toFixed(2).replace('.', ',')}
-                  Status Aprovação: ${p.approvalStatus}
-                `).join('\n')}
+            modalTitle.innerText = `${action} PO`;
+            modalMessage.innerText = `Tem certeza que deseja ${action.toLowerCase()} a PO ${currentPurchasingPO.id}?`;
 
-                --- NOTAS DE NEGOCIAÇÃO ---
-                ${po.negotiationNotes || 'Nenhuma nota de negociação.'}
+            confirmBtn.onclick = () => {
+                if (currentApprovalAction === 'Aprovar') {
+                    approvePO();
+                } else if (currentApprovalAction === 'Rejeitar') {
+                    rejectPO();
+                }
+                closeApprovalModal();
+            };
 
-                --------------------------
-                Documento gerado em: ${new Date().toLocaleString('pt-BR')}
+            document.getElementById('approvalModal').classList.add('active');
+        }
+
+        function closeApprovalModal() {
+            document.getElementById('approvalModal').classList.remove('active');
+        }
+
+        function approvePO() {
+            if (!currentPurchasingPO) return;
+
+            currentPurchasingPO.products.forEach(p => {
+                if (p.approvalStatus !== 'Rejeitado') {
+                    p.approvalStatus = 'Aprovado';
+                }
+            });
+
+            currentPurchasingPO.overallApprovalStatus = 'Aprovado';
+            currentPurchasingPO.lastUpdateDate = new Date().toISOString().slice(0, 10);
+            showMessage('Sucesso', `PO ${currentPurchasingPO.id} aprovada com sucesso!`, 'success', () => backToPurchasingCentral());
+        }
+
+        function rejectPO() {
+            if (!currentPurchasingPO) return;
+
+            currentPurchasingPO.products.forEach(p => {
+                p.approvalStatus = 'Rejeitado';
+            });
+
+            currentPurchasingPO.overallApprovalStatus = 'Rejeitado';
+            currentPurchasingPO.lastUpdateDate = new Date().toISOString().slice(0, 10);
+            showMessage('Sucesso', `PO ${currentPurchasingPO.id} rejeitada.`, 'success', () => backToPurchasingCentral());
+        }
+
+        function showPoPdf() {
+            if (!currentPurchasingPO) {
+                showMessage('Erro', 'Nenhuma PO selecionada para visualizar o PDF.', 'error');
+                return;
+            }
+
+            const po = currentPurchasingPO;
+            let productsHtml = '';
+            let totalUSD = 0;
+
+            po.products.forEach(p => {
+                const totalProductPrice = (parseFloat(p.newSupplierUnitPrice) * p.quantity);
+                totalUSD += totalProductPrice;
+                productsHtml += `
+                    <tr>
+                        <td>${p.supplierModel || 'N/A'}</td>
+                        <td>${p.toyamaModel || 'N/A'}</td>
+                        <td>${p.code}</td>
+                        <td>${p.quantity}</td>
+                        <td class="description-col">${p.name}</td>
+                        <td>single</td>
+                        <td>${parseFloat(p.newSupplierUnitPrice).toFixed(2).replace('.', ',')}</td>
+                        <td>${totalProductPrice.toFixed(2).replace('.', ',')}</td>
+                    </tr>
+                `;
+            });
+
+            const poContent = `
+                <div class="header-section">
+                    <table>
+                        <tr>
+                            <td colspan="2" style="text-align: left; font-weight: bold;">TO: ${po.clientName || 'N/A'} - Ms. Eileen Li</td>
+                            <td colspan="2" style="text-align: right; font-weight: bold;">PURCHASE ORDER</td>
+                        </tr>
+                    </table>
+                    <table style="margin-top: 10px;">
+                        <tr>
+                            <td style="width: 20%; font-weight: bold;">BILL TO:</td>
+                            <td style="width: 80%;" rowspan="3">TOYAMA HONG KONG LTD<br>TOYAMA DO BRASIL MAQ. LTDA<br>BR 470 - INGO HERING, Nº 4, BAIRRO SÃO DOMINGOS,<br>88370-888 - NAVEGANTES, SC, BRASIL<br>TAX ID: 03.817.469/0003-78</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold;">SHIP TO:</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold;">PORT OF DESTINATION:</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">${po.billTo || 'N/A'}</td>
+                            <td colspan="2">${po.shipTo || 'N/A'}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"></td>
+                            <td colspan="2">${po.freight || 'N/A'}</td>
+                        </tr>
+                    </table>
+                    <table style="margin-top: 10px;">
+                        <tr>
+                            <td style="width: 33%; font-weight: bold;">FREIGHT:</td>
+                            <td style="width: 33%; font-weight: bold;">ORDER NUMBER:</td>
+                            <td style="width: 34%; font-weight: bold;">ORIGIN:</td>
+                        </tr>
+                        <tr>
+                            <td>${po.freight || 'N/A'}</td>
+                            <td>${po.orderNumber || 'N/A'}</td>
+                            <td>${po.originCountry || 'N/A'}</td>
+                        </tr>
+                    </table>
+                    <table style="margin-top: 10px;">
+                        <tr>
+                            <td style="width: 25%; font-weight: bold;">TERMS:</td>
+                            <td style="width: 25%; font-weight: bold;">DATE:</td>
+                            <td style="width: 25%; font-weight: bold;">CUT OFF (ETD):</td>
+                            <td style="width: 25%; font-weight: bold;">ETA:</td>
+                        </tr>
+                        <tr>
+                            <td>${po.terms || 'N/A'}</td>
+                            <td>${po.date || 'N/A'}</td>
+                            <td>${po.etd || 'N/A'}</td>
+                            <td>${po.eta || 'N/A'}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="pdf-section">
+                    <table class="pdf-products-table">
+                        <thead>
+                            <tr>
+                                <th>SUPPLIER MODEL</th>
+                                <th>TOYAMA MODEL</th>
+                                <th>TOYAMA CODE</th>
+                                <th>QTY</th>
+                                <th>DESCRIPTION</th>
+                                <th>PACK</th>
+                                <th>UNIT USD FOB</th>
+                                <th>TOTAL $</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${productsHtml}
+                            <tr class="total-row">
+                                <td colspan="7" style="text-align: right;">TOTAL FOB NINGBO PORT</td>
+                                <td>${totalUSD.toFixed(2).replace('.', ',')}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pdf-footer-signature">
+                    <p>SIGNED ____________________________________ ORDER # ${po.orderNumber || 'N/A'}</p>
+                </div>
             `;
-
-            document.getElementById('poPdfContent').innerText = pdfContent;
+            document.getElementById('poPdfContent').innerHTML = poContent;
             document.getElementById('poPdfViewer').classList.add('active');
         }
 
-        /**
-         * Popula o filtro de fornecedores na tela da Central de Compras.
-         */
-        function populatePurchasingSupplierFilter() {
-            const supplierFilterSelect = document.getElementById('poSupplierFilter');
-            supplierFilterSelect.innerHTML = '<option value="Todos">Todos</option>'; // Opção padrão
 
-            const uniqueSupplierCodes = new Set();
-            generatedPurchaseOrders.forEach(po => {
-                if (po.supplierCode) {
-                    uniqueSupplierCodes.add(po.supplierCode);
+        function showNfePdf() {
+            if (!currentPurchasingPO || currentPurchasingPO.originCountry !== 'Colômbia') {
+                showMessage('Erro', 'NF-e disponível apenas para pedidos da Colômbia.', 'error');
+                return;
+            }
+            const nfeContent = `
+                --- Nota Fiscal Eletrônica (Simulada) ---
+                Nº NF-e: NF-${currentPurchasingPO.id.replace('SAP-', '')}-${Math.floor(Math.random() * 9000) + 1000}
+                Data Emissão: ${new Date().toISOString().slice(0, 10)}
+                Emitente: ${currentPurchasingPO.supplier}
+                Destinatário: ${currentPurchasingPO.clientFlag}
+
+                Produtos:
+                ${currentPurchasingPO.products.map(p => `
+                - Cód: ${p.code}
+                  Descrição: ${p.name}
+                  Qtd: ${p.quantity}
+                  Valor Unit.: R$ ${parseFloat(p.unitPrice).toFixed(2).replace('.', ',')}
+                  Valor Total Item: R$ ${(parseFloat(p.unitPrice) * p.quantity).toFixed(2).replace('.', ',')}
+                `).join('\n')}
+
+                Valor Total da NF-e: R$ ${parseFloat(currentPurchasingPO.newSupplierPriceTotal).toFixed(2).replace('.', ',')}
+                ----------------------------------------
+            `;
+            document.getElementById('nfePdfContent').innerText = nfeContent;
+            document.getElementById('nfePdfViewer').classList.add('active');
+        }
+
+        function backToPurchasingCentral() {
+            currentPurchasingPO = null;
+            showScreen('purchasing-central-page');
+            renderPurchasingOrdersTable();
+        }
+
+        function openFlowchartModal() {
+            document.getElementById('flowchartModal').classList.add('active');
+        }
+
+        function closeFlowchartModal() {
+            document.getElementById('flowchartModal').classList.remove('active');
+        }
+
+        function initiateNegotiation(poId) {
+            const po = generatedPurchaseOrders.find(p => p.id === poId);
+            if (po) {
+                po.overallApprovalStatus = 'Negociado';
+                po.lastUpdateDate = new Date().toISOString().slice(0, 10);
+                // Removed showMessage for initiate negotiation
+                viewPurchasingOrderDetails(poId);
+            }
+        }
+
+        function trackOrder(poId) {
+            showMessage('Acompanhar Pedido', `Função de acompanhamento do pedido ${poId} será implementada aqui.`, 'info', () => viewPurchasingOrderDetails(poId));
+        }
+
+        function renegotiateOrder(poId) {
+            const po = generatedPurchaseOrders.find(p => p.id === poId);
+            if (po) {
+                po.overallApprovalStatus = 'Negociado';
+                po.lastUpdateDate = new Date().toISOString().slice(0, 10);
+                showMessage('Sucesso', `PO ${poId} movida para renegociação.`, 'success', () => viewPurchasingOrderDetails(poId));
+            }
+        }
+
+        function updatePoDetailsActions() {
+            const approveBtn = document.getElementById('approvePoBtn');
+            const rejectBtn = document.getElementById('rejectPoBtn');
+            const renegotiatePoBtn = document.getElementById('renegotiatePoBtn');
+            
+            approveBtn.classList.add('hidden');
+            rejectBtn.classList.add('hidden');
+            renegotiatePoBtn.classList.add('hidden');
+
+            const editableFields = ['detailPoOrderNumber', 'detailPoTerms', 'detailPoFreight', 'detailPoETD', 'detailPoETA'];
+            editableFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    field.disabled = !['Pendente', 'Negociado'].includes(currentPurchasingPO.overallApprovalStatus);
                 }
             });
 
-            Array.from(uniqueSupplierCodes).sort().forEach(code => {
-                const option = document.createElement('option');
-                option.value = code;
-                option.innerText = `${code} - ${getSupplierNameFromCode(code)}`;
-                supplierFilterSelect.appendChild(option);
-            });
+            switch (currentPurchasingPO.overallApprovalStatus) {
+                case 'Aguardando Aprovação':
+                    // As per new request, these buttons are hidden for 'Aguardando Aprovação'
+                    break;
+                case 'Rejeitado':
+                    renegotiatePoBtn.classList.remove('hidden');
+                    break;
+            }
         }
 
-        /**
-         * Popula o filtro de país de origem na tela da Central de Compras.
-         */
-        function populatePurchasingOriginCountryFilter() {
-            const originCountryFilterSelect = document.getElementById('poOriginCountryFilter');
-            originCountryFilterSelect.innerHTML = '<option value="Todos">Todos</option>'; // Opção padrão
-
-            const uniqueCountries = new Set();
-            generatedPurchaseOrders.forEach(po => {
-                if (po.originCountry) {
-                    uniqueCountries.add(po.originCountry);
-                }
-            });
-
-            Array.from(uniqueCountries).sort().forEach(country => {
-                const option = document.createElement('option');
-                option.value = country;
-                option.innerText = country;
-                originCountryFilterSelect.appendChild(option);
-            });
-        }
-
-        // Inicialização da página de compras
         document.addEventListener('DOMContentLoaded', () => {
-            // Popula os filtros ao carregar a página
-            populatePurchasingSupplierFilter();
-            populatePurchasingOriginCountryFilter();
-            switchPurchasingTab('newRequests'); // Ativa a aba "Novas Solicitações" por padrão
-            renderPurchasingCenterTables(); // Renderiza a tabela de POs inicialmente
+            // Add dummy supplierModel and toyamaModel to products for PDF display
+            generatedPurchaseOrders.forEach(po => {
+                po.products.forEach(product => {
+                    if (!product.supplierModel) {
+                        product.supplierModel = 'MODEL-' + product.code.slice(4) + '-S';
+                    }
+                    if (!product.toyamaModel) {
+                        product.toyamaModel = 'MODEL-' + product.code.slice(4) + '-T';
+                    }
+                });
+            });
 
-            // Adiciona event listener para o botão de logout
+            generatedPurchaseOrders.forEach(po => {
+                if (po.supplier) {
+                    getOrGenerateSupplierCode(po.supplier);
+                }
+            });
+
+            populatePoSupplierFilter();
+            
+            document.getElementById('newRequestsButton').addEventListener('click', () => switchPurchasingTab('newRequests'));
+            document.getElementById('inNegotiationButton').addEventListener('click', () => switchPurchasingTab('inNegotiation'));
+            document.getElementById('pendingManagementButton').addEventListener('click', () => switchPurchasingTab('pendingManagement'));
+            document.getElementById('approvedManagementButton').addEventListener('click', () => switchPurchasingTab('approvedManagement'));
+
+            switchPurchasingTab('newRequests'); 
+
             const purchasingLogoutButton = document.getElementById('purchasingLogoutButton');
             if (purchasingLogoutButton) {
                 purchasingLogoutButton.addEventListener('click', logout);
+            }
+
+            const messageModalCloseBtn = document.getElementById('messageModalCloseBtn');
+            if (messageModalCloseBtn) {
+                messageModalCloseBtn.addEventListener('click', () => {
+                    document.getElementById('messageModal').classList.remove('active');
+                });
             }
         });
     </script>
