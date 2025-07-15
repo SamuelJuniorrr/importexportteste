@@ -3,1209 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Fluig - Compras</title>
-    <!-- Tailwind CSS CDN for styling -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <style>
-        /* Estilos comuns para todas as páginas */
-        :root {
-            --primary-color: #007bff;
-            --secondary-color: #6c757d;
-            --text-color: #333;
-            --light-gray: #f8f9fa;
-            --border-color: #dee2e6;
-            --header-bg: #fff;
-            --table-header-bg: #e9ecef;
-            --shadow: 0 2px 4px rgba(0,0,0,0.05);
-            --red-alert: #dc3545;
-            --green-success: #28a745;
-            --orange-warning: #ffc107;
-            --colombia-bg: #e6f7ff;
-            --hongkong-bg: #fff3e0;
-            --colombia-border: #90cdf4;
-            --hongkong-border: #ffcc80;
-            --highlight-container-bg: #d1e7dd; /* Light green for highlight */
-            --highlight-container-border: #28a745; /* Darker green border */
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Roboto', sans-serif;
-            color: var(--text-color);
-        }
-
-        body {
-            background-color: var(--light-gray);
-            line-height: 1.6;
-            font-size: 14px;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        .page {
-            display: none;
-            width: 100%;
-            flex-grow: 1;
-        }
-
-        .page.active {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .header {
-            background-color: var(--header-bg);
-            padding: 15px 40px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: var(--shadow);
-        }
-
-        .header h1 {
-            font-size: 20px;
-            font-weight: 500;
-            margin-bottom: 5px;
-        }
-
-        .header p {
-            font-size: 13px;
-            color: #666;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .header-icon {
-            background-color: #e0e0e0;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: bold;
-            color: #666;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: background-color 0.2s ease-in-out;
-            white-space: nowrap;
-        }
-
-        .btn-primary:hover {
-            background-color: #0056b3;
-        }
-
-        .btn-secondary {
-            background-color: var(--secondary-color);
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: background-color 0.2s ease-in-out;
-            white-space: nowrap;
-        }
-
-        .btn-secondary:hover {
-            background-color: #5a6268;
-        }
-
-        .input-group {
-            margin-bottom: 15px;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 13px;
-            font-weight: 500;
-            color: #555;
-        }
-
-        .input-group input[type="text"],
-        .input-group input[type="password"],
-        .input-group input[type="number"],
-        .input-group input[type="file"],
-        .input-group select,
-        textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.2s ease-in-out;
-        }
-
-        .input-group input:focus,
-        .input-group select:focus,
-        textarea:focus {
-            border-color: var(--primary-color);
-        }
-
-        .icon-search::before { content: '🔍'; }
-        .icon-plus::before { content: '➕'; }
-        .icon-question::before { content: '?'; }
-        .icon-flow::before { content: '!'; } /* Ícone para o botão Fluxo */
-
-
-        .container {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: var(--shadow);
-            flex-grow: 1;
-        }
-
-        .filters {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: var(--shadow);
-        }
-
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            flex-grow: 1;
-            min-width: 150px;
-        }
-
-        .filter-group label {
-            font-weight: 500;
-            color: #555;
-            font-size: 13px;
-            white-space: nowrap;
-        }
-
-        .filter-group select,
-        .filter-group input {
-            padding: 8px 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            font-size: 14px;
-            min-width: 120px;
-        }
-
-        .search-group {
-            flex-grow: 2;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            min-width: 250px;
-        }
-
-        .search-input-wrapper {
-            display: flex;
-            width: 100%;
-        }
-
-        .search-group input {
-            flex-grow: 1;
-            border-right: none;
-            border-top-right-radius: 0;
-            border-bottom-right-radius: 0;
-        }
-
-        .search-icon-btn {
-            background-color: transparent;
-            border: 1px solid var(--border-color);
-            border-left: none;
-            border-radius: 0 5px 5px 0;
-            padding: 8px 12px;
-            cursor: pointer;
-            font-size: 16px;
-            color: #666;
-        }
-
-        .table-container {
-            overflow-x: auto;
-            margin-top: 20px;
-            border-radius: 8px;
-            box-shadow: var(--shadow);
-            background-color: #fff;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        table thead th {
-            background-color: var(--table-header-bg);
-            padding: 12px 15px;
-            text-align: left;
-            font-weight: 600;
-            font-size: 12px;
-            color: #555;
-            text-transform: uppercase;
-            border-bottom: 1px solid var(--border-color);
-            white-space: nowrap;
-        }
-
-        table tbody td {
-            padding: 10px 15px;
-            border-bottom: 1px solid #f0f0f0;
-            font-size: 13px;
-            vertical-align: middle;
-            white-space: nowrap;
-        }
-
-        table tbody tr:hover {
-            background-color: #f5f5f5;
-        }
-
-        .pedido-link {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .pedido-link:hover {
-            text-decoration: underline;
-        }
-
-        .flag-icon {
-            width: 16px;
-            height: 11px;
-            vertical-align: middle;
-            margin-right: 5px;
-            border: 1px solid #eee;
-        }
-
-        .footer-button {
-            text-align: right;
-            margin-top: 20px;
-            padding: 10px 0;
-        }
-
-        .form-section {
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .tab-buttons {
-            display: flex;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 20px;
-        }
-
-        .tab-button {
-            background-color: transparent;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: 500;
-            color: #666;
-            border-bottom: 3px solid transparent;
-            transition: all 0.2s ease-in-out;
-        }
-
-        .tab-button.active {
-            color: var(--primary-color);
-            border-bottom-color: var(--primary-color);
-        }
-
-        .tab-content {
-            display: none;
-            padding: 20px 0;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .tab-content h2 {
-            font-size: 18px;
-            margin-bottom: 10px;
-            font-weight: 500;
-        }
-
-        .tab-content p {
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 15px;
-        }
-
-        .accordion {
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-
-        .accordion-item {
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .accordion-item:last-child {
-            border-bottom: none;
-        }
-
-        .accordion-header {
-            width: 100%;
-            background-color: #f7f7f7;
-            padding: 12px 15px;
-            text-align: left;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background-color 0.2s ease-in-out;
-        }
-
-        .accordion-header:hover {
-            background-color: #ececec;
-        }
-
-        .accordion-header .arrow {
-            transition: transform 0.2s ease-in-out;
-        }
-
-        .accordion-header.active .arrow {
-            transform: rotate(180deg);
-        }
-
-        .accordion-content {
-            padding: 15px;
-            background-color: #fff;
-            border-top: 1px solid var(--border-color);
-            display: none;
-        }
-
-        .accordion-content.active {
-            display: block;
-        }
-
-        #uploadPlanilhaInput,
-        #copiarColarTextarea {
-            margin-top: 10px;
-            margin-bottom: 10px;
-        }
-
-        .how-to-use-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .how-to-use-item {
-            background-color: #f0f5fa;
-            border: 1px dashed #cce0f0;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .how-to-use-item h4 {
-            font-size: 16px;
-            margin-bottom: 10px;
-            color: var(--primary-color);
-        }
-
-        .how-to-use-item p {
-            font-size: 13px;
-            color: #555;
-            margin-bottom: 15px;
-        }
-
-        .how-to-use-item a {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .how-to-use-item a:hover {
-            text-decoration: underline;
-        }
-
-        .add-product-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            align-items: end;
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            background-color: #fefefe;
-        }
-
-        .add-product-grid .input-group {
-            margin-bottom: 0;
-        }
-
-        .add-product-grid .input-group input[type="text"],
-        .add-product-grid .input-group input[type="number"],
-        .add-product-grid .input-group select {
-            width: 100%;
-        }
-
-        .add-product-grid .input-group.full-width {
-            grid-column: span 2;
-        }
-
-        .add-product-grid .input-group.search-input {
-            display: flex;
-            align-items: center;
-        }
-        .add-product-grid .input-group.search-input input {
-            border-right: none;
-            border-top-right-radius: 0;
-            border-bottom-right-radius: 0;
-        }
-        .add-product-grid .input-group.search-input button {
-            border-left: none;
-            border-top-left-radius: 0;
-            border-bottom-left-radius: 0;
-            padding: 10px 12px;
-            height: 38px;
-        }
-
-        .add-button-container {
-            grid-column: span 4;
-            text-align: right;
-            margin-top: 10px;
-        }
-
-        .products-added-section {
-            margin-top: 30px;
-            border-top: 1px solid var(--border-color);
-            padding-top: 20px;
-        }
-
-        .products-added-section h3 {
-            font-size: 18px;
-            margin-bottom: 15px;
-            font-weight: 500;
-        }
-
-        #noProductsMessage {
-            text-align: center;
-            color: #888;
-            padding: 20px;
-            border: 1px dashed var(--border-color);
-            border-radius: 5px;
-        }
-
-        #addedProductsTable {
-            width: 100%;
-            margin-top: 15px;
-        }
-
-        #addedProductsTable th,
-        #addedProductsTable td {
-            padding: 10px 8px;
-            text-align: left;
-            border: 1px solid #eee;
-            font-size: 12px;
-            word-wrap: break-word;
-        }
-
-        #addedProductsTable th {
-            background-color: var(--table-header-bg);
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        #addedProductsTable .remove-item-btn {
-            background-color: var(--red-alert);
-            color: #fff;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: background-color 0.2s ease-in-out;
-        }
-
-        #addedProductsTable .remove-item-btn:hover {
-            background-color: #c82333;
-        }
-
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .product-details {
-            display: none;
-        }
-
-        .validation-message {
-            color: var(--red-alert);
-            font-size: 13px;
-            margin-top: 10px;
-            display: none;
-        }
-
-        .success-message {
-            color: var(--green-success);
-            font-size: 13px;
-            margin-top: 10px;
-            display: none;
-        }
-
-        .status-ok { color: var(--green-success); font-weight: bold; }
-        .status-warning { color: var(--orange-warning); font-weight: bold; }
-        .status-error { color: var(--red-alert); font-weight: bold; }
-
-        .status-indicator {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-right: 5px;
-        }
-        .status-indicator.green { background-color: var(--green-success); }
-        .status-indicator.yellow { background-color: var(--orange-warning); }
-        .status-indicator.red { background-color: var(--red-alert); }
-        .status-indicator.blue { background-color: var(--primary-color); }
-        .status-indicator.gray { background-color: var(--secondary-color); }
-        .status-indicator.purple { background-color: #800080; }
-
-
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            width: 90%;
-            max-width: 600px;
-            position: relative;
-        }
-
-        .modal-close-btn {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 24px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #888;
-        }
-
-        .modal-content h3 {
-            margin-bottom: 20px;
-            font-size: 20px;
-            color: var(--primary-color);
-        }
-
-        .modal-content pre {
-            background-color: var(--light-gray);
-            padding: 15px;
-            border-radius: 5px;
-            white-space: pre-wrap;
-            font-family: monospace;
-            font-size: 14px;
-            max-height: 400px;
-            overflow-y: auto;
-            border: 1px solid var(--border-color);
-        }
-
-        .modal-content .modal-actions {
-            margin-top: 25px;
-            text-align: right;
-        }
-
-        #productCatalogModal .modal-content {
-            max-width: 800px;
-        }
-
-        #productCatalogModal .modal-content .search-bar {
-            margin-bottom: 15px;
-            display: flex;
-            gap: 10px;
-        }
-
-        #productCatalogModal .modal-content .search-bar input {
-            flex-grow: 1;
-            padding: 8px;
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-        }
-
-        #productCatalogModal .modal-content .product-catalog-table-container {
-            max-height: 400px;
-            overflow-y: auto;
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-        }
-
-        #productCatalogModal .modal-content .data-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        #productCatalogModal .modal-content .data-table th,
-        #productCatalogModal .modal-content .data-table td {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-            text-align: left;
-            font-size: 13px;
-        }
-
-        #productCatalogModal .modal-content .data-table th {
-            background-color: #f7f7f7;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        #productCatalogModal .modal-content .data-table tbody tr:hover {
-            background-color: #f5f5f5;
-            cursor: pointer;
-        }
-
-        .needs-review {
-            background-color: #fff3cd !important;
-            border: 1px solid #ffc107 !important;
-        }
-
-        .summary-section {
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .summary-section:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-            margin-bottom: 0;
-        }
-
-        .summary-section h2 {
-            font-size: 22px;
-            font-weight: 600;
-            color: var(--primary-color);
-            margin-bottom: 20px;
-        }
-
-        .supplier-summary-card {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: var(--shadow);
-            margin-bottom: 20px;
-            border: 1px solid var(--border-color);
-            position: relative;
-        }
-
-        .supplier-status-indicator {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 1.5rem;
-        }
-
-        .price-difference-positive {
-            color: var(--red-alert);
-            font-weight: bold;
-        }
-
-        .price-difference-negative {
-            color: var(--green-success);
-            font-weight: bold;
-        }
-
-        .details-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px 20px;
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-        }
-
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 5px 0;
-            border-bottom: 1px dashed #e9ecef;
-        }
-
-        .detail-row:last-child {
-            border-bottom: none;
-        }
-
-        .detail-label {
-            font-weight: 500;
-            color: #555;
-            flex-basis: 40%;
-            text-align: left;
-        }
-
-        .detail-value {
-            font-weight: 600;
-            color: #333;
-            flex-basis: 60%;
-            text-align: right;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-        }
-
-        .tracking-steps {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            padding: 20px 0;
-            position: relative;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: var(--shadow);
-            overflow-x: auto;
-            white-space: nowrap;
-            min-height: 120px;
-        }
-
-        .tracking-steps::before {
-            content: '';
-            position: absolute;
-            top: 40px;
-            left: 20px;
-            right: 20px;
-            height: 2px;
-            background-color: #e0e0e0;
-            z-index: 1;
-        }
-
-        .tracking-step {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            flex: 1;
-            min-width: 100px;
-            position: relative;
-            z-index: 2;
-            padding: 0 10px;
-        }
-
-        .tracking-step .circle {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background-color: #e0e0e0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: bold;
-            color: #666;
-            margin-bottom: 10px;
-            flex-shrink: 0;
-        }
-
-        .tracking-step span {
-            font-size: 12px;
-            text-align: center;
-            color: #666;
-            word-wrap: break-word;
-            white-space: normal;
-        }
-
-        .tracking-step.completed .circle {
-            background-color: var(--green-success);
-            color: #fff;
-        }
-        .tracking-step.active .circle {
-            background-color: var(--primary-color);
-            color: #fff;
-            border: 2px solid var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3);
-        }
-        .tracking-step.pending .circle {
-            background-color: var(--orange-warning);
-            color: #fff;
-        }
-        .tracking-step.rejected .circle,
-        .tracking-step.cancelled .circle {
-            background-color: var(--red-alert);
-            color: #fff;
-        }
-        .tracking-step.approved .circle,
-        .tracking-step.production .circle,
-        .tracking-step.ready-cargo .circle,
-        .tracking-step.atd .circle,
-        .tracking-step.pending-doc .circle,
-        .tracking-step.doc-ok .circle,
-        .tracking-step.ata .circle,
-        .tracking-step.finished .circle {
-            background-color: var(--green-success);
-            color: #fff;
-        }
-        .tracking-step.negotiation .circle,
-        .tracking-step.waiting-approval .circle {
-            background-color: var(--orange-warning);
-            color: #fff;
-        }
-        .tracking-step.separation .circle,
-        .tracking-step.conference .circle,
-        .tracking-step.in-transit .circle,
-        .tracking-step.delivered .circle {
-            background-color: var(--primary-color);
-            color: #fff;
-        }
-
-        .tracking-step.completed span {
-            color: #333;
-            font-weight: 500;
-        }
-        .tracking-step.active span {
-            color: var(--primary-color);
-            font-weight: bold;
-        }
-        .tracking-step.rejected span,
-        .tracking-step.cancelled span {
-            color: var(--red-alert);
-            font-weight: bold;
-        }
-
-        .colombia-col {
-            background-color: var(--colombia-bg);
-            border-left: 1px solid var(--colombia-border);
-            border-right: 1px solid var(--colombia-border);
-        }
-
-        .hongkong-col {
-            background-color: var(--hongkong-bg);
-            border-left: 1px solid var(--hongkong-border);
-            border-right: 1px solid var(--hongkong-border);
-        }
-
-        .cubage-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-            margin-bottom: 20px;
-        }
-
-        .cubage-table th,
-        .cubage-table td {
-            border: 1px solid var(--border-color);
-            padding: 3px 5px;
-            text-align: left;
-            font-size: 11px;
-        }
-
-        .cubage-table th {
-            background-color: var(--table-header-bg);
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        /* Highlight for the most probable container */
-        .cubage-table tr.highlight-container {
-            background-color: var(--highlight-container-bg);
-            border: 1px solid var(--highlight-container-border);
-            font-weight: bold;
-        }
-
-        /* Styles for Flowchart Modal */
-        #flowchartModal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1001; /* Sit on top */
-            left: 0;
-            top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
-            justify-content: center;
-            align-items: center;
-        }
-
-        #flowchartModal.active {
-            display: flex;
-        }
-
-        #flowchartModal .modal-content {
-            margin: auto;
-            display: block;
-            width: 90%;
-            height: 90%;
-            max-width: 1200px; /* Adjust as needed */
-            max-height: 800px; /* Adjust as needed */
-            background-color: #fff; /* White background for the image */
-            padding: 20px;
-            border-radius: 8px;
-            position: relative;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #flowchartModal .modal-content img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain; /* Ensures the image fits within the modal without cropping */
-        }
-
-        #flowchartModal .modal-close-btn {
-            position: absolute;
-            top: 15px;
-            right: 25px;
-            color: #333; /* Darker color for visibility on white background */
-            font-size: 35px;
-            font-weight: bold;
-            transition: 0.3s;
-            background: none;
-            border: none;
-            cursor: pointer;
-            z-index: 1002; /* Ensure close button is above image */
-        }
-
-        #flowchartModal .modal-close-btn:hover,
-        #flowchartModal .modal-close-btn:focus {
-            color: #999;
-            text-decoration: none;
-            cursor: pointer;
-        }
-    </style>
+    <title>Portal Fluig - Central de Compras</title>
+    <!-- Link para o arquivo CSS externo -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
+    <!-- Central de Compras - Página Principal do Compras -->
     <div id="purchasingCenterScreen" class="page active">
         <header class="header">
             <div class="header-left">
                 <h1>Central de Compras</h1>
-                <p>Gerencie e acompanhe os pedidos de compra.</p>
             </div>
             <div class="header-right">
                 <span class="header-icon" onclick="showScreenInfo()"><i class="icon-question"></i></span>
-                <span class="header-icon" onclick="SharedFunctions.openFlowchartModal()"><i class="icon-flow"></i></span>
+                <span class="header-icon" onclick="openFlowchartModal()"><i class="icon-flow"></i></span> <!-- Botão Fluxo -->
                 <button class="btn-secondary" id="purchasingLogoutButton">Sair (Logout)</button>
             </div>
         </header>
+
         <div class="container">
-            <div class="tab-buttons" id="purchasingTabButtons">
-                <button class="tab-button active" onclick="switchPurchasingTab('novasSolicitacoes')">Novas Solicitações</button>
-                <button class="tab-button" onclick="switchPurchasingTab('negociacoesEmAndamento')">Negociações em Andamento</button>
-                <button class="tab-button" onclick="switchPurchasingTab('pendenteGerencia')">Pendente Gerência</button>
-                <button class="tab-button" onclick="switchPurchasingTab('aprovadoGerencia')">Aprovado Gerência</button>
-            </div>
-
-            <div id="novasSolicitacoesTab" class="tab-content active">
-                <h2 class="text-xl font-semibold mb-4">Novas Solicitações de Compra</h2>
-                <div class="table-container">
-                    <table class="w-full">
-                        <thead>
-                            <tr>
-                                <th>ID SOLICITAÇÃO PRINCIPAL</th>
-                                <th>Nº PO</th>
-                                <th>CLIENTE (NOME)</th>
-                                <th>FORNECEDOR (NOME)</th>
-                                <th>VALOR TOTAL</th>
-                                <th>ÚLTIMA ATUALIZAÇÃO</th>
-                                <th>STATUS</th>
-                                <th>AÇÃO</th>
-                            </tr>
-                        </thead>
-                        <tbody id="negotiationTable">
-                        </tbody>
-                    </table>
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="poStatusFilter">Status da PO:</label>
+                    <select id="poStatusFilter" onchange="renderPurchasingCenterTables()">
+                        <option value="Todos">Todos</option>
+                        <option value="Pendente">Pendente</option>
+                        <option value="Negociado">Negociado</option>
+                        <option value="Aguardando Aprovação">Aguardando Aprovação</option>
+                        <option value="Aprovado">Aprovado</option>
+                        <option value="Rejeitado">Rejeitado</option>
+                        <option value="Finalizado">Finalizado</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="poSupplierFilter">Fornecedor:</label>
+                    <select id="poSupplierFilter" onchange="renderPurchasingCenterTables()">
+                        <option value="Todos">Todos</option>
+                        <!-- Opções de fornecedor serão populadas via JS -->
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="poOriginCountryFilter">País Origem:</label>
+                    <select id="poOriginCountryFilter" onchange="renderPurchasingCenterTables()">
+                        <option value="Todos">Todos</option>
+                        <!-- Opções de país de origem serão populadas via JS -->
+                    </select>
+                </div>
+                <div class="filter-group search-group">
+                    <label for="poSearch">Buscar por Nº PO ou ID Solicitação:</label>
+                    <div class="search-input-wrapper">
+                        <input type="text" id="poSearch" placeholder="Buscar por Nº PO ou ID Solicitação">
+                        <button class="search-icon-btn" onclick="renderPurchasingCenterTables()"><i class="icon-search"></i></button>
+                    </div>
                 </div>
             </div>
 
-            <div id="negociacoesEmAndamentoTab" class="tab-content">
-                <h2 class="text-xl font-semibold mb-4">Negociações em Andamento</h2>
-                <div class="table-container">
-                    <table class="w-full">
-                        <thead>
-                            <tr>
-                                <th>ID SOLICITAÇÃO PRINCIPAL</th>
-                                <th>Nº PO</th>
-                                <th>CLIENTE (NOME)</th>
-                                <th>FORNECEDOR (NOME)</th>
-                                <th>VALOR TOTAL</th>
-                                <th>ÚLTIMA ATUALIZAÇÃO</th>
-                                <th>STATUS</th>
-                                <th>AÇÃO</th>
-                            </tr>
-                        </thead>
-                        <tbody id="negotiationInProgressTable">
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="pendenteGerenciaTab" class="tab-content">
-                <h2 class="text-xl font-semibold mb-4">Pedidos Aguardando Ação da Gerência</h2>
-                <div class="table-container">
-                    <table class="w-full">
-                        <thead>
-                            <tr>
-                                <th>ID SOLICITAÇÃO PRINCIPAL</th>
-                                <th>Nº PO</th>
-                                <th>CLIENTE (NOME)</th>
-                                <th>FORNECEDOR (NOME)</th>
-                                <th>VALOR TOTAL</th>
-                                <th>ÚLTIMA ATUALIZAÇÃO</th>
-                                <th>STATUS</th>
-                                <th>AÇÃO</th>
-                            </tr>
-                        </thead>
-                        <tbody id="pendenteGerenciaTable">
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="aprovadoGerenciaTab" class="tab-content">
-                <h2 class="text-xl font-semibold mb-4">Pedidos Aprovados pela Gerência</h2>
-                <div class="table-container">
-                    <table class="w-full">
-                        <thead>
-                            <tr>
-                                <th>ID SOLICITAÇÃO PRINCIPAL</th>
-                                <th>Nº PO</th>
-                                <th>CLIENTE (NOME)</th>
-                                <th>FORNECEDOR (NOME)</th>
-                                <th>VALOR TOTAL</th>
-                                <th>ÚLTIMA ATUALIZAÇÃO</th>
-                                <th>STATUS</th>
-                                <th>AÇÃO</th>
-                            </tr>
-                        </thead>
-                        <tbody id="aprovadoGerenciaTable">
-                        </tbody>
-                    </table>
-                </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID SOLICITAÇÃO PRINCIPAL</th>
+                            <th>Nº PO</th>
+                            <th>FORNECEDOR (CÓDIGO)</th>
+                            <th>PAÍS ORIGEM</th>
+                            <th>VALOR TOTAL (FORNECEDOR)</th>
+                            <th>STATUS DA PO</th>
+                            <th>DATA GERAÇÃO</th>
+                            <th>AÇÃO</th>
+                        </tr>
+                    </thead>
+                    <tbody id="purchasingOrdersTableBody">
+                        <!-- Purchase Orders will be rendered here -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 
-    <div id="purchasingOrderDetailsScreen" class="page">
+    <!-- Detalhes do Pedido de Compra (PO) -->
+    <div id="purchaseOrderDetailsScreen" class="page">
         <header class="header">
             <div class="header-left">
-                <h1>Detalhes do Pedido de Compra <span id="purchasingCurrentOrderId"></span></h1>
-                <p>Gerencie os detalhes e a negociação deste pedido.</p>
+                <h1>Detalhes do Pedido de Compra (PO) <span id="currentPoId"></span></h1>
             </div>
             <div class="header-right">
                 <span class="header-icon" onclick="showScreenInfo()"><i class="icon-question"></i></span>
-                <span class="header-icon" onclick="SharedFunctions.openFlowchartModal()"><i class="icon-flow"></i></span>
+                <span class="header-icon" onclick="openFlowchartModal()"><i class="icon-flow"></i></span> <!-- Botão Fluxo -->
             </div>
         </header>
         <div class="container">
             <div class="form-section">
-                <h2 class="text-xl font-semibold mb-4">Dados Gerais do Pedido de Compra</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="input-group">
-                        <label>Nº PO:</label>
-                        <p id="purchasingDetailOrderId" class="font-medium text-gray-800"></p>
+                <h2 class="text-xl font-semibold mb-4">Informações Gerais da PO</h2>
+                <div class="details-grid">
+                    <div class="detail-row">
+                        <div class="detail-label">Nº PO:</div>
+                        <div class="detail-value" id="poDetailId"></div>
                     </div>
-                    <div class="input-group">
-                        <label>ID Solicitação Principal:</label>
-                        <p id="purchasingDetailParentOrderId" class="font-medium text-gray-800"></p>
+                    <div class="detail-row">
+                        <div class="detail-label">ID Solicitação Principal:</div>
+                        <div class="detail-value" id="poDetailParentOrderId"></div>
                     </div>
-                    <div class="input-group">
-                        <label>Fornecedor:</label>
-                        <p id="purchasingDetailSupplier" class="font-medium text-gray-800"></p>
+                    <div class="detail-row">
+                        <div class="detail-label">Fornecedor:</div>
+                        <div class="detail-value" id="poDetailSupplier"></div>
                     </div>
-                    <div class="input-group">
-                        <label>Status Atual:</label>
-                        <p id="purchasingDetailStatus" class="font-medium text-gray-800"></p>
+                    <div class="detail-row">
+                        <div class="detail-label">País de Origem:</div>
+                        <div class="detail-value" id="poDetailOriginCountry"></div>
                     </div>
-                    <div class="input-group">
-                        <label>Data Solicitação:</label>
-                        <p id="purchasingDetailDate" class="font-medium text-gray-800"></p>
+                    <div class="detail-row">
+                        <div class="detail-label">Valor Total (Fornecedor):</div>
+                        <div class="detail-value" id="poDetailNewSupplierPriceTotal"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Valor Total (Interno):</div>
+                        <div class="detail-value" id="poDetailCurrentInternalPriceTotal"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Status Geral da PO:</div>
+                        <div class="detail-value" id="poDetailOverallApprovalStatus"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Data de Geração:</div>
+                        <div class="detail-value" id="poDetailDate"></div>
                     </div>
                 </div>
             </div>
 
             <div class="form-section">
-                <h2 class="text-xl font-semibold mb-4">Produtos do Pedido</h2>
+                <h2 class="text-xl font-semibold mb-4">Produtos na PO</h2>
                 <div class="table-container">
                     <table class="w-full">
                         <thead>
                             <tr>
                                 <th>Cód Produto</th>
                                 <th>Descrição</th>
-                                <th>Quantidade</th>
+                                <th>Qtd.</th>
                                 <th>Valor Unit. Interno</th>
                                 <th>Valor Unit. Fornecedor (Atual)</th>
-                                <th>Novo Valor Fornecedor</th>
-                                <th>Status Aprovação</th>
+                                <th>Status Aprovação Item</th>
                             </tr>
                         </thead>
-                        <tbody id="purchasingOrderProductsTableBody">
+                        <tbody id="poDetailsProductsTableBody">
                         </tbody>
                     </table>
                 </div>
             </div>
 
+            <div class="form-section" id="negotiationSection">
+                <h2 class="text-xl font-semibold mb-4">Negociação de Preços (Apenas Hong Kong)</h2>
+                <div class="input-group">
+                    <label for="negotiationNotes">Notas da Negociação:</label>
+                    <textarea id="negotiationNotes" rows="4" placeholder="Adicione notas sobre a negociação aqui..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button class="btn-primary" onclick="finalizeNegotiation()">Finalizar Negociação</button>
+                </div>
+            </div>
+
             <div class="form-actions">
-                <button class="btn-secondary" onclick="backToPurchasingCenter()">Voltar</button>
-                <button class="btn-primary" onclick="handlePurchasingAction()" id="savePurchasingNegotiationBtn">Salvar Negociação</button>
-                <button class="btn-secondary" onclick="generatePOPDF()">Gerar PDF da PO</button>
+                <button class="btn-secondary" onclick="backToPurchasingCenter()">Voltar para Central de Compras</button>
+                <button class="btn-primary" onclick="generatePOPDF(currentPurchasingPO.id)">Gerar PDF da PO</button>
             </div>
         </div>
     </div>
 
-    <!-- Modais (Compartilhados, mas definidos aqui para acesso direto) -->
+    <!-- Modais Globais (usados por várias telas) -->
     <div id="messageModal" class="modal-overlay">
         <div class="modal-content">
             <button class="modal-close-btn" id="messageModalCloseBtn">&times;</button>
@@ -1232,115 +196,114 @@
     <!-- Flowchart Modal Structure -->
     <div id="flowchartModal" class="modal-overlay">
         <div class="modal-content">
-            <span class="modal-close-btn" onclick="SharedFunctions.closeFlowchartModal()">&times;</span>
+            <span class="modal-close-btn" onclick="closeFlowchartModal()">&times;</span>
             <img id="flowchartImage" src="https://raw.githubusercontent.com/SamuelJuniorrr/importexport/refs/heads/main/fluxograma.png" alt="Fluxograma do Processo">
         </div>
     </div>
 
-    <script src="common.js"></script>
+    <!-- Link para o arquivo JavaScript externo -->
+    <script src="script.js"></script>
     <script>
-        // Importa as variáveis e funções compartilhadas
-        const {
-            currentPurchasingPO, generatedPurchaseOrders, orders
-        } = SharedData;
-
-        const {
-            showMessage, getSupplierNameFromCode,
-            openFlowchartModal, closeFlowchartModal,
-            synchronizeOrdersAndPOs, logout
-        } = SharedFunctions;
-
-        let currentScreen = 'purchasingCenterScreen'; // Tela inicial de compras
-
-        // Função para exibir informações da tela (ajustada para compras)
+        /**
+         * Exibe informações sobre a tela atual para o usuário de Compras.
+         */
         function showScreenInfo() {
             let info = '';
             switch (currentScreen) {
                 case 'purchasingCenterScreen':
                     info = `
                         <h2 style="font-size:1.3rem; font-weight:bold; margin-bottom:10px;">🛒 Central de Compras</h2>
-                        <p>Área exclusiva para o time de compras:</p>
+                        <p>Bem-vindo à <b>Central de Compras</b>! Aqui você gerencia as Ordens de Compra (POs) e as negociações com fornecedores.</p>
                         <hr style="margin:16px 0;">
+                        <h3 style="font-size:1.1rem; font-weight:bold;">🔍 Busca e Filtros</h3>
                         <ul style="margin-bottom:10px;">
-                        <li><b>Visualize solicitações</b> recebidas dos clientes.</li>
-                        <li><b>Negocie preços</b> com fornecedores e registre as condições negociadas.</li>
-                        <li><b>Solicite aprovação gerencial</b> para pedidos negociados.</li>
-                        <li><b>Acompanhe o status</b> dos pedidos em todas as etapas do fluxo de compras.</li>
+                        <li>Filtre POs por <b>Status da PO</b>, <b>Fornecedor</b> (código) ou <b>País de Origem</b>.</li>
+                        <li>Utilize a busca rápida por número da PO ou ID da Solicitação Principal.</li>
+                        </ul>
+                        <h3 style="font-size:1.1rem; font-weight:bold;">📋 Visualização das POs</h3>
+                        <ul style="margin-bottom:10px;">
+                        <li>Veja todas as POs em uma tabela detalhada.</li>
+                        <li>Clique em <b>Ver Detalhes</b> para acessar informações completas e iniciar negociações.</li>
+                        </ul>
+                        <h3 style="font-size:1.1rem; font-weight:bold;">📊 Negociação</h3>
+                        <ul style="margin-bottom:10px;">
+                        <li>Para POs de Hong Kong, você pode simular a negociação de preços e finalizar o processo.</li>
+                        <li>POs da Colômbia são processadas automaticamente via SAP.</li>
                         </ul>
                         <hr style="margin:16px 0;">
-                        <p style="font-size:0.95rem;"><b>Dica:</b> Utilize as abas para navegar entre solicitações, negociações e aprovações.</p>
-                        <p style="font-size:0.95rem;"><b>Atenção:</b> Jornada desenhada para o comprador(PCP) inserir o preço do fornecedor manualmente, porém, vamos disponibilizar acesso para cada fornecedor entrar na plataforma e incluir seu preço.</p>
-
+                        <p style="font-size:0.95rem;">Se precisar de ajuda, clique novamente neste ícone ou consulte o manual do usuário.</p>
                     `;
                     break;
-                case 'purchasingOrderDetailsScreen':
+                case 'purchaseOrderDetailsScreen':
                     info = `
-                        <h2 style="font-size:1.3rem; font-weight:bold; margin-bottom:10px;">📑 Detalhes do Pedido de Compra</h2>
-                        <p>Aqui você pode:</p>
+                        <h2 style="font-size:1.3rem; font-weight:bold; margin-bottom:10px;">📄 Detalhes da PO</h2>
+                        <p>Visualize os detalhes de uma Ordem de Compra (PO) e gerencie a negociação.</p>
                         <hr style="margin:16px 0;">
                         <ul style="margin-bottom:10px;">
-                        <li>Visualizar todos os produtos do pedido, quantidades e valores.</li>
-                        <li>Editar o valor negociado com o fornecedor (se permitido).</li>
-                        <li>Salvar negociações, solicitar aprovação ou finalizar o processo.</li>
+                        <li><b>Informações Gerais:</b> Dados básicos da PO, valores internos e do fornecedor.</li>
+                        <li><b>Produtos na PO:</b> Lista de itens, quantidades e status de aprovação individual.</li>
+                        <li><b>Negociação de Preços:</b> (Apenas para Hong Kong) Adicione notas e finalize a negociação.</li>
+                        <li><b>Gerar PDF:</b> Crie um PDF simulado da PO para documentação.</li>
                         </ul>
                         <hr style="margin:16px 0;">
-                        <p style="font-size:0.95rem;"><b>Dica:</b> Altere os valores unitários negociados diretamente na tabela, se necessário.</p>
+                        <p style="font-size:0.95rem;"><b>Dica:</b> O status de aprovação de cada item é atualizado após a negociação ou aprovação gerencial.</p>
                     `;
                     break;
                 default:
-                    info = '<p>Esta tela faz parte do fluxo do portal. Para mais informações, consulte o manual do usuário ou o suporte.</p>';
+                    info = '<p>Esta tela faz parte do fluxo do portal. Para mais informações, consulte o manual ou o suporte.</p>';
             }
             showMessage('Informações da Tela', info, 'info');
         }
 
-        // Função para mostrar uma tela específica
-        function showScreen(screenId) {
-            document.querySelectorAll('.page').forEach(screen => {
-                screen.classList.remove('active');
-            });
-            document.getElementById(screenId).classList.add('active');
-            currentScreen = screenId;
-        }
-
-        // Função para voltar para a Central de Compras
+        /**
+         * Retorna à Central de Compras.
+         */
         function backToPurchasingCenter() {
-            SharedData.currentPurchasingPO = null;
             showScreen('purchasingCenterScreen');
-            const activeTabButton = document.querySelector('#purchasingTabButtons .tab-button.active');
-            if (activeTabButton) {
-                switchPurchasingTab(activeTabButton.onclick.toString().match(/switchPurchasingTab\('(\w+)'\)/)[1]);
-            } else {
-                renderPurchasingCenterTables();
-            }
+            renderPurchasingCenterTables(); // Re-renderiza a tabela de POs
         }
 
-        // Renderiza a tabela de POs
-        function renderPOTable(tbodyId, filteredPOs, actionButtonText, actionButtonFunction) {
-            const tbody = document.getElementById(tbodyId);
-            if (!tbody) {
-                console.error(`Error: tbody with ID '${tbodyId}' not found.`);
-                return;
-            }
+        /**
+         * Renderiza as tabelas da Central de Compras, aplicando filtros.
+         */
+        function renderPurchasingCenterTables() {
+            const tbody = document.getElementById('purchasingOrdersTableBody');
             tbody.innerHTML = '';
 
+            const statusFilter = document.getElementById('poStatusFilter').value;
+            const supplierFilterCode = document.getElementById('poSupplierFilter').value;
+            const originCountryFilter = document.getElementById('poOriginCountryFilter').value;
+            const searchInput = document.getElementById('poSearch').value.toLowerCase();
+
+            let filteredPOs = generatedPurchaseOrders.filter(po => {
+                const matchesStatus = statusFilter === 'Todos' || po.overallApprovalStatus === statusFilter;
+                const matchesSupplier = supplierFilterCode === 'Todos' || po.supplierCode === supplierFilterCode;
+                const matchesOriginCountry = originCountryFilter === 'Todos' || po.originCountry === originCountryFilter;
+                const matchesSearch = searchInput === '' ||
+                                      po.id.toLowerCase().includes(searchInput) ||
+                                      (po.parentOrderId && po.parentOrderId.toLowerCase().includes(searchInput));
+                return matchesStatus && matchesSupplier && matchesOriginCountry && matchesSearch;
+            });
+
             if (filteredPOs.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-gray-500">Nenhum pedido encontrado nesta categoria.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-gray-500">Nenhuma Ordem de Compra encontrada com os filtros aplicados.</td></tr>`;
                 return;
             }
 
             filteredPOs.forEach(po => {
                 const row = document.createElement('tr');
-                const clientOrder = SharedData.orders.find(o => o.orderId === po.id);
-                const clientName = clientOrder ? clientOrder.clientFlag : 'N/A';
 
                 let statusIndicatorClass = '';
                 switch (po.overallApprovalStatus) {
                     case 'Pendente':
-                    case 'Negociado':
                     case 'Aguardando Aprovação':
                         statusIndicatorClass = 'yellow';
                         break;
+                    case 'Negociado':
+                        statusIndicatorClass = 'purple'; // Novo status para negociação
+                        break;
                     case 'Aprovado':
+                    case 'Finalizado':
                         statusIndicatorClass = 'green';
                         break;
                     case 'Rejeitado':
@@ -1352,85 +315,53 @@
 
                 row.innerHTML = `
                     <td>${po.parentOrderId || 'N/A'}</td>
-                    <td><a href="#" class="pedido-link" onclick="viewPurchasingOrderDetails('${po.id}')">${po.id}</a></td>
-                    <td>${clientName}</td>
-                    <td>${getSupplierNameFromCode(po.supplierCode)}</td>
+                    <td>${po.id}</td>
+                    <td>${po.supplierCode} - ${po.supplier}</td>
+                    <td>${po.originCountry}</td>
                     <td>R$ ${parseFloat(po.newSupplierPriceTotal).toFixed(2).replace('.', ',')}</td>
-                    <td>${po.date}</td>
                     <td><span class="status-indicator ${statusIndicatorClass}"></span>${po.overallApprovalStatus}</td>
+                    <td>${po.date}</td>
                     <td>
-                        <button class="btn-primary" onclick="${actionButtonFunction}('${po.id}')">${actionButtonText}</button>
+                        <button class="btn-primary" onclick="viewPurchaseOrderDetails('${po.id}')">Ver Detalhes</button>
                     </td>
                 `;
                 tbody.appendChild(row);
             });
         }
 
-        // Renderiza todas as tabelas da Central de Compras
-        function renderPurchasingCenterTables() {
-            const novasSolicitacoes = generatedPurchaseOrders.filter(po => po.overallApprovalStatus === 'Pendente' && po.originCountry === 'Hong Kong');
-            const negociacoesEmAndamento = generatedPurchaseOrders.filter(po => po.overallApprovalStatus === 'Negociado' && po.originCountry === 'Hong Kong');
-            const pendenteGerencia = generatedPurchaseOrders.filter(po => po.overallApprovalStatus === 'Aguardando Aprovação' && po.originCountry === 'Hong Kong');
-            const aprovadoGerencia = generatedPurchaseOrders.filter(po => po.overallApprovalStatus === 'Aprovado' && po.originCountry === 'Hong Kong');
-
-            renderPOTable('negotiationTable', novasSolicitacoes, 'Negociar', 'viewPurchasingOrderDetails');
-            renderPOTable('negotiationInProgressTable', negociacoesEmAndamento, 'Continuar Negociação', 'viewPurchasingOrderDetails');
-            renderPOTable('pendenteGerenciaTable', pendenteGerencia, 'Visualizar', 'viewPurchasingOrderDetails');
-            renderPOTable('aprovadoGerenciaTable', aprovadoGerencia, 'Visualizar', 'viewPurchasingOrderDetails');
-        }
-
-        // Troca de abas na Central de Compras
-        function switchPurchasingTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
-
-            document.getElementById(`${tabId}Tab`).classList.add('active');
-            document.querySelector(`button[onclick="switchPurchasingTab('${tabId}')"]`).classList.add('active');
-
-            renderPurchasingCenterTables();
-        }
-
-        // Visualiza detalhes do pedido de compra
-        function viewPurchasingOrderDetails(poId) {
-            SharedData.currentPurchasingPO = generatedPurchaseOrders.find(po => po.id === poId);
-            if (!SharedData.currentPurchasingPO) {
-                showMessage('Erro', 'Detalhes do pedido de compra não encontrados.', 'error');
+        /**
+         * Exibe os detalhes de uma Ordem de Compra (PO) específica.
+         * @param {string} poId - O ID da PO a ser visualizada.
+         */
+        function viewPurchaseOrderDetails(poId) {
+            currentPurchasingPO = generatedPurchaseOrders.find(po => po.id === poId);
+            if (!currentPurchasingPO) {
+                showMessage('Erro', 'Detalhes da PO não encontrados.', 'error');
                 return;
             }
 
-            document.getElementById('purchasingCurrentOrderId').innerText = SharedData.currentPurchasingPO.id;
-            document.getElementById('purchasingDetailOrderId').innerText = SharedData.currentPurchasingPO.id;
-            document.getElementById('purchasingDetailParentOrderId').innerText = SharedData.currentPurchasingPO.parentOrderId || 'N/A';
-            document.getElementById('purchasingDetailSupplier').innerText = getSupplierNameFromCode(SharedData.currentPurchasingPO.supplierCode);
-            document.getElementById('purchasingDetailStatus').innerText = SharedData.currentPurchasingPO.overallApprovalStatus;
-            document.getElementById('purchasingDetailDate').innerText = SharedData.currentPurchasingPO.date;
+            document.getElementById('currentPoId').innerText = currentPurchasingPO.id;
+            document.getElementById('poDetailId').innerText = currentPurchasingPO.id;
+            document.getElementById('poDetailParentOrderId').innerText = currentPurchasingPO.parentOrderId || 'N/A';
+            document.getElementById('poDetailSupplier').innerText = `${currentPurchasingPO.supplierCode} - ${currentPurchasingPO.supplier}`;
+            document.getElementById('poDetailOriginCountry').innerText = currentPurchasingPO.originCountry;
+            document.getElementById('poDetailNewSupplierPriceTotal').innerText = `R$ ${parseFloat(currentPurchasingPO.newSupplierPriceTotal).toFixed(2).replace('.', ',')}`;
+            document.getElementById('poDetailCurrentInternalPriceTotal').innerText = `R$ ${parseFloat(currentPurchasingPO.currentInternalPriceTotal).toFixed(2).replace('.', ',')}`;
+            document.getElementById('poDetailOverallApprovalStatus').innerText = currentPurchasingPO.overallApprovalStatus;
+            document.getElementById('poDetailDate').innerText = currentPurchasingPO.date;
 
-            const productsTableBody = document.getElementById('purchasingOrderProductsTableBody');
+            const productsTableBody = document.getElementById('poDetailsProductsTableBody');
             productsTableBody.innerHTML = '';
 
-            SharedData.currentPurchasingPO.products.forEach((product, index) => {
+            currentPurchasingPO.products.forEach(product => {
                 const row = document.createElement('tr');
                 const internalPrice = parseFloat(product.currentInternalUnitPrice);
                 const supplierPrice = parseFloat(product.newSupplierUnitPrice);
-
                 let priceClass = '';
                 if (supplierPrice > internalPrice) {
                     priceClass = 'price-difference-positive';
                 } else if (supplierPrice < internalPrice) {
                     priceClass = 'price-difference-negative';
-                }
-
-                let approvalStatusClass = '';
-                switch (product.approvalStatus) {
-                    case 'Pendente':
-                        approvalStatusClass = 'status-warning';
-                        break;
-                    case 'Aprovado':
-                        approvalStatusClass = 'status-ok';
-                        break;
-                    case 'Rejeitar':
-                        approvalStatusClass = 'status-error';
-                        break;
                 }
 
                 row.innerHTML = `
@@ -1439,130 +370,169 @@
                     <td>${product.quantity}</td>
                     <td>R$ ${internalPrice.toFixed(2).replace('.', ',')}</td>
                     <td class="${priceClass}">R$ ${supplierPrice.toFixed(2).replace('.', ',')}</td>
-                    <td>
-                        <input type="number" step="0.01" value="${supplierPrice.toFixed(2)}"
-                            onchange="updateNegotiatedPrice(${index}, this.value)"
-                            class="w-24 text-center border rounded-md px-2 py-1 text-sm">
-                    </td>
-                    <td class="${approvalStatusClass}">${product.approvalStatus}</td>
+                    <td>${product.approvalStatus}</td>
                 `;
                 productsTableBody.appendChild(row);
             });
 
-            const saveButton = document.getElementById('savePurchasingNegotiationBtn');
-            if (SharedData.currentPurchasingPO.overallApprovalStatus === 'Pendente') {
-                saveButton.innerText = 'Salvar Negociação';
-                saveButton.onclick = () => savePurchasingNegotiation('Negociado');
-            } else if (SharedData.currentPurchasingPO.overallApprovalStatus === 'Negociado') {
-                saveButton.innerText = 'Solicitar Aprovação';
-                saveButton.onclick = () => savePurchasingNegotiation('Aguardando Aprovação');
+            // Gerencia a visibilidade da seção de negociação
+            const negotiationSection = document.getElementById('negotiationSection');
+            if (currentPurchasingPO.originCountry === 'Hong Kong' && currentPurchasingPO.overallApprovalStatus === 'Pendente') {
+                negotiationSection.classList.remove('hidden');
             } else {
-                saveButton.classList.add('hidden'); // Hide if already approved/rejected
+                negotiationSection.classList.add('hidden');
             }
 
-            showScreen('purchasingOrderDetailsScreen');
+            showScreen('purchaseOrderDetailsScreen');
         }
 
-        // Atualiza o preço negociado de um produto
-        function updateNegotiatedPrice(productIndex, newPrice) {
-            if (SharedData.currentPurchasingPO && SharedData.currentPurchasingPO.products[productIndex]) {
-                const oldPrice = parseFloat(SharedData.currentPurchasingPO.products[productIndex].newSupplierUnitPrice);
-                const price = parseFloat(newPrice);
-
-                if (isNaN(price) || price <= 0) {
-                    showMessage('Erro', 'Preço inválido. Por favor, insira um valor numérico positivo.', 'error');
-                    // Reverte para o valor anterior se o novo for inválido
-                    document.querySelector(`#purchasingOrderProductsTableBody tr:nth-child(${productIndex + 1}) input`).value = oldPrice.toFixed(2);
-                    return;
-                }
-
-                SharedData.currentPurchasingPO.products[productIndex].newSupplierUnitPrice = price.toFixed(2);
-                SharedData.currentPurchasingPO.products[productIndex].approvalStatus = 'Pendente'; // Reset status on price change
-
-                // Recalcula o total do PO
-                SharedData.currentPurchasingPO.newSupplierPriceTotal = SharedData.currentPurchasingPO.products.reduce((sum, p) =>
-                    sum + (parseFloat(p.newSupplierUnitPrice) * p.quantity), 0
-                ).toFixed(2);
-
-                // Atualiza a exibição do status do produto
-                viewPurchasingOrderDetails(SharedData.currentPurchasingPO.id);
+        /**
+         * Simula a negociação de uma PO de Hong Kong.
+         * Esta função atualiza o status da PO para 'Negociado' e simula novas condições.
+         */
+        function finalizeNegotiation() {
+            if (!currentPurchasingPO || currentPurchasingPO.originCountry !== 'Hong Kong' || currentPurchasingPO.overallApprovalStatus !== 'Pendente') {
+                showMessage('Erro', 'Esta PO não pode ser negociada neste momento.', 'error');
+                return;
             }
-        }
 
-        // Salva a negociação do pedido de compra
-        function savePurchasingNegotiation(newStatus) {
-            if (!SharedData.currentPurchasingPO) return;
+            const negotiationNotes = document.getElementById('negotiationNotes').value.trim();
+            if (!negotiationNotes) {
+                showMessage('Atenção', 'Por favor, adicione algumas notas de negociação antes de finalizar.', 'warning');
+                return;
+            }
 
-            SharedData.currentPurchasingPO.overallApprovalStatus = newStatus;
-            SharedData.currentPurchasingPO.date = new Date().toISOString().slice(0, 10); // Update last modified date
-
-            // Update individual product approval status based on negotiation
-            SharedData.currentPurchasingPO.products.forEach(product => {
-                if (newStatus === 'Negociado') {
-                    product.approvalStatus = 'Pendente'; // Mark as pending for manager review
-                } else if (newStatus === 'Aguardando Aprovação') {
-                    product.approvalStatus = 'Pendente'; // Still pending for manager
-                }
+            // Simula uma nova negociação de preços para cada produto
+            currentPurchasingPO.products.forEach(product => {
+                const currentSupplierPrice = parseFloat(product.newSupplierUnitPrice);
+                // Simula uma leve redução ou manutenção do preço do fornecedor
+                product.newSupplierUnitPrice = (currentSupplierPrice * (1 - (Math.random() * 0.02))).toFixed(2); // Reduz em até 2%
+                product.approvalStatus = 'Negociado'; // Atualiza o status do item
             });
 
-            // Find and update the original order in the main orders array
-            const originalOrder = orders.find(order => order.orderId === SharedData.currentPurchasingPO.id);
-            if (originalOrder) {
-                originalOrder.status = newStatus;
-                originalOrder.totalValue = parseFloat(SharedData.currentPurchasingPO.newSupplierPriceTotal);
-                originalOrder.lastUpdateDate = new Date().toISOString().slice(0, 10);
-            }
+            // Recalcula o valor total da PO com base nos novos preços
+            currentPurchasingPO.newSupplierPriceTotal = currentPurchasingPO.products.reduce((sum, p) => sum + (parseFloat(p.newSupplierUnitPrice) * p.quantity), 0).toFixed(2);
+            currentPurchasingPO.overallApprovalStatus = 'Negociado'; // Atualiza o status geral da PO
+            currentPurchasingPO.negotiationNotes = negotiationNotes; // Salva as notas
+            currentPurchasingPO.lastUpdateDate = new Date().toISOString().slice(0, 10); // Atualiza a data de modificação
 
-            showMessage('Sucesso', `Pedido ${SharedData.currentPurchasingPO.id} atualizado para status: ${newStatus}.`, 'success', () => {
-                backToPurchasingCenter();
+            showMessage('Negociação Finalizada', `A PO ${currentPurchasingPO.id} foi marcada como 'Negociado'. Agora precisa ser enviada para aprovação do Gestor.`, 'success', () => {
+                // Atualiza a exibição dos detalhes da PO
+                viewPurchaseOrderDetails(currentPurchasingPO.id);
+                synchronizeOrdersAndPOs(); // Sincroniza os dados globais
             });
-            synchronizeOrdersAndPOs();
         }
 
-        // Gera um PDF simulado da PO
-        function generatePOPDF() {
-            if (!SharedData.currentPurchasingPO) {
-                showMessage('Erro', 'Nenhum pedido de compra selecionado para gerar PDF.', 'error');
+        /**
+         * Simula a geração de um PDF para a PO.
+         * @param {string} poId - O ID da PO para a qual gerar o PDF.
+         */
+        function generatePOPDF(poId) {
+            const po = generatedPurchaseOrders.find(p => p.id === poId);
+            if (!po) {
+                showMessage('Erro', 'PO não encontrada para gerar PDF.', 'error');
                 return;
             }
 
             let pdfContent = `
-                --- Pedido de Compra (PO) ---
-                Nº PO: ${SharedData.currentPurchasingPO.id}
-                ID Solicitação Principal: ${SharedData.currentPurchasingPO.parentOrderId || 'N/A'}
-                Fornecedor: ${getSupplierNameFromCode(SharedData.currentPurchasingPO.supplierCode)}
-                Data: ${SharedData.currentPurchasingPO.date}
-                Status Geral: ${SharedData.currentPurchasingPO.overallApprovalStatus}
-                Valor Total Negociado: R$ ${parseFloat(SharedData.currentPurchasingPO.newSupplierPriceTotal).toFixed(2).replace('.', ',')}
-                -----------------------------
+                --- ORDEM DE COMPRA (PO) ---
+                Nº PO: ${po.id}
+                ID Solicitação Principal: ${po.parentOrderId || 'N/A'}
+                Fornecedor: ${po.supplierCode} - ${po.supplier}
+                País de Origem: ${po.originCountry}
+                Data de Geração: ${po.date}
+                Status Geral da PO: ${po.overallApprovalStatus}
+                Valor Total (Fornecedor): R$ ${parseFloat(po.newSupplierPriceTotal).toFixed(2).replace('.', ',')}
+                Valor Total (Interno): R$ ${parseFloat(po.currentInternalPriceTotal).toFixed(2).replace('.', ',')}
+                Cubagem Total: ${po.totalCubage} m³
 
-                Produtos:
-            `;
-
-            SharedData.currentPurchasingPO.products.forEach(p => {
-                pdfContent += `
-                - Cód: ${p.code}
+                --- PRODUTOS ---
+                ${po.products.map(p => `
+                - Cód Produto: ${p.code}
                   Descrição: ${p.name}
                   Quantidade: ${p.quantity}
                   Valor Unit. Interno: R$ ${parseFloat(p.currentInternalUnitPrice).toFixed(2).replace('.', ',')}
-                  Valor Unit. Fornecedor (Negociado): R$ ${parseFloat(p.newSupplierUnitPrice).toFixed(2).replace('.', ',')}
+                  Valor Unit. Fornecedor: R$ ${parseFloat(p.newSupplierUnitPrice).toFixed(2).replace('.', ',')}
                   Status Aprovação: ${p.approvalStatus}
-                `;
-            });
+                `).join('\n')}
 
-            pdfContent += `
-                -----------------------------
-                Este é um documento PDF simulado.
+                --- NOTAS DE NEGOCIAÇÃO ---
+                ${po.negotiationNotes || 'Nenhuma nota de negociação.'}
+
+                --------------------------
+                Documento gerado em: ${new Date().toLocaleString('pt-BR')}
             `;
 
             document.getElementById('poPdfContent').innerText = pdfContent;
             document.getElementById('poPdfViewer').classList.add('active');
         }
 
+        /**
+         * Popula o filtro de fornecedores na tela da Central de Compras.
+         */
+        function populatePurchasingSupplierFilter() {
+            const supplierFilterSelect = document.getElementById('poSupplierFilter');
+            supplierFilterSelect.innerHTML = '<option value="Todos">Todos</option>'; // Opção padrão
+
+            const uniqueSupplierCodes = new Set();
+            generatedPurchaseOrders.forEach(po => {
+                if (po.supplierCode) {
+                    uniqueSupplierCodes.add(po.supplierCode);
+                }
+            });
+
+            Array.from(uniqueSupplierCodes).sort().forEach(code => {
+                const option = document.createElement('option');
+                option.value = code;
+                option.innerText = `${code} - ${getSupplierNameFromCode(code)}`;
+                supplierFilterSelect.appendChild(option);
+            });
+        }
+
+        /**
+         * Popula o filtro de status na tela da Central de Compras.
+         */
+        function populatePurchasingStatusFilter() {
+            const statusFilterSelect = document.getElementById('poStatusFilter');
+            // As opções já estão no HTML, então não precisamos repopular, apenas garantir que existam.
+            // Se os status fossem dinâmicos, faríamos algo similar ao populatePurchasingSupplierFilter.
+        }
+
+        /**
+         * Popula o filtro de país de origem na tela da Central de Compras.
+         */
+        function populatePurchasingOriginCountryFilter() {
+            const originCountryFilterSelect = document.getElementById('poOriginCountryFilter');
+            originCountryFilterSelect.innerHTML = '<option value="Todos">Todos</option>'; // Opção padrão
+
+            const uniqueCountries = new Set();
+            generatedPurchaseOrders.forEach(po => {
+                if (po.originCountry) {
+                    uniqueCountries.add(po.originCountry);
+                }
+            });
+
+            Array.from(uniqueCountries).sort().forEach(country => {
+                const option = document.createElement('option');
+                option.value = country;
+                option.innerText = country;
+                originCountryFilterSelect.appendChild(option);
+            });
+        }
+
+        // Inicialização da página de compras
         document.addEventListener('DOMContentLoaded', () => {
-            SharedFunctions.initializeCounters(); // Garante que os contadores estejam atualizados
-            renderPurchasingCenterTables();
-            document.getElementById('purchasingLogoutButton').addEventListener('click', SharedFunctions.logout);
+            // Popula os filtros ao carregar a página
+            populatePurchasingSupplierFilter();
+            populatePurchasingStatusFilter();
+            populatePurchasingOriginCountryFilter();
+            renderPurchasingCenterTables(); // Renderiza a tabela de POs inicialmente
+
+            // Adiciona event listener para o botão de logout
+            const purchasingLogoutButton = document.getElementById('purchasingLogoutButton');
+            if (purchasingLogoutButton) {
+                purchasingLogoutButton.addEventListener('click', logout);
+            }
         });
     </script>
 </body>
