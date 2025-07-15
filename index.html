@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Fluig - Login</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos comuns para todas as páginas */
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --text-color: #333;
+            --light-gray: #f8f9fa;
+            --border-color: #dee2e6;
+            --header-bg: #fff;
+            --table-header-bg: #e9ecef;
+            --shadow: 0 2px 4px rgba(0,0,0,0.05);
+            --red-alert: #dc3545;
+            --green-success: #28a745;
+            --orange-warning: #ffc107;
+            --colombia-bg: #e6f7ff;
+            --hongkong-bg: #fff3e0;
+            --colombia-border: #90cdf4;
+            --hongkong-border: #ffcc80;
+            --highlight-container-bg: #d1e7dd; /* Light green for highlight */
+            --highlight-container-border: #28a745; /* Darker green border */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            color: var(--text-color);
+        }
+
+        body {
+            background-color: var(--light-gray);
+            line-height: 1.6;
+            font-size: 14px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .page {
+            display: none;
+            width: 100%;
+            flex-grow: 1;
+        }
+
+        .page.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .input-group input[type="text"],
+        .input-group input[type="password"],
+        .input-group input[type="number"],
+        .input-group input[type="file"],
+        .input-group select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s ease-in-out;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus,
+        textarea:focus {
+            border-color: var(--primary-color);
+        }
+
+        /* Estilos específicos da tela de login */
+        #login-page-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1;
+            background-color: #f0f2f5;
+        }
+
+        .login-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 380px;
+        }
+
+        .login-header {
+            margin-bottom: 30px;
+        }
+
+        .login-header img {
+            max-width: 200px;
+            height: auto;
+        }
+
+        .login-form .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .login-form .input-group input {
+            padding-left: 40px;
+        }
+
+        .login-form .input-group label {
+            position: absolute;
+            left: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 16px;
+            pointer-events: none;
+            transition: all 0.2s ease-in-out;
+            background: none;
+            padding: 0;
+            z-index: 1;
+        }
+
+        .login-form .input-group input:focus + label,
+        .login-form .input-group input:not(:placeholder-shown) + label {
+            top: 0;
+            font-size: 12px;
+            background-color: #fff;
+            padding: 0 5px;
+            left: 35px;
+            color: var(--primary-color);
+            z-index: 2;
+        }
+
+        .login-form .input-group .icon-user,
+        .login-form .input-group .icon-lock {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 18px;
+            z-index: 1;
+        }
+
+        .btn-access {
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            transition: background-color 0.2s ease-in-out;
+            margin-top: 20px;
+        }
+
+        .btn-access:hover {
+            background-color: #0056b3;
+        }
+
+        .forgot-password {
+            display: block;
+            margin-top: 15px;
+            font-size: 13px;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        /* Ícones */
+        .icon-user::before { content: '👤'; }
+        .icon-lock::before { content: '🔒'; }
+
+        /* Estilos para modais de mensagem */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #888;
+        }
+
+        .modal-content h3 {
+            margin-bottom: 20px;
+            font-size: 20px;
+            color: var(--primary-color);
+        }
+
+        .modal-content pre {
+            background-color: var(--light-gray);
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-content .modal-actions {
+            margin-top: 25px;
+            text-align: right;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.2s ease-in-out;
+            white-space: nowrap;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.2s ease-in-out;
+            white-space: nowrap;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-page" class="page active">
+        <div id="login-page-content">
+            <div class="login-container">
+                <div class="login-header">
+                    <img src="https://i.ibb.co/8Lyy59Vt/Captura-de-tela-2025-07-01-163440.png" alt="Totvs Fluig Logo">
+                </div>
+                <div class="login-form">
+                    <div class="input-group">
+                        <i class="icon-user"></i>
+                        <input type="text" id="username" placeholder=" ">
+                        <label for="username">Usuário</label>
+                    </div>
+                    <div class="input-group">
+                        <i class="icon-lock"></i>
+                        <input type="password" id="password" placeholder=" ">
+                        <label for="password">Senha</label>
+                    </div>
+                    <button id="loginButton" class="btn-access">ACESSAR</button>
+                    <a href="#" class="forgot-password">Esqueceu sua senha?</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Mensagem (Compartilhado) -->
+    <div id="messageModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-btn" id="messageModalCloseBtn">&times;</button>
+            <h3 id="messageModalTitle"></h3>
+            <div id="messageModalContent"></div>
+            <div class="modal-actions">
+                <button class="btn-primary" id="messageModalConfirmBtn">OK</button>
+                <button class="btn-secondary" id="messageModalCancelBtn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal do Fluxograma (Compartilhado) -->
+    <div id="flowchartModal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="modal-close-btn" onclick="window.closeFlowchartModal()">&times;</span>
+            <img id="flowchartImage" src="https://raw.githubusercontent.com/SamuelJuniorrr/importexport/refs/heads/main/fluxograma.png" alt="Fluxograma do Processo">
+        </div>
+    </div>
+
+    <script src="common.js"></script>
+    <script>
+        // Variável para armazenar o papel do usuário logado
+        let userRole = 'guest';
+
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username === 'cliente' && password === 'cliente') {
+                userRole = 'client';
+                window.location.href = 'client.html'; // Redireciona para a página do cliente
+            } else if (username === 'compras' && password === 'compras') {
+                userRole = 'compras';
+                window.location.href = 'compras.html'; // Redireciona para a página de compras
+            } else if (username === 'gestor' && password === 'gestor') {
+                userRole = 'gestor';
+                window.location.href = 'gestor.html'; // Redireciona para a página do gestor
+            } else if (username === 'dimpex' && password === 'dimpex') {
+                userRole = 'dimpex';
+                window.location.href = 'dimpex.html'; // Redireciona para a página dimpex (se existir)
+            } else {
+                window.showMessage('Erro de Login', 'Usuário ou senha inválidos.', 'error');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            window.initializeCounters(); // Inicializa os contadores ao carregar a página de login
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+
+            const loginButton = document.getElementById('loginButton');
+            if (loginButton) {
+                loginButton.addEventListener('click', login);
+            } else {
+                console.error("Botão de login não encontrado.");
+            }
+        });
+    </script>
+</body>
+</html>
