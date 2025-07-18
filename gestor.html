@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Fluig - Aprovação Gerencial</title>
+    <!-- A biblioteca html2pdf.js foi removida, pois a visualização agora é simulada em HTML. -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
@@ -26,6 +27,20 @@
             --highlight-bg: #e0f7fa; /* Light blue for highlights */
             --highlight-border: #00bcd4; /* Cyan for highlight borders */
             --dark-blue: #004085; /* Darker blue for key text */
+
+            /* Novas variáveis para cores das colunas PO e PI */
+            --po-column-bg: rgba(0, 123, 255, 0.05); /* Light primary blue */
+            --pi-column-bg: rgba(108, 117, 125, 0.05); /* Light secondary gray */
+
+            /* Cores específicas para as seções da tela Geral */
+            --general-section-bg-light-blue: #e6f7ff; /* Cor de fundo para Informações da PO / Partes Envolvidas */
+            --general-section-border-light-blue: #90cdf4;
+            --general-section-bg-light-green: #e6ffe6; /* Cor de fundo para Análise Financeira */
+            --general-section-border-light-green: #a7d9a7;
+            --general-section-bg-lighter-blue: #f0f8ff; /* Cor de fundo para Detalhes Logísticos */
+            --general-section-border-lighter-blue: #aaddff;
+            --general-section-bg-light-gray: #f8f8f8; /* Cor de fundo para Histórico de Status */
+            --general-section-border-light-gray: #e0e0e0;
         }
 
         * {
@@ -62,7 +77,7 @@
 
         .header {
             background-color: var(--header-bg);
-            padding: 15px 40px;
+            padding: 15px 40px; /* Mantém o padding do header */
             border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
@@ -177,9 +192,9 @@
 
 
         .container {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 20px;
+            width: 100%; /* Garante que ocupe a largura total disponível */
+            padding: 20px 40px; /* Ajusta o padding para ser consistente com o header */
+            margin: 20px auto; /* Mantém a centralização vertical e margens */
             background-color: #fff;
             border-radius: 8px;
             box-shadow: var(--shadow);
@@ -565,7 +580,7 @@
 
         .form-actions {
             display: flex;
-            justify-content: flex-end;
+            justify-content: flex-end; /* Alterado para alinhar à direita */
             gap: 10px;
             margin-top: 30px;
             padding-top: 20px;
@@ -923,42 +938,91 @@
             font-weight: bold;
         }
 
-        .colombia-col {
-            background-color: var(--colombia-bg);
-            border-left: 1px solid var(--colombia-border);
-            border-right: 1px solid var(--colombia-border);
+        /* Styles for Document Viewer Modal */
+        #documentViewerModal .modal-content {
+            max-width: 90%;
+            height: 90%;
+            display: flex;
+            flex-direction: column;
         }
 
-        .hongkong-col {
-            background-color: var(--hongkong-bg);
-            border-left: 1px solid var(--hongkong-border);
-            border-right: 1px solid var(--hongkong-border);
+        /* Removed iframe, now using message element */
+        #documentViewerModal .modal-content #documentViewerMessage {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            color: #666;
+            text-align: center;
+            padding: 20px;
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            border: 1px dashed #ccc;
+            flex-direction: column; /* To stack message lines */
         }
 
-        .cubage-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-            margin-bottom: 20px;
-        }
-
-        .cubage-table th,
-        .cubage-table td {
+        .document-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
             border: 1px solid var(--border-color);
-            padding: 3px 5px;
-            text-align: left;
-            font-size: 11px;
         }
 
-        .cubage-table th {
-            background-color: var(--table-header-bg);
-            font-weight: 600;
-            text-transform: uppercase;
+        .document-card {
+            background-color: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+            text-align: center;
+            width: 220px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            cursor: pointer;
+        }
+
+        .document-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .document-card .icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .document-card h4 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: var(--dark-blue);
+        }
+
+        .document-card .btn-view {
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .document-card .btn-view:hover {
+            background-color: #0056b3;
         }
 
         /* Specific styles for Renato Approval Screen table */
         #renatoApprovalScreen .data-table {
-            table-layout: fixed; /* Ensures columns respect defined widths */
+            table-layout: fixed; /* Ensures columns respect defined defined widths */
         }
 
         #renatoApprovalScreen .data-table th,
@@ -967,58 +1031,81 @@
             word-wrap: break-word; /* Ensure long words break */
             font-size: 12px; /* Slightly smaller font for more content */
             padding: 8px 5px; /* Reduced padding */
+            text-align: center; /* Centraliza o texto nas células da tabela */
         }
 
-        /* Adjusted column widths for new column order */
-        #renatoApprovalScreen .data-table thead th:nth-child(1) { width: 8%; } /* Cód Produto */
-        #renatoApprovalScreen .data-table thead th:nth-child(2) { width: 15%; } /* Descrição */
-        #renatoApprovalScreen .data-table thead th:nth-child(3) { width: 5%; } /* Qtd. */
-        #renatoApprovalScreen .data-table thead th:nth-child(4) { width: 8%; } /* Valor Unit. Interno */
-        #renatoApprovalScreen .data-table thead th:nth-child(5) { width: 8%; } /* Valor Unit. Fornecedor */
-        #renatoApprovalScreen .data-table thead th:nth-child(6) { width: 8%; } /* Dif */
-        #renatoApprovalScreen .data-table thead th:nth-child(7) { width: 8%; } /* Preço Unit. Venda */
-        #renatoApprovalScreen .data-table thead th:nth-child(8) { width: 8%; } /* Preço Total Venda */
-        #renatoApprovalScreen .data-table thead th:nth-child(9) { width: 8%; } /* Margem Estimada */
-        #renatoApprovalScreen .data-table thead th:nth-child(10) { width: 8%; } /* Valor Total Interno */
-        #renatoApprovalScreen .data-table thead th:nth-child(11) { width: 8%; } /* Valor Total Fornecedor */
-        #renatoApprovalScreen .data-table thead th:nth-child(12) { width: 7%; } /* Status Aprovação */
-        #renatoApprovalScreen .data-table thead th:nth-child(13) { width: 5%; } /* Ação */
+        /* Adjusted column widths for 16 columns total */
+        /* PO Section (5 columns - Total 32%) */
+        #renatoApprovalScreen .data-table thead th:nth-child(1),
+        #renatoApprovalScreen .data-table tbody td:nth-child(1) { width: 5%; } /* PO MODEL */
+        #renatoApprovalScreen .data-table thead th:nth-child(2),
+        #renatoApprovalScreen .data-table tbody td:nth-child(2) { width: 7%; } /* PO P.N. */
+        #renatoApprovalScreen .data-table thead th:nth-child(3),
+        #renatoApprovalScreen .data-table tbody td:nth-child(3) { width: 5%; } /* PO QTY */
+        #renatoApprovalScreen .data-table thead th:nth-child(4),
+        #renatoApprovalScreen .data-table tbody td:nth-child(4) { width: 7.5%; } /* PO UNIT PRICE */
+        #renatoApprovalScreen .data-table thead th:nth-child(5),
+        #renatoApprovalScreen .data-table tbody td:nth-child(5) { width: 7.5%; } /* PO TOTAL AMOUNT */
+
+        /* PI Section (5 columns - Total 32%) */
+        #renatoApprovalScreen .data-table thead th:nth-child(6),
+        #renatoApprovalScreen .data-table tbody td:nth-child(6) { width: 5%; } /* PI MODEL */
+        #renatoApprovalScreen .data-table thead th:nth-child(7),
+        #renatoApprovalScreen .data-table tbody td:nth-child(7) { width: 7%; } /* PI P.N. */
+        #renatoApprovalScreen .data-table thead th:nth-child(8),
+        #renatoApprovalScreen .data-table tbody td:nth-child(8) { width: 5%; } /* PI QTY */
+        #renatoApprovalScreen .data-table thead th:nth-child(9),
+        #renatoApprovalScreen .data-table tbody td:nth-child(9) { width: 7.5%; } /* PI UNIT PRICE */
+        #renatoApprovalScreen .data-table thead th:nth-child(10),
+        #renatoApprovalScreen .data-table tbody td:nth-child(10) { width: 7.5%; } /* PI TOTAL AMOUNT */
+
+        /* Divergências Section (6 columns - Total 36%) */
+        #renatoApprovalScreen .data-table thead th:nth-child(11),
+        #renatoApprovalScreen .data-table tbody td:nth-child(11) { width: 5%; } /* QTY PI/PO */
+        #renatoApprovalScreen .data-table thead th:nth-child(12),
+        #renatoApprovalScreen .data-table tbody td:nth-child(12) { width: 6%; } /* PREÇO PI/PO */
+        #renatoApprovalScreen .data-table thead th:nth-child(13),
+        #renatoApprovalScreen .data-table tbody td:nth-child(13) { width: 6%; } /* MODELO */
+        #renatoApprovalScreen .data-table thead th:nth-child(14),
+        #renatoApprovalScreen .data-table tbody td:nth-child(14) { width: 6%; } /* P.N. */
+        #renatoApprovalScreen .data-table thead th:nth-child(15),
+        #renatoApprovalScreen .data-table tbody td:nth-child(15) { width: 5%; } /* % */
+        #renatoApprovalScreen .data-table thead th:nth-child(16),
+        #renatoApprovalScreen .data-table tbody td:nth-child(16) { width: 8%; } /* Ação */
 
 
-        /* Adjusted styles for smaller approval buttons with icons */
-        .approval-buttons-group {
-            display: flex;
-            flex-direction: column; /* Stack buttons vertically */
-            gap: 2px; /* Smaller gap between buttons */
-            align-items: stretch; /* Make buttons fill available width */
+        /* Estilos para colorir as colunas de PO e PI */
+        #renatoApprovalScreen .data-table .po-header {
+            background-color: var(--po-column-bg) !important;
+        }
+        #renatoApprovalScreen .data-table .pi-header {
+            background-color: var(--pi-column-bg) !important;
+        }
+        #renatoApprovalScreen .data-table .po-column {
+            background-color: var(--po-column-bg);
+        }
+        #renatoApprovalScreen .data-table .pi-column {
+            background-color: var(--pi-column-bg);
         }
 
-        .approval-buttons-group .btn {
-            padding: 3px 6px; /* Even smaller padding for buttons */
-            font-size: 14px; /* Larger font size for icons */
-            line-height: 1; /* Ensure icon is centered vertically */
-            white-space: nowrap;
-            text-align: center;
-            display: flex; /* Use flexbox for centering icon */
-            justify-content: center;
-            align-items: center;
-            min-width: 28px; /* Minimum width for the button */
-            min-height: 28px; /* Minimum height for the button */
-            background-color: transparent; /* Remove background color */
-            border: 1px solid transparent; /* Transparent border by default */
-            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        /* Styles for the new select element in the "Ação" column */
+        .action-select {
+            width: 100%;
+            padding: 4px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 11px;
+            background-color: #fff;
+            cursor: pointer;
+            outline: none;
+            transition: border-color 0.2s ease-in-out;
         }
 
-        .approval-buttons-group .btn:hover {
-            border-color: var(--primary-color); /* Highlight border on hover */
-            box-shadow: 0 0 0 1px rgba(0, 123, 255, 0.3);
+        .action-select:focus {
+            border-color: var(--primary-color);
         }
 
-        .approval-buttons-group .btn.selected {
-            border: 1px solid var(--primary-color); /* Thinner border */
-            box-shadow: 0 0 0 1px rgba(0, 123, 255, 0.3); /* Smaller shadow */
-            background-color: rgba(0, 123, 255, 0.1); /* Light background when selected */
-        }
+        /* Removed .approval-buttons-group styles as it's no longer used */
 
         /* Styles for Flowchart Modal */
         #flowchartModal {
@@ -1298,29 +1385,29 @@
             background-color: var(--green-success);
             color: #fff;
         }
-        .timeline-step.negotiation .circle,
-        .timeline-step.waiting-approval .circle {
+        .tracking-step.negotiation .circle,
+        .tracking-step.waiting-approval .circle {
             background-color: var(--orange-warning);
             color: #fff;
         }
-        .timeline-step.separation .circle,
-        .timeline-step.conference .circle,
-        .timeline-step.in-transit .circle,
-        .timeline-step.delivered .circle {
+        .tracking-step.separation .circle,
+        .tracking-step.conference .circle,
+        .tracking-step.in-transit .circle,
+        .tracking-step.delivered .circle {
             background-color: var(--primary-color);
             color: #fff;
         }
 
-        .timeline-step.completed span {
+        .tracking-step.completed span {
             color: #333;
             font-weight: 500;
         }
-        .timeline-step.active span {
+        .tracking-step.active span {
             color: var(--primary-color);
             font-weight: bold;
         }
-        .timeline-step.rejected span,
-        .timeline-step.cancelled span {
+        .tracking-step.rejected span,
+        .tracking-step.cancelled span {
             color: var(--red-alert);
             font-weight: bold;
         }
@@ -1333,11 +1420,7 @@
             flex-direction: column;
         }
 
-        #documentViewerModal .modal-content iframe {
-            flex-grow: 1;
-            margin-top: 15px;
-        }
-
+        /* Removed iframe, now using message element */
         #documentViewerModal .modal-content #documentViewerMessage {
             flex-grow: 1;
             display: flex;
@@ -1345,6 +1428,12 @@
             align-items: center;
             font-size: 1.2rem;
             color: #666;
+            text-align: center;
+            padding: 20px;
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            border: 1px dashed #ccc;
+            flex-direction: column; /* To stack message lines */
         }
 
         .document-list {
@@ -1403,6 +1492,130 @@
 
         .document-card .btn-view:hover {
             background-color: #0056b3;
+        }
+
+        /* Invoice Simulation Specific Styles */
+        #invoicePdfViewerModal .modal-content {
+            max-width: 1200px; /* Increased max-width for better invoice display */
+            width: 95%; /* Use a percentage for responsiveness */
+            height: auto; /* Allow height to adjust to content */
+            max-height: 90vh; /* Limit max height to viewport height */
+            overflow-y: auto; /* Enable scrolling if content overflows */
+            padding: 0; /* Remove padding from modal content to allow invoice content to control it */
+        }
+
+        #invoicePdfMessage {
+            flex-grow: 1;
+            display: block; /* Change to block to allow full HTML rendering */
+            justify-content: initial;
+            align-items: initial;
+            font-size: initial;
+            color: initial;
+            text-align: initial;
+            padding: 0; /* Remove padding from message div, let invoice content handle it */
+            background-color: #fff; /* White background for the invoice */
+            border-radius: 0; /* No border radius here */
+            border: none; /* No border here */
+            flex-direction: initial;
+        }
+
+        /* Styles for the simulated invoice content */
+        .simulated-invoice {
+            font-family: 'Roboto', sans-serif;
+            font-size: 11px;
+            padding: 20px;
+            width: 210mm; /* A4 width */
+            min-height: 297mm; /* A4 height */
+            margin: 0 auto;
+            border: 1px solid #ccc; /* Light border around the whole invoice */
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+            background-color: #fff;
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+        }
+
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+        .invoice-table th, .invoice-table td {
+            border: 1px solid #000;
+            padding: 5px;
+            font-size: 10px;
+            vertical-align: top; /* Align content to top of cell */
+            word-wrap: break-word; /* Allow long words to break */
+        }
+        .invoice-header-cell {
+            background-color: #e0e0e0;
+            font-weight: bold;
+            text-align: center;
+        }
+        .section-header {
+            background-color: #e0e0e0;
+            font-weight: bold;
+            padding: 5px;
+            border: 1px solid #000;
+            text-align: left;
+            margin-bottom: 5px;
+            margin-top: 10px; /* Add some top margin for separation */
+        }
+        .signature-box {
+            border: 1px solid #000;
+            padding: 10px;
+            height: 80px;
+            text-align: center;
+            vertical-align: bottom;
+            font-size: 10px;
+        }
+        .logo {
+            max-width: 100px;
+            height: auto;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        .invoice-info-box {
+            border: 1px solid #000;
+            padding: 5px;
+            font-size: 10px;
+        }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .font-bold { font-weight: bold; }
+        .flex-container { display: flex; align-items: center; }
+        .float-right { float: right; }
+        .clear-both { clear: both; }
+
+        /* Specific styles for the new TRANSPORT table format */
+        .transport-grid-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+        .transport-grid-table td {
+            border: 1px solid #000;
+            padding: 5px;
+            font-size: 10px;
+            vertical-align: top;
+            word-wrap: break-word;
+            background-color: #f0f0f0; /* Light gray background for cells */
+        }
+        .transport-grid-table .label-cell {
+            font-weight: bold;
+            width: 25%; /* Adjust width as needed */
+        }
+        .transport-grid-table .value-cell {
+            width: 25%; /* Adjust width as needed */
+        }
+        /* Style for the main TRANSPORT header */
+        .transport-main-header {
+            background-color: #000; /* Black background */
+            color: #fff; /* White text */
+            font-weight: bold;
+            padding: 5px;
+            border: 1px solid #000;
+            text-align: center;
+            margin-bottom: 5px;
+            margin-top: 10px;
         }
 
     </style>
@@ -1488,6 +1701,10 @@
                     <div id="poAnalysisContent">
                         <!-- Conteúdo analítico da PO será renderizado aqui -->
                     </div>
+                    <!-- Botão Gerar Invoice movido para cá, alinhado à direita -->
+                    <div class="form-actions" style="justify-content: flex-end; margin-top: 20px; border-top: none; padding-top: 0;">
+                        <button class="btn-primary" id="generateInvoiceBtn" onclick="handleGenerateInvoiceClick()" disabled>Gerar Invoice</button>
+                    </div>
                 </div>
 
                 <div id="documentsTabContent" class="tab-content">
@@ -1499,8 +1716,7 @@
 
                 <div class="form-actions mt-6">
                     <button class="btn-secondary" onclick="backToMainList()">Voltar para Lista</button>
-                    <button class="btn-primary" id="saveApprovalBtn" onclick="saveApprovalDecisions()" disabled>Salvar Decisões</button>
-                    <button class="btn-primary" id="finalizeApprovalBtn" onclick="displayRenatoFinalSummary()" disabled>Finalizar Aprovação</button>
+                    <button class="btn-primary" id="finalizeApprovalBtn" onclick="handleFinalizeApprovalClick()" disabled>Finalizar Aprovação</button>
                 </div>
             </div>
 
@@ -1557,13 +1773,26 @@
         </div>
     </div>
 
-    <!-- Document Viewer Modal Structure -->
+    <!-- Document Viewer Modal Structure (Simulated) -->
     <div id="documentViewerModal" class="modal-overlay">
         <div class="modal-content">
             <button class="modal-close-btn" onclick="closeDocumentViewerModal()">&times;</button>
             <h3 id="documentViewerTitle"></h3>
-            <iframe id="documentViewerFrame" style="width: 100%; height: calc(100% - 60px); border: none;"></iframe>
-            <div id="documentViewerMessage" style="display: none; padding: 20px; text-align: center;"></div>
+            <div id="documentViewerMessage"></div> <!-- Changed from iframe to div for message -->
+        </div>
+    </div>
+
+    <!-- Invoice PDF Viewer Modal Structure (Simulated) -->
+    <div id="invoicePdfViewerModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeInvoicePdfViewerModal()">&times;</button>
+            <h3 style="margin-bottom: 10px;">Visualizando Invoice</h3>
+            <div id="invoicePdfMessage">
+                <!-- Simulated Invoice HTML will be injected here -->
+            </div>
+            <div class="modal-actions" style="justify-content: center; margin-top: 15px;">
+                <button class="btn-primary" onclick="simulateDocSign()">Simular Assinatura (DocSign)</button>
+            </div>
         </div>
     </div>
 
@@ -1577,11 +1806,12 @@
 
         // Dados simulados das Ordens de Compra (POs)
         // Adicionadas informações de currentInternalSalePrice e statusHistory
+        // Adicionados piQuantity, piModel e piPN para simular divergências
         let generatedPurchaseOrders = [
             {
                 parentOrderId: 'SOL-001', id: 'PED-001', supplier: 'Fornecedor A', supplierCode: '22', date: '2025-06-20',
                 products: [
-                    { code: 'PROD001', name: 'Smartphone Premium X1', quantity: 10, currentInternalUnitPrice: 160.00, newSupplierUnitPrice: 155.00, approvalStatus: 'Pendente', cubageUnit: 0.005, currentInternalSalePrice: 220.00, targetProfitMarginPercent: 25 }
+                    { code: 'PROD001', name: 'Smartphone Premium X1', quantity: 10, piQuantity: 9, piModel: 'PROD001-B', piPN: 'PROD001', currentInternalUnitPrice: 160.00, newSupplierUnitPrice: 155.00, approvalStatus: 'Pendente', cubageUnit: 0.005, currentInternalSalePrice: 220.00, targetProfitMarginPercent: 25 }
                 ],
                 newSupplierPriceTotal: (10 * 155).toFixed(2), currentInternalPriceTotal: (10 * 160).toFixed(2), overallApprovalStatus: 'Aguardando Aprovação',
                 totalCubage: (10 * 0.005).toFixed(2), originCountry: 'Hong Kong', lastUpdateDate: '2025-06-20',
@@ -1598,7 +1828,7 @@
             {
                 parentOrderId: 'SOL-014', id: 'PED-017', supplier: 'Fornecedor C', supplierCode: '44', date: '2025-06-30',
                 products: [
-                    { code: 'PROD003', name: 'Fone Bluetooth Max', quantity: 20, currentInternalUnitPrice: 48.00, newSupplierUnitPrice: 42.00, approvalStatus: 'Pendente', cubageUnit: 0.001, currentInternalSalePrice: 60.00, targetProfitMarginPercent: 30 }
+                    { code: 'PROD003', name: 'Fone Bluetooth Max', quantity: 20, piQuantity: 22, piModel: 'PROD003', piPN: 'PROD003-Y', currentInternalUnitPrice: 48.00, newSupplierUnitPrice: 42.00, approvalStatus: 'Pendente', cubageUnit: 0.001, currentInternalSalePrice: 60.00, targetProfitMarginPercent: 30 }
                 ],
                 newSupplierPriceTotal: (20 * 42).toFixed(2), currentInternalPriceTotal: (20 * 48).toFixed(2), overallApprovalStatus: 'Aguardando Aprovação',
                 totalCubage: (20 * 0.001).toFixed(2), originCountry: 'Hong Kong', lastUpdateDate: '2025-06-30',
@@ -1615,8 +1845,8 @@
             {
                 parentOrderId: 'SOL-003', id: 'PED-005', supplier: 'Fornecedor B', supplierCode: '33', date: '2025-06-24',
                 products: [
-                    { code: 'PROD001', name: 'Smartphone Premium X1', quantity: 2, currentInternalUnitPrice: 158.00, newSupplierUnitPrice: 152.00, approvalStatus: 'Pendente', cubageUnit: 0.005, currentInternalSalePrice: 210.00, targetProfitMarginPercent: 20 },
-                    { code: 'PROD003', name: 'Fone Bluetooth Max', quantity: 3, currentInternalUnitPrice: 48.00, newSupplierUnitPrice: 46.00, approvalStatus: 'Pendente', cubageUnit: 0.001, currentInternalSalePrice: 65.00, targetProfitMarginPercent: 28 }
+                    { code: 'PROD001', name: 'Smartphone Premium X1', quantity: 2, piQuantity: 2, piModel: 'PROD001', piPN: 'PROD001', currentInternalUnitPrice: 158.00, newSupplierUnitPrice: 152.00, approvalStatus: 'Pendente', cubageUnit: 0.005, currentInternalSalePrice: 210.00, targetProfitMarginPercent: 20 },
+                    { code: 'PROD003', name: 'Fone Bluetooth Max', quantity: 3, piQuantity: 3, piModel: 'PROD003', piPN: 'PROD003', currentInternalUnitPrice: 48.00, newSupplierUnitPrice: 46.00, approvalStatus: 'Pendente', cubageUnit: 0.001, currentInternalSalePrice: 65.00, targetProfitMarginPercent: 28 }
                 ],
                 newSupplierPriceTotal: (2 * 152 + 3 * 46).toFixed(2), currentInternalPriceTotal: (2 * 158 + 3 * 48).toFixed(2), overallApprovalStatus: 'Negociado',
                 totalCubage: (2 * 0.005 + 3 * 0.001).toFixed(2), originCountry: 'Hong Kong', lastUpdateDate: '2025-07-01',
@@ -1634,7 +1864,7 @@
             {
                 parentOrderId: 'SOL-015', id: 'PED-018', supplier: 'Fornecedor A', supplierCode: '22', date: '2025-06-29',
                 products: [
-                    { code: 'PROD004', name: 'Smartwatch Sport Y', quantity: 5, currentInternalUnitPrice: 85.00, newSupplierUnitPrice: 82.00, approvalStatus: 'Pendente', cubageUnit: 0.002, currentInternalSalePrice: 110.00, targetProfitMarginPercent: 22 }
+                    { code: 'PROD004', name: 'Smartwatch Sport Y', quantity: 5, piQuantity: 5, piModel: 'PROD004', piPN: 'PROD004', currentInternalUnitPrice: 85.00, newSupplierUnitPrice: 82.00, approvalStatus: 'Pendente', cubageUnit: 0.002, currentInternalSalePrice: 110.00, targetProfitMarginPercent: 22 }
                 ],
                 newSupplierPriceTotal: (5 * 82).toFixed(2), currentInternalPriceTotal: (5 * 85).toFixed(2), overallApprovalStatus: 'Negociado',
                 totalCubage: (5 * 0.002).toFixed(2), originCountry: 'Hong Kong', lastUpdateDate: '2025-07-01',
@@ -1652,13 +1882,13 @@
             {
                 parentOrderId: 'SOL-008', id: 'PED-015', supplier: 'Fornecedor A', supplierCode: '22', date: '2025-06-29',
                 products: [
-                    { code: 'PROD001', name: 'Smartphone Premium X1', quantity: 5, currentInternalUnitPrice: 158.00, newSupplierUnitPrice: 152.00, approvalStatus: 'Pendente', cubageUnit: 0.005, currentInternalSalePrice: 210.00, targetProfitMarginPercent: 20 }
+                    { code: 'PROD001', name: 'Smartphone Premium X1', quantity: 5, piQuantity: 5, piModel: 'PROD001', piPN: 'PROD001', currentInternalUnitPrice: 158.00, newSupplierUnitPrice: 152.00, approvalStatus: 'Pendente', cubageUnit: 0.005, currentInternalSalePrice: 210.00, targetProfitMarginPercent: 20 }
                 ],
                 newSupplierPriceTotal: (5 * 152).toFixed(2), currentInternalPriceTotal: (5 * 158).toFixed(2), overallApprovalStatus: 'Aguardando Aprovação',
                 totalCubage: (5 * 0.005).toFixed(2), originCountry: 'Hong Kong', lastUpdateDate: '2025-07-02',
-                clientName: 'Cliente Chile', billTo: 'Calle Falsa, 123', shipTo: 'Av. Siempre Viva, 742', clientEmail: 'cliente.chile@example.com',
+                clientName: 'Cliente Chile', billTo: 'Calle Falsa, 123', shipTo: 'Av. Sempre Viva, 742', clientEmail: 'cliente.chile@example.com',
                 orderNumber: 'PO-1122', supplierEmail: 'fornecedorA@example.com', terms: 'Net 30', freight: 'FOB Hong Kong', etd: '2025-07-15', eta: '2025-07-30',
-                clientCnpj: '03.817.469/0003-78', clientAddress: 'Calle Falsa, 123', clientShipAddress: 'Av. Siempre Viva, 742',
+                clientCnpj: '03.817.469/0003-78', clientAddress: 'Calle Falsa, 123', clientShipAddress: 'Av. Sempre Viva, 742',
                 portDestination: 'Navegantes Port, Brazil',
                 statusHistory: [
                     { status: 'Solicitado', date: '2025-06-26' },
@@ -1669,7 +1899,7 @@
             {
                 parentOrderId: 'SOL-008', id: 'PED-016', supplier: 'Fornecedor B', supplierCode: '33', date: '2025-06-29',
                 products: [
-                    { code: 'PROD002', name: 'Tablet Pro Z', quantity: 2, currentInternalUnitPrice: 260.00, newSupplierUnitPrice: 255.00, approvalStatus: 'Pendente', cubageUnit: 0.008, currentInternalSalePrice: 350.00, targetProfitMarginPercent: 25 }
+                    { code: 'PROD002', name: 'Tablet Pro Z', quantity: 2, piQuantity: 2, piModel: 'PROD002', piPN: 'PROD002', currentInternalUnitPrice: 260.00, newSupplierUnitPrice: 255.00, approvalStatus: 'Pendente', cubageUnit: 0.008, currentInternalSalePrice: 350.00, targetProfitMarginPercent: 25 }
                 ],
                 newSupplierPriceTotal: (2 * 255).toFixed(2), currentInternalPriceTotal: (2 * 260).toFixed(2), overallApprovalStatus: 'Aguardando Aprovação',
                 totalCubage: (2 * 0.008).toFixed(2), originCountry: 'Hong Kong', lastUpdateDate: '2025-07-02',
@@ -1686,7 +1916,7 @@
             {
                 parentOrderId: 'SOL-016', id: 'PED-019', supplier: 'Fornecedor B', supplierCode: '33', date: '2025-06-30',
                 products: [
-                    { code: 'PROD005', name: 'Câmera Digital Ultra HD', quantity: 1, currentInternalUnitPrice: 320.00, newSupplierUnitPrice: 310.00, approvalStatus: 'Pendente', cubageUnit: 0.01, currentInternalSalePrice: 400.00, targetProfitMarginPercent: 20 }
+                    { code: 'PROD005', name: 'Câmera Digital Ultra HD', quantity: 1, piQuantity: 1, piModel: 'PROD005', piPN: 'PROD005', currentInternalUnitPrice: 320.00, newSupplierUnitPrice: 310.00, approvalStatus: 'Pendente', cubageUnit: 0.01, currentInternalSalePrice: 400.00, targetProfitMarginPercent: 20 }
                 ],
                 newSupplierPriceTotal: (1 * 310).toFixed(2), currentInternalPriceTotal: (1 * 320).toFixed(2), overallApprovalStatus: 'Aguardando Aprovação',
                 totalCubage: (1 * 0.01).toFixed(2), originCountry: 'Hong Kong', lastUpdateDate: '2025-07-02',
@@ -1703,13 +1933,13 @@
             {
                 parentOrderId: 'SOL-020', id: 'PED-021', supplier: 'Fornecedor A', supplierCode: '22', date: '2025-07-01',
                 products: [
-                    { code: 'PROD004', name: 'Smartwatch Sport Y', quantity: 3, currentInternalUnitPrice: 85.00, newSupplierUnitPrice: 88.00, approvalStatus: 'Rejeitar', cubageUnit: 0.002, currentInternalSalePrice: 110.00, targetProfitMarginPercent: 22 }
+                    { code: 'PROD004', name: 'Smartwatch Sport Y', quantity: 3, piQuantity: 3, piModel: 'PROD004', piPN: 'PROD004', currentInternalUnitPrice: 85.00, newSupplierUnitPrice: 88.00, approvalStatus: 'Rejeitar', cubageUnit: 0.002, currentInternalSalePrice: 110.00, targetProfitMarginPercent: 22 }
                 ],
                 newSupplierPriceTotal: (3 * 88).toFixed(2), currentInternalPriceTotal: (3 * 85).toFixed(2), overallApprovalStatus: 'Rejeitado',
                 totalCubage: (3 * 0.002).toFixed(2), originCountry: 'Hong Kong', lastUpdateDate: '2025-07-03',
-                clientName: 'Cliente Chile', billTo: 'Calle Falsa, 123', shipTo: 'Av. Siempre Viva, 742', clientEmail: 'cliente.chile@example.com',
+                clientName: 'Cliente Chile', billTo: 'Calle Falsa, 123', shipTo: 'Av. Sempre Viva, 742', clientEmail: 'cliente.chile@example.com',
                 orderNumber: 'PO-7788', supplierEmail: 'fornecedorA@example.com', terms: 'Net 30', freight: 'CIF Hong Kong', etd: '2025-07-05', eta: '2025-07-20',
-                clientCnpj: '03.817.469/0003-78', clientAddress: 'Calle Falsa, 123', clientShipAddress: 'Av. Siempre Viva, 742',
+                clientCnpj: '03.817.469/0003-78', clientAddress: 'Calle Falsa, 123', clientShipAddress: 'Av. Sempre Viva, 742',
                 portDestination: 'Navegantes Port, Brazil',
                 statusHistory: [
                     { status: 'Solicitado', date: '2025-06-28' },
@@ -1721,7 +1951,7 @@
             {
                 parentOrderId: 'SOL-005', id: 'PED-010', supplier: 'Fornecedor C', supplierCode: '44', date: '2025-06-26',
                 products: [
-                    { code: 'PROD005', name: 'Câmera Digital Ultra HD', quantity: 3, currentInternalUnitPrice: 335.00, newSupplierUnitPrice: 320.00, approvalStatus: 'Aprovado', cubageUnit: 0.01, currentInternalSalePrice: 450.00, targetProfitMarginPercent: 25 }
+                    { code: 'PROD005', name: 'Câmera Digital Ultra HD', quantity: 3, piQuantity: 3, piModel: 'PROD005', piPN: 'PROD005', currentInternalUnitPrice: 335.00, newSupplierUnitPrice: 320.00, approvalStatus: 'Aprovado', cubageUnit: 0.01, currentInternalSalePrice: 450.00, targetProfitMarginPercent: 25 }
                 ],
                 newSupplierPriceTotal: (3 * 320).toFixed(2), currentInternalPriceTotal: (3 * 335).toFixed(2), overallApprovalStatus: 'Aprovado',
                 totalCubage: (3 * 0.01).toFixed(2), originCountry: 'Hong Kong', lastUpdateDate: '2025-07-03',
@@ -1739,7 +1969,7 @@
             {
                 parentOrderId: 'SOL-009', id: 'PED-002', supplier: 'Fornecedor B', supplierCode: '33', date: '2025-06-21',
                 products: [
-                    { code: 'PROD007', name: 'Cadeira Ergonômica', quantity: 2, currentInternalUnitPrice: 630.00, newSupplierUnitPrice: 600.00, approvalStatus: 'Aprovado', cubageUnit: 0.15, currentInternalSalePrice: 800.00, targetProfitMarginPercent: 20 }
+                    { code: 'PROD007', name: 'Cadeira Ergonômica', quantity: 2, piQuantity: 2, piModel: 'PROD007', piPN: 'PROD007', currentInternalUnitPrice: 630.00, newSupplierUnitPrice: 600.00, approvalStatus: 'Aprovado', cubageUnit: 0.15, currentInternalSalePrice: 800.00, targetProfitMarginPercent: 20 }
                 ],
                 newSupplierPriceTotal: (2 * 600).toFixed(2), currentInternalPriceTotal: (2 * 630).toFixed(2), overallApprovalStatus: 'Aprovado',
                 totalCubage: (2 * 0.15).toFixed(2), originCountry: 'Colômbia', lastUpdateDate: '2025-07-01',
@@ -1757,7 +1987,7 @@
             {
                 parentOrderId: 'SOL-017', id: 'PED-020', supplier: 'Fornecedor A', supplierCode: '22', date: '2025-06-25',
                 products: [
-                    { code: 'PROD006', name: 'Bateria Portátil Mega', quantity: 15, currentInternalUnitPrice: 28.00, newSupplierUnitPrice: 22.00, approvalStatus: 'Aprovado', cubageUnit: 0.0005, currentInternalSalePrice: 40.00, targetProfitMarginPercent: 30 }
+                    { code: 'PROD006', name: 'Bateria Portátil Mega', quantity: 15, piQuantity: 15, piModel: 'PROD006', piPN: 'PROD006', currentInternalUnitPrice: 28.00, newSupplierUnitPrice: 22.00, approvalStatus: 'Aprovado', cubageUnit: 0.0005, currentInternalSalePrice: 40.00, targetProfitMarginPercent: 30 }
                 ],
                 newSupplierPriceTotal: (15 * 22).toFixed(2), currentInternalPriceTotal: (15 * 28).toFixed(2), overallApprovalStatus: 'Finalizado',
                 totalCubage: (15 * 0.0005).toFixed(2), originCountry: 'Hong Kong', lastUpdateDate: '2025-07-05',
@@ -1776,8 +2006,8 @@
             {
                 parentOrderId: 'SOL-018', id: 'SAP-001', supplier: 'Fornecedor C', supplierCode: '44', date: '2025-07-01',
                 products: [
-                    { code: 'PROD009', name: 'Monitor Ultrawide', quantity: 1, currentInternalUnitPrice: 350.00, newSupplierUnitPrice: 350.00, approvalStatus: 'Aprovado', cubageUnit: 0.05, currentInternalSalePrice: 500.00, targetProfitMarginPercent: 30 },
-                    { code: 'PROD003', name: 'Fone Bluetooth Max', quantity: 3, currentInternalUnitPrice: 50.00, newSupplierUnitPrice: 50.00, approvalStatus: 'Aprovado', cubageUnit: 0.001, currentInternalSalePrice: 70.00, targetProfitMarginPercent: 28 }
+                    { code: 'PROD009', name: 'Monitor Ultrawide', quantity: 1, piQuantity: 1, piModel: 'PROD009', piPN: 'PROD009', currentInternalUnitPrice: 350.00, newSupplierUnitPrice: 350.00, approvalStatus: 'Aprovado', cubageUnit: 0.05, currentInternalSalePrice: 500.00, targetProfitMarginPercent: 30 },
+                    { code: 'PROD003', name: 'Fone Bluetooth Max', quantity: 3, piQuantity: 3, piModel: 'PROD003', piPN: 'PROD003', currentInternalUnitPrice: 50.00, newSupplierUnitPrice: 50.00, approvalStatus: 'Aprovado', cubageUnit: 0.001, currentInternalSalePrice: 70.00, targetProfitMarginPercent: 28 }
                 ],
                 newSupplierPriceTotal: (1 * 350 + 3 * 50).toFixed(2), currentInternalPriceTotal: (1 * 350 + 3 * 50).toFixed(2), overallApprovalStatus: 'Em Separação',
                 totalCubage: (1 * 0.05 + 3 * 0.001).toFixed(2), originCountry: 'Colômbia', lastUpdateDate: '2025-07-05',
@@ -1951,7 +2181,7 @@
                 case 'Rejeitado':
                 case 'Cancelado':
                     return 'red';
-                case 'Negociado':
+                case 'Negociar': /* Changed from Negociado to Negociar to match dropdown option */
                     return 'purple';
                 case 'Solicitado': // New status for tracking
                 case 'Em Negociação':
@@ -2177,20 +2407,7 @@
 
             // --- Cálculos de Cubagem ---
             const totalCubage = parseFloat(po.totalCubage || 0);
-            const MAX_CUBAGE_20HC = 37.4;
-            const MAX_CUBAGE_40HC = 76.0;
-            const percentageOccupation20HC = (totalCubage / MAX_CUBAGE_20HC) * 100;
-            const percentageOccupation40HC = (totalCubage / MAX_CUBAGE_40HC) * 100;
-            let containerSuggestion = 'LCL';
-            if (totalCubage >= MAX_CUBAGE_40HC * 0.8) { // If 80% of 40HC is filled
-                containerSuggestion = 'CTN 40HC (Recomendado)';
-            } else if (totalCubage >= MAX_CUBAGE_20HC * 0.8) { // If 80% of 20HC is filled
-                containerSuggestion = 'CTN 20 (Recomendado)';
-            } else if (totalCubage > 0) {
-                containerSuggestion = 'LCL (Carga Consolidada)';
-            } else {
-                containerSuggestion = 'N/A';
-            }
+            // REMOVIDOS: MAX_CUBAGE_20HC, MAX_CUBAGE_40HC, percentageOccupation20HC, percentageOccupation40HC, containerSuggestion
 
             // --- HTML Structure ---
             let htmlContent = `
@@ -2225,7 +2442,7 @@
                     </div>
                     <div class="financial-metric">
                         <div class="label">Diferença de Custo</div>
-                        <div class="value ${costDifferencePO > 0 ? 'positive' : (costDifferencePO < 0 ? 'negative' : '')}">
+                        <div class="value ${costDifferencePO > 0 ? 'price-difference-positive' : (costDifferencePO < 0 ? 'price-difference-negative' : '')}">
                             R$ ${costDifferencePO.toFixed(2).replace('.', ',')} (${costDifferencePercentPO.toFixed(2)}%)
                         </div>
                     </div>
@@ -2235,11 +2452,11 @@
                     </div>
                     <div class="financial-metric">
                         <div class="label">Lucro Bruto Estimado</div>
-                        <div class="value ${grossProfitPO < 0 ? 'positive' : 'negative'}">R$ ${grossProfitPO.toFixed(2).replace('.', ',')}</div>
+                        <div class="value ${grossProfitPO < 0 ? 'price-difference-positive' : 'price-difference-negative'}">R$ ${grossProfitPO.toFixed(2).replace('.', ',')}</div>
                     </div>
                     <div class="financial-metric">
                         <div class="label">Margem Bruta Estimada</div>
-                        <div class="value ${grossMarginPO < (po.products[0]?.targetProfitMarginPercent || 0) ? 'positive' : 'negative'}">
+                        <div class="value ${grossMarginPO < (po.products[0]?.targetProfitMarginPercent || 0) ? 'price-difference-positive' : 'price-difference-negative'}">
                             ${grossMarginPO.toFixed(2).replace('.', ',')}%
                         </div>
                     </div>
@@ -2275,18 +2492,6 @@
                         <div class="label">Cubagem Total:</div>
                         <div class="value">${totalCubage.toFixed(2).replace('.', ',')} m³</div>
                     </div>
-                    <div class="detail-item">
-                        <div class="label">Sugestão de Contêiner:</div>
-                        <div class="value">${containerSuggestion}</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="label">Ocupação CTN 20:</div>
-                        <div class="value">${percentageOccupation20HC.toFixed(2).replace('.', ',')}%</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="label">Ocupação CTN 40HC:</div>
-                        <div class="value">${percentageOccupation40HC.toFixed(2).replace('.', ',')}%</div>
-                    </div>
                 </div>
 
                 <h3 class="font-semibold text-lg mb-3 mt-4" style="color: var(--dark-blue);">Histórico de Status da PO</h3>
@@ -2304,69 +2509,69 @@
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>Cód Produto</th>
-                                <th>Descrição</th>
-                                <th>Qtd.</th>
-                                <th>Valor Unit. Interno</th>
-                                <th>Valor Unit. Fornecedor</th>
-                                <th>Dif</th>
-                                <th>Preço Unit. Venda</th>
-                                <th>Preço Total Venda</th>
-                                <th>Margem Estimada</th>
-                                <th>Valor Total Interno</th>
-                                <th>Valor Total Fornecedor</th>
-                                <th>Status Aprovação</th>
+                                <th colspan="5" class="po-header">PO</th>
+                                <th colspan="5" class="pi-header">PI (RETORNO DO FORNECEDOR)</th>
+                                <th colspan="6" style="background-color: #e9e9e9;">DIVERGÊNCIAS</th>
+                            </tr>
+                            <tr>
+                                <th class="po-column">MODEL</th>
+                                <th class="po-column">P.N.</th>
+                                <th class="po-column">QTY</th>
+                                <th class="po-column">UNIT PRICE</th>
+                                <th class="po-column">TOTAL AMOUNT</th>
+                                <th class="pi-column">MODEL</th>
+                                <th class="pi-column">P.N.</th>
+                                <th class="pi-column">QTY</th>
+                                <th class="pi-column">UNIT PRICE</th>
+                                <th class="pi-column">TOTAL AMOUNT</th>
+                                <th>QTY PI/PO</th>
+                                <th>PREÇO PI/PO</th>
+                                <th>MODELO</th>
+                                <th>P.N.</th>
+                                <th>%</th>
                                 <th>Ação</th>
                             </tr>
                         </thead>
                         <tbody>
                             ${po.products.map((p, pIndex) => {
-                                const diff = parseFloat(p.newSupplierUnitPrice) - parseFloat(p.currentInternalUnitPrice);
-                                const percent = parseFloat(p.currentInternalUnitPrice) === 0
+                                const diffPrice = parseFloat(p.newSupplierUnitPrice) - parseFloat(p.currentInternalUnitPrice);
+                                const percentPriceDiff = parseFloat(p.currentInternalUnitPrice) === 0
                                     ? 0
-                                    : (diff / parseFloat(p.currentInternalUnitPrice)) * 100;
-                                const diffClass = diff > 0 ? 'price-difference-positive' : (diff < 0 ? 'price-difference-negative' : '');
-                                const diffText = diff > 0
-                                    ? `+R$ ${diff.toFixed(2).replace('.', ',')} (+${percent.toFixed(2)}%)`
-                                    : diff < 0
-                                        ? `-R$ ${Math.abs(diff).toFixed(2).replace('.', ',')} (${percent.toFixed(2)}%)`
-                                        : 'R$ 0,00 (0,00%)';
-                                const totalInterno = parseFloat(p.currentInternalUnitPrice) * p.quantity;
-                                const totalFornecedor = parseFloat(p.newSupplierUnitPrice) * p.quantity;
-                                const precoUnitVenda = parseFloat(p.currentInternalSalePrice || 0);
-                                const precoTotalVenda = precoUnitVenda * p.quantity;
+                                    : (diffPrice / parseFloat(p.currentInternalUnitPrice)) * 100;
+                                const priceDiffClass = percentPriceDiff > 0 ? 'price-difference-positive' : (percentPriceDiff < 0 ? 'price-difference-negative' : '');
+                                
+                                const poTotalAmount = (parseFloat(p.currentInternalUnitPrice) * p.quantity).toFixed(2);
+                                const piTotalAmount = (parseFloat(p.newSupplierUnitPrice) * (p.piQuantity || p.quantity)).toFixed(2); // Use piQuantity if available
 
-                                // Calculate estimated margin for the product
-                                const productGrossProfit = (precoUnitVenda - parseFloat(p.newSupplierUnitPrice)) * p.quantity;
-                                const productEstimatedMargin = precoTotalVenda > 0 ? (productGrossProfit / precoTotalVenda) * 100 : 0;
-                                const marginClass = productEstimatedMargin < (p.targetProfitMarginPercent || 0) ? 'price-difference-positive' : 'price-difference-negative'; // Highlight if below target
+                                // Divergências
+                                const qtyMatch = (p.quantity === (p.piQuantity || p.quantity)) ? 'VERDADEIRO' : 'FALSO';
+                                const modelMatch = (p.code === (p.piModel || p.code)) ? 'VERDADEIRO' : 'FALSO';
+                                const pnMatch = (p.code === (p.piPN || p.code)) ? 'VERDADEIRO' : 'FALSO'; // Assuming P.N. is same as code for simplicity if not specified
 
                                 return `
                                     <tr>
-                                        <td>${p.code}</td>
-                                        <td>${p.name}</td>
-                                        <td>${p.quantity}</td>
-                                        <td>R$ ${parseFloat(p.currentInternalUnitPrice).toFixed(2).replace('.', ',')}</td>
-                                        <td>R$ ${parseFloat(p.newSupplierUnitPrice).toFixed(2).replace('.', ',')}</td>
-                                        <td><span class="${diffClass}">${diffText}</span></td>
-                                        <td>R$ ${precoUnitVenda.toFixed(2).replace('.', ',')}</td>
-                                        <td>R$ ${precoTotalVenda.toFixed(2).replace('.', ',')}</td>
-                                        <td><span class="${marginClass}">${productEstimatedMargin.toFixed(2).replace('.', ',')}%</span></td>
-                                        <td>R$ ${totalInterno.toFixed(2).replace('.', ',')}</td>
-                                        <td>R$ ${totalFornecedor.toFixed(2).replace('.', ',')}</td>
-                                        <td class="product-approval-status ${p.approvalStatus}">
-                                            <span class="status-indicator ${getStatusClass(p.approvalStatus)}"></span>
-                                            ${p.approvalStatus}
-                                        </td>
+                                        <td class="po-column">${p.code}</td>
+                                        <td class="po-column">${p.code}</td>
+                                        <td class="po-column">${p.quantity}</td>
+                                        <td class="po-column">R$ ${parseFloat(p.currentInternalUnitPrice).toFixed(2).replace('.', ',')}</td>
+                                        <td class="po-column">R$ ${poTotalAmount.replace('.', ',')}</td>
+                                        <td class="pi-column">${p.piModel || p.code}</td> <!-- Use piModel if available -->
+                                        <td class="pi-column">${p.piPN || p.code}</td> <!-- Use piPN if available -->
+                                        <td class="pi-column">${p.piQuantity || p.quantity}</td> <!-- Use piQuantity if available -->
+                                        <td class="pi-column">R$ ${parseFloat(p.newSupplierUnitPrice).toFixed(2).replace('.', ',')}</td>
+                                        <td class="pi-column">R$ ${piTotalAmount.replace('.', ',')}</td>
+                                        <td>${qtyMatch}</td>
+                                        <td>R$ ${diffPrice.toFixed(2).replace('.', ',')}</td> <!-- Diferença absoluta de preço -->
+                                        <td>${modelMatch}</td>
+                                        <td>${pnMatch}</td>
+                                        <td><span class="${priceDiffClass}">${percentPriceDiff.toFixed(2).replace('.', ',')}%</span></td> <!-- Nova coluna de percentual -->
                                         <td>
-                                            <div class="approval-buttons-group">
-                                                <button class="btn btn-sm btn-approve ${p.approvalStatus === 'Aprovado' ? 'selected' : ''}"
-                                                        onclick="setProductApprovalStatus('${po.id}', '${p.code}', 'Aprovado')" title="Aprovar">✅</button>
-                                                <button class="btn btn-sm btn-negotiate ${p.approvalStatus === 'Negociar' ? 'selected' : ''}"
-                                                        onclick="setProductApprovalStatus('${po.id}', '${p.code}', 'Negociar')" title="Negociar">🔄</button>
-                                                <button class="btn btn-sm btn-reject ${p.approvalStatus === 'Rejeitar' ? 'selected' : ''}"
-                                                        onclick="setProductApprovalStatus('${po.id}', '${p.code}', 'Rejeitar')" title="Rejeitar">❌</button>
-                                            </div>
+                                            <select class="action-select" onchange="setProductApprovalStatus('${po.id}', '${p.code}', this.value)">
+                                                <option value="Pendente" ${p.approvalStatus === 'Pendente' ? 'selected' : ''}>Pendente</option>
+                                                <option value="Aprovado" ${p.approvalStatus === 'Aprovado' ? 'selected' : ''}>Aprovar</option>
+                                                <option value="Negociar" ${p.approvalStatus === 'Negociar' ? 'selected' : ''}>Negociar</option>
+                                                <option value="Rejeitar" ${p.approvalStatus === 'Rejeitar' ? 'selected' : ''}>Rejeitar</option>
+                                            </select>
                                         </td>
                                     </tr>
                                 `;
@@ -2382,7 +2587,7 @@
          * Define o status de aprovação de um produto específico dentro de uma PO.
          * @param {string} poId O ID da PO.
          * @param {string} productCode O código do produto.
-         * @param {string} status O novo status de aprovação ('Aprovado', 'Negociar', 'Rejeitar').
+         * @param {string} status O novo status de aprovação ('Pendente', 'Aprovado', 'Negociar', 'Rejeitar').
          */
         function setProductApprovalStatus(poId, productCode, status) {
             const po = generatedPurchaseOrders.find(p => p.id === poId);
@@ -2397,45 +2602,64 @@
         }
 
         /**
-         * Verifica o estado dos botões "Salvar Decisões" e "Finalizar Aprovação".
+         * Verifica o estado dos botões "Finalizar Aprovação" e "Gerar Invoice".
          * Eles são habilitados apenas se todos os produtos da PO atual tiverem um status de aprovação definido (não 'Pendente').
          */
         function checkApprovalButtonsState() {
-            const saveApprovalBtn = document.getElementById('saveApprovalBtn');
             const finalizeApprovalBtn = document.getElementById('finalizeApprovalBtn');
+            const generateInvoiceBtn = document.getElementById('generateInvoiceBtn');
 
-            const allProductsReviewed = currentViewingPO.products.every(p => p.approvalStatus !== 'Pendente');
+            // Verifica se currentViewingPO existe e se todos os produtos têm status diferente de 'Pendente'
+            const allProductsReviewed = currentViewingPO && currentViewingPO.products.every(p => p.approvalStatus !== 'Pendente');
 
-            if (allProductsReviewed) {
-                saveApprovalBtn.disabled = false;
-                finalizeApprovalBtn.disabled = false;
-            } else {
-                saveApprovalBtn.disabled = true;
-                finalizeApprovalBtn.disabled = true;
+            if (finalizeApprovalBtn) {
+                finalizeApprovalBtn.disabled = !allProductsReviewed;
+            }
+            if (generateInvoiceBtn) {
+                generateInvoiceBtn.disabled = !allProductsReviewed;
             }
         }
 
         /**
-         * Salva as decisões de aprovação (simulado).
+         * Handler para o clique no botão "Gerar Invoice".
+         * Verifica se todos os produtos foram revisados antes de chamar generateInvoicePdf().
          */
-        function saveApprovalDecisions() {
-            showMessage('Sucesso', 'Decisões de aprovação salvas temporariamente. Finalize para aplicar as alterações.', 'success');
+        function handleGenerateInvoiceClick() {
+            if (!currentViewingPO) {
+                showMessage('Erro', 'Nenhum pedido selecionado para gerar a Invoice.', 'error');
+                return;
+            }
+            const allProductsReviewed = currentViewingPO.products.every(p => p.approvalStatus !== 'Pendente');
+            if (!allProductsReviewed) {
+                showMessage('Atenção', 'Não é possível gerar a Invoice. Por favor, defina o status (Aprovar, Negociar ou Rejeitar) para TODOS os produtos.', 'warning');
+            } else {
+                generateInvoicePdf();
+            }
+        }
+
+        /**
+         * Handler para o clique no botão "Finalizar Aprovação".
+         * Verifica se todos os produtos foram revisados antes de chamar displayRenatoFinalSummary().
+         */
+        function handleFinalizeApprovalClick() {
+            if (!currentViewingPO) {
+                showMessage('Erro', 'Nenhum pedido selecionado para finalizar aprovação.', 'error');
+                return;
+            }
+            const allProductsReviewed = currentViewingPO.products.every(p => p.approvalStatus !== 'Pendente');
+            if (!allProductsReviewed) {
+                showMessage('Atenção', 'Por favor, defina o status (Aprovar, Negociar ou Rejeitar) para TODOS os produtos antes de finalizar.', 'warning');
+            } else {
+                displayRenatoFinalSummary();
+            }
         }
 
         /**
          * Exibe o resumo final da aprovação e atualiza o status da PO.
          */
         function displayRenatoFinalSummary() {
-            if (!currentViewingPO) {
-                showMessage('Erro', 'Nenhum pedido selecionado para finalizar aprovação.', 'error');
-                return;
-            }
-
-            const allProductsReviewed = currentViewingPO.products.every(p => p.approvalStatus !== 'Pendente');
-            if (!allProductsReviewed) {
-                showMessage('Atenção', 'Por favor, defina o status (Aprovar, Negociar ou Rejeitar) para TODOS os produtos antes de finalizar.', 'warning');
-                return;
-            }
+            // A validação de produtos pendentes já foi feita em handleFinalizeApprovalClick
+            // currentViewingPO já deve estar definido aqui
 
             let approvedCount = 0;
             let negotiateCount = 0;
@@ -2473,6 +2697,7 @@
                     <p class="mt-4">O pedido retornará para a Central de Compras para que as renegociações e/ou rejeições sejam tratadas.</p>
                 `;
             } else {
+                // Should not happen if checkAllProductsReviewed is working correctly, but as a fallback
                 showMessage('Erro', 'Status de aprovação inconsistente. Por favor, verifique e tente novamente.', 'error');
                 return;
             }
@@ -2539,22 +2764,25 @@
                     name: 'Solicitação do Cliente',
                     icon: '📄', // Emoji icon for document
                     type: 'client_request',
-                    url: null, // No actual URL, will show message
                     description: 'Documento original da solicitação do cliente.'
                 },
                 {
                     name: 'PO do Compras',
                     icon: '🛒', // Emoji icon for shopping cart/PO
                     type: 'purchase_order',
-                    url: 'uploaded:Modelo PO.pdf', // Path to the uploaded PDF
                     description: 'Ordem de Compra gerada pela equipe de compras.'
                 },
                 {
                     name: 'PI do Fornecedor',
                     icon: '💰', // Emoji icon for money/invoice
                     type: 'proforma_invoice',
-                    url: null, // No actual URL, will show message
                     description: 'Proforma Invoice (Fatura Proforma) enviada pelo fornecedor.'
+                },
+                {
+                    name: 'Invoice Cliente',
+                    icon: '🧾', // Emoji icon for receipt/invoice
+                    type: 'client_invoice',
+                    description: 'Invoice final emitida para o cliente.'
                 }
             ];
 
@@ -2570,36 +2798,33 @@
                     <div class="icon">${doc.icon}</div>
                     <h4>${doc.name}</h4>
                     <p style="font-size: 0.85rem; color: #777; margin-bottom: 15px;">${doc.description}</p>
-                    <button class="btn-view" onclick="openDocument('${doc.type}', '${doc.name}', '${doc.url || ''}')">Visualizar</button>
+                    <button class="btn-view" onclick="openDocument('${doc.type}', '${doc.name}')">Visualizar</button>
                 `;
                 documentsContentDiv.appendChild(card);
             });
         }
 
         /**
-         * Abre o modal para visualizar um documento.
-         * @param {string} docType Tipo do documento ('client_request', 'purchase_order', 'proforma_invoice').
+         * Abre o modal para visualizar um documento (agora simulado).
+         * @param {string} docType Tipo do documento ('client_request', 'purchase_order', 'proforma_invoice', 'client_invoice').
          * @param {string} docName Nome do documento a ser exibido no título do modal.
-         * @param {string} docUrl URL do documento (se houver).
          */
-        function openDocument(docType, docName, docUrl) {
+        function openDocument(docType, docName) {
             const modal = document.getElementById('documentViewerModal');
             const titleElement = document.getElementById('documentViewerTitle');
-            const iframeElement = document.getElementById('documentViewerFrame');
             const messageElement = document.getElementById('documentViewerMessage');
 
             titleElement.innerText = `Visualizando: ${docName}`;
-
-            if (docUrl) {
-                iframeElement.src = docUrl;
-                iframeElement.style.display = 'block';
-                messageElement.style.display = 'none';
+            
+            let simulatedContent = '';
+            if (docType === 'client_invoice') {
+                simulatedContent = `<p>Este é o documento "Invoice Cliente" para o pedido ${currentViewingPO ? currentViewingPO.id : 'N/A'}.</p><p>Conteúdo simulado.</p>`;
             } else {
-                iframeElement.src = '';
-                iframeElement.style.display = 'none';
-                messageElement.style.display = 'flex'; // Use flex to center message
-                messageElement.innerHTML = `<p>O documento "${docName}" seria exibido aqui.</p><p>Para este protótipo, não há um arquivo real disponível para este tipo de documento.</p>`;
+                simulatedContent = `<p>O documento "${docName}" seria exibido aqui.</p><p>Esta é uma visualização simulada de PDF.</p>`;
             }
+
+            messageElement.innerHTML = simulatedContent;
+            
             modal.classList.add('active');
         }
 
@@ -2608,8 +2833,266 @@
          */
         function closeDocumentViewerModal() {
             document.getElementById('documentViewerModal').classList.remove('active');
-            document.getElementById('documentViewerFrame').src = ''; // Clear iframe src
             document.getElementById('documentViewerMessage').innerHTML = ''; // Clear message
+        }
+
+        /**
+         * Gera o conteúdo HTML da Invoice com base nos dados da PO, replicando o layout da imagem.
+         * @param {Object} po O objeto da Purchase Order.
+         * @returns {string} O HTML da invoice.
+         */
+        function generateInvoiceHtmlContent(po) {
+            // Use current date for simulation, or a fixed date for consistency
+            const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+            const piNo = po.id.replace('PED-', 'PI-'); // Example PI No.
+            const ourRef = po.orderNumber || 'N/A';
+
+            let productsHtml = po.products.map((p, index) => {
+                const itemNo = (index + 1).toString().padStart(2, '0');
+                const quantity = p.piQuantity || p.quantity;
+                const priceListUnitUSD = parseFloat(p.newSupplierUnitPrice).toFixed(2);
+                // For simulation, let's make Net Price Unit a fixed percentage of Price List Unit
+                const netPriceUnitUSD = (parseFloat(priceListUnitUSD) * 0.95).toFixed(2); // Example: 5% discount
+                const amountUSD = (quantity * parseFloat(netPriceUnitUSD)).toFixed(2);
+
+                return `
+                    <tr>
+                        <td class="text-center">${itemNo}</td>
+                        <td class="text-center">${p.piModel || p.code}</td>
+                        <td class="text-center">${p.piPN || p.code}</td>
+                        <td>${p.name}</td>
+                        <td class="text-center">${quantity}</td>
+                        <td class="text-right">$ ${priceListUnitUSD}</td>
+                        <td class="text-right">$ ${netPriceUnitUSD}</td>
+                        <td class="text-right">$ ${amountUSD}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            const subtotal = po.products.reduce((sum, p) => {
+                const quantity = p.piQuantity || p.quantity;
+                const priceListUnitUSD = parseFloat(p.newSupplierUnitPrice).toFixed(2);
+                const netPriceUnitUSD = (parseFloat(priceListUnitUSD) * 0.95).toFixed(2);
+                return sum + (quantity * parseFloat(netPriceUnitUSD));
+            }, 0).toFixed(2);
+
+            const otherCharge = 250.00; // Example fixed other charge
+            const invoiceTotal = (parseFloat(subtotal) + otherCharge).toFixed(2);
+
+            return `
+                <div class="simulated-invoice">
+                    <table class="invoice-table" style="border: none;">
+                        <tr>
+                            <td style="width: 60%; border: none; vertical-align: top;">
+                                <div class="flex-container" style="margin-bottom: 10px;">
+                                    <img src="https://raw.githubusercontent.com/SamuelJuniorrr/importexport/refs/heads/main/logo.png" alt="Toyama Logo" class="logo">
+                                    <div class="font-bold" style="font-size: 14px;">TOYAMA HONG KONG LTD.</div>
+                                </div>
+                                <div style="font-size: 10px;">
+                                    Suite 01-02A, 9/F, Tower 5, China Hong Kong City<br>
+                                    33 Canton Road, Tsim Sha Tsui, Kowloon, Hong Kong<br>
+                                    Tel.: 852-2542 8343<br>
+                                    Fax.: 852-2544 7002
+                                </div>
+                            </td>
+                            <td style="width: 40%; border: none; vertical-align: top; text-align: right;">
+                                <table class="invoice-table" style="width: 100%; border: 1px solid #000;">
+                                    <tr>
+                                        <td class="invoice-info-box invoice-header-cell" style="width: 40%;">Date:</td>
+                                        <td class="invoice-info-box">${today}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="invoice-info-box invoice-header-cell">PI No:</td>
+                                        <td class="invoice-info-box">${piNo}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="invoice-info-box invoice-header-cell">Our Ref.:</td>
+                                        <td class="invoice-info-box">${ourRef}</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <table class="invoice-table" style="margin-top: 10px;">
+                        <tr>
+                            <td style="width: 50%; vertical-align: top; padding: 0;">
+                                <div class="section-header">BILL TO</div>
+                                <div style="border: 1px solid #000; border-top: none; padding: 5px; font-size: 10px; min-height: 80px;">
+                                    <strong class="font-bold">Company Address</strong> ${po.billTo || 'N/A'}<br>
+                                    <strong class="font-bold">Tax ID</strong> ${po.clientCnpj || 'N/A'}<br>
+                                    <strong class="font-bold">Phone</strong> N/A<br>
+                                    <strong class="font-bold">Email</strong> ${po.clientEmail || 'N/A'}<br>
+                                    <strong class="font-bold">Contact</strong> N/A
+                                </div>
+                            </td>
+                            <td style="width: 50%; vertical-align: top; padding: 0;">
+                                <div class="section-header">SHIP TO</div>
+                                <div style="border: 1px solid #000; border-top: none; padding: 5px; font-size: 10px; min-height: 80px;">
+                                    <strong class="font-bold">Company Address</strong> ${po.shipTo || 'N/A'}<br>
+                                    <strong class="font-bold">Tax ID</strong> N/A<br>
+                                    <strong class="font-bold">Phone</strong> N/A<br>
+                                    <strong class="font-bold">Email</strong> N/A<br>
+                                    <strong class="font-bold">Contact</strong> N/A
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="transport-main-header">TRANSPORT</div>
+                    <table class="transport-grid-table">
+                        <tr>
+                            <td class="label-cell">Transport Method</td>
+                            <td class="value-cell">SEA</td>
+                            <td class="label-cell">ETD</td>
+                            <td class="value-cell">${po.etd || 'N/A'}</td>
+                        </tr>
+                        <tr>
+                            <td class="label-cell">Freight</td>
+                            <td class="value-cell">${po.freight || 'N/A'}</td>
+                            <td class="label-cell">Incoterm</td>
+                            <td class="value-cell">${po.terms || 'N/A'}</td>
+                        </tr>
+                        <tr>
+                            <td class="label-cell">Port of Origin</td>
+                            <td class="value-cell">${po.originCountry || 'N/A'}</td>
+                            <td class="label-cell">Destination Port</td>
+                            <td class="value-cell">${po.portDestination || 'N/A'}</td>
+                        </tr>
+                        <tr>
+                            <td class="label-cell">Country of Origin</td>
+                            <td class="value-cell">${po.originCountry || 'N/A'}</td>
+                            <td class="label-cell">Destination Country</td>
+                            <td class="value-cell">BRAZIL</td>
+                        </tr>
+                    </table>
+
+                    <table class="invoice-table" style="margin-top: 10px;">
+                        <thead>
+                            <tr>
+                                <th class="invoice-header-cell" style="width: 5%;">Item</th>
+                                <th class="invoice-header-cell" style="width: 10%;">Model</th>
+                                <th class="invoice-header-cell" style="width: 10%;">Code</th>
+                                <th class="invoice-header-cell" style="width: 35%;">Description</th>
+                                <th class="invoice-header-cell" style="width: 5%;">Qty.</th>
+                                <th class="invoice-header-cell" style="width: 10%;">Price List Unit (USD)</th>
+                                <th class="invoice-header-cell" style="width: 10%;">Net Price Unit (USD)</th>
+                                <th class="invoice-header-cell" style="width: 15%;">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${productsHtml}
+                        </tbody>
+                    </table>
+
+                    <div style="font-size: 10px; margin-top: 10px;">
+                        The discounts below are already progressively included in the unit prices
+                    </div>
+
+                    <table class="invoice-table" style="width: 40%; ${po.originCountry === 'Colômbia' ? 'float: left;' : 'float: right;'} margin-top: 10px;">
+                        <tr>
+                            <td class="font-bold text-right invoice-header-cell">Subtotal</td>
+                            <td class="text-right">$ ${subtotal}</td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold text-right invoice-header-cell">Other Charge</td>
+                            <td class="text-right">$ ${otherCharge.toFixed(2)}</td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold text-right invoice-header-cell">Invoice Total</td>
+                            <td class="text-right">$ ${invoiceTotal}</td>
+                        </tr>
+                    </table>
+                    <div class="clear-both"></div>
+
+                    <div style="margin-top: 20px;">
+                        <div class="section-header">Bank Info.</div>
+                        <table class="invoice-table">
+                            <tr>
+                                <td style="width: 30%;" class="font-bold">Bank Name:</td>
+                                <td style="width: 70%;">TOYAMA HONG KONG LIMITED</td>
+                            </tr>
+                            <tr>
+                                <td class="font-bold">Beneficiary Bank Address:</td>
+                                <td>HSBCHKKHHHKH</td>
+                            </tr>
+                            <tr>
+                                <td class="font-bold">SWIFT Code:</td>
+                                <td>HSBCHKKHHHKH</td>
+                            </tr>
+                            <tr>
+                                <td class="font-bold">Beneficiary A/C Name:</td>
+                                <td>Toyama Hong Kong Limited</td>
+                            </tr>
+                            <tr>
+                                <td class="font-bold">A/C No.:</td>
+                                <td>852-418421-831</td>
+                            </tr>
+                            <tr>
+                                <td class="font-bold">Payment Terms:</td>
+                                <td>${po.terms || 'N/A'}</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <div class="section-header">Remarks:</div>
+                        <div style="border: 1px solid #000; padding: 10px; min-height: 50px; font-size: 10px;">
+                            <!-- Add any specific remarks here from PO if available -->
+                        </div>
+                    </div>
+
+                    <table class="invoice-table" style="margin-top: 30px;">
+                        <tr>
+                            <td class="signature-box" style="width: 50%;">
+                                <div style="margin-top: 30px;">Seller's confirmation</div>
+                                <div style="border-top: 1px solid #000; width: 80%; margin: 5px auto 0;"></div>
+                            </td>
+                            <td class="signature-box" style="width: 50%;">
+                                <div style="margin-top: 30px;">Buyer's confirmation</div>
+                                <div style="border-top: 1px solid #000; width: 80%; margin: 5px auto 0;"></div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            `;
+        }
+
+        /**
+         * Simula a geração de um PDF de Invoice e o exibe em um modal.
+         */
+        function generateInvoicePdf() {
+            // A validação de produtos pendentes já foi feita em handleGenerateInvoiceClick
+            // currentViewingPO já deve estar definido aqui
+
+            const invoicePdfViewerModal = document.getElementById('invoicePdfViewerModal');
+            const invoicePdfMessage = document.getElementById('invoicePdfMessage');
+
+            invoicePdfViewerModal.classList.add('active');
+            // Inject the generated HTML directly into the message div
+            invoicePdfMessage.innerHTML = generateInvoiceHtmlContent(currentViewingPO);
+
+            console.log(`Simulando visualização de Invoice para o pedido ${currentViewingPO.id}`);
+        }
+
+        /**
+         * Fecha o modal de visualização da Invoice.
+         */
+        function closeInvoicePdfViewerModal() {
+            document.getElementById('invoicePdfViewerModal').classList.remove('active');
+            document.getElementById('invoicePdfMessage').innerHTML = ''; // Limpa a mensagem
+        }
+
+        /**
+         * Simula o processo de assinatura via DocSign.
+         */
+        function simulateDocSign() {
+            showMessage('DocSign', 'Simulando o processo de assinatura eletrônica via DocSign. Após a assinatura, o documento será enviado para as partes envolvidas.', 'info', () => {
+                closeInvoicePdfViewerModal();
+                // Aqui você poderia adicionar lógica para mudar o status da PO para 'Invoice Gerada/Assinada'
+                // currentViewingPO.overallApprovalStatus = 'Invoice Gerada'; // Exemplo
+                // synchronizePOs();
+            });
         }
 
         /**
