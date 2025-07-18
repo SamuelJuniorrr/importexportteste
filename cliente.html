@@ -995,6 +995,90 @@
             border: none; /* Remove qualquer borda */
             object-fit: contain; /* Garante que a imagem inteira seja visível */
         }
+
+        /* Estilos para a nova seção de comparação de filiais */
+        .branch-comparison-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .branch-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+            flex: 1 1 calc(50% - 20px); /* Duas colunas em telas maiores, uma em telas pequenas */
+            min-width: 300px; /* Largura mínima para os cards */
+            border: 1px solid var(--border-color);
+        }
+
+        .branch-card h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .branch-card .flag-icon-large {
+            width: 30px;
+            height: 20px;
+            border: 1px solid #eee;
+            flex-shrink: 0;
+        }
+
+        .colombia-card {
+            border-left: 5px solid var(--colombia-border);
+            background-color: var(--colombia-bg);
+        }
+
+        .hongkong-card {
+            border-left: 5px solid var(--hongkong-border);
+            background-color: var(--hongkong-bg);
+        }
+
+        .branch-card p {
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        .branch-card .delivery-time {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .branch-card .price-model h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .branch-card .price-model ul {
+            list-style-type: disc;
+            margin-left: 20px;
+            margin-bottom: 10px;
+        }
+
+        .branch-card .price-model ul li {
+            font-size: 13px;
+            margin-bottom: 3px;
+        }
+
+        .branch-card .stock-info,
+        .branch-card .moq-info {
+            font-style: italic;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .branch-card {
+                flex: 1 1 100%; /* Empilha os cards em telas pequenas */
+            }
+        }
     </style>
 </head>
 <body>
@@ -1269,6 +1353,33 @@
             </div>
 
             <div class="products-added-section">
+                <h3 class="font-semibold text-gray-700 mb-4">Diferenças de Compra por Filial:</h3>
+                <div class="branch-comparison-container">
+                    <div class="branch-card colombia-card">
+                        <h3><img src="https://e7.pngegg.com/pngimages/796/10/png-clipart-flag-of-colombia-flag-of-cambodia-colombia-flag-flag-sphere-thumbnail.png" alt="Bandeira da Colômbia" class="flag-icon-large"> Colômbia</h3>
+                        <p class="delivery-time">Previsão de Entrega: ~45 dias</p>
+                        <div class="price-model">
+                            <h4>Modelo de Preço:</h4>
+                            <ul>
+                                <li>Preço único para produtos disponíveis em estoque.</li>
+                            </ul>
+                        </div>
+                        <p class="stock-info">Foco em produtos com estoque disponível.</p>
+                    </div>
+                    <div class="branch-card hongkong-card">
+                        <h3><img src="https://e7.pngegg.com/pngimages/630/750/png-clipart-flag-of-china-association-of-southeast-asian-nations-national-flag-asean%E3%81%AE%E7%B4%8B%E7%AB%A0-china-orange-world-thumbnail.png" alt="Bandeira de Hong Kong" class="flag-icon-large"> Hong Kong</h3>
+                        <p class="delivery-time">Previsão de Entrega: ~90 dias</p>
+                        <div class="price-model">
+                            <h4>Modelo de Preço:</h4>
+                            <ul>
+                                <li><strong>LCL:</strong> Mais caro (para volumes pequenos)</li>
+                                <li><strong>Container 20ft:</strong> Preço intermediário</li>
+                                <li><strong>Container 40ft:</strong> Mais barato (para volumes maiores)</li>
+                            </ul>
+                        </div>
+                        <p class="moq-info">Para adquirir, é necessário atender ao MOQ (Quantidade Mínima de Pedido).</p>
+                    </div>
+                </div>
                 <div id="productList">
                 </div>
             </div>
@@ -1414,19 +1525,21 @@
         let currentViewingPO = null; // PO atualmente visualizada
         let currentPurchasingPO = null; // PO atualmente em negociação (não usado diretamente aqui, mas mantido para consistência)
 
-        const MAX_CUBAGE_20HC = 37.4; // Cubagem máxima para container de 20HC
-        const MAX_CUBAGE_40HC = 76.0; // Cubagem máxima para container de 40HC
+        const LCL_CAPACITY = 20.0; // Capacidade simulada para LCL em m³
+        const MAX_CUBAGE_20HC = 33.2; // Capacidade real de um container de 20HC em m³ (aproximado, geralmente 33.2m³)
+        const MAX_CUBAGE_40HC = 67.7; // Capacidade real de um container de 40HC em m³ (aproximado, geralmente 67.7m³)
+        const MAX_CUBAGE_40HC_CU = 76.0; // Capacidade real de um container de 40HC (High Cube) em m³ (aproximado, geralmente 76.0m³)
 
         // Dados simulados para produtos, pedidos e fornecedores (replicados para independência do arquivo)
         const productDatabase = {
-            "PROD001": { code: "PROD001", clientCode: "SKU-001", description: "Smartphone Premium X1", moq: 3, unitPrice: 150.00, tableValue: 160.00, cubageUnit: 0.005, simulatedStock: 100, productLine: "Eletrônicos", supplier: "Fornecedor A", originCountry: "Hong Kong" },
-            "PROD002": { code: "PROD002", clientCode: "SKU-002", description: "Tablet Pro Z", moq: 2, unitPrice: 250.00, tableValue: 265.00, cubageUnit: 0.008, simulatedStock: 50, productLine: "Eletrônicos", supplier: "Fornecedor B", originCountry: "Hong Kong" },
-            "PROD003": { code: "PROD003", clientCode: "SKU-003", description: "Fone Bluetooth Max", moq: 5, unitPrice: 45.00, tableValue: 50.00, cubageUnit: 0.001, simulatedStock: 200, productLine: "Acessórios", supplier: "Fornecedor C", originCountry: "Colômbia" },
+            "PROD001": { code: "PROD001", clientCode: "SKU-001", description: "Smartphone Premium X1", moq: 3, unitPrice: 150.00, tableValue: 160.00, cubageUnit: 3.5, simulatedStock: 100, productLine: "Eletrônicos", supplier: "Fornecedor A", originCountry: "Hong Kong" }, // Increased cubage
+            "PROD002": { code: "PROD002", clientCode: "SKU-002", description: "Tablet Pro Z", moq: 2, unitPrice: 250.00, tableValue: 265.00, cubageUnit: 5.0, simulatedStock: 50, productLine: "Eletrônicos", supplier: "Fornecedor B", originCountry: "Hong Kong" }, // Increased cubage
+            "PROD003": { code: "PROD003", clientCode: "SKU-003", description: "Fone Bluetooth Max", moq: 5, unitPrice: 45.00, tableValue: 50.00, cubageUnit: 1.0, simulatedStock: 200, productLine: "Acessórios", supplier: "Fornecedor C", originCountry: "Colômbia" }, // Increased cubage
             "PROD004": { code: "PROD004", clientCode: "SKU-004", description: "Smartwatch Sport Y", moq: 1, unitPrice: 80.00, tableValue: 85.00, cubageUnit: 0.002, simulatedStock: 120, productLine: "Vestíveis", supplier: "Fornecedor A", originCountry: "Hong Kong" },
             "PROD005": { code: "PROD005", clientCode: "SKU-005", description: "Câmera Digital Ultra HD", moq: 2, unitPrice: 300.00, tableValue: 320.00, cubageUnit: 0.01, simulatedStock: 30, productLine: "Fotografia", supplier: "Fornecedor B", originCountry: "Hong Kong" },
             "PROD006": { code: "PROD006", clientCode: "SKU-006", description: "Bateria Portátil Mega", moq: 10, unitPrice: 25.00, tableValue: 28.00, cubageUnit: 0.0005, simulatedStock: 300, productLine: "Acessórios", supplier: "Fornecedor C", originCountry: "Colômbia" },
-            "PROD007": { code: "PROD007", clientCode: "SKU-007", description: "Cadeira Ergonômica", moq: 1, unitPrice: 600.00, tableValue: 650.00, cubageUnit: 0.15, simulatedStock: 15, productLine: "Móveis de Escritório", supplier: "Fornecedor A", originCountry: "Hong Kong" },
-            "PROD008": { code: "PROD008", clientCode: "SKU-008", description: "Impressora 3D Industrial", moq: 1, unitPrice: 800.00, tableValue: 850.00, cubageUnit: 0.8, simulatedStock: 0, productLine: "Maquinário", supplier: "Fornecedor B", originCountry: "Hong Kong" },
+            "PROD007": { code: "PROD007", clientCode: "SKU-007", description: "Cadeira Ergonômica", moq: 1, unitPrice: 600.00, tableValue: 650.00, cubageUnit: 18.0, simulatedStock: 15, productLine: "Móveis de Escritório", supplier: "Fornecedor A", originCountry: "Hong Kong" }, // Increased cubage
+            "PROD008": { code: "PROD008", clientCode: "SKU-008", description: "Impressora 3D Industrial", moq: 1, unitPrice: 800.00, tableValue: 850.00, cubageUnit: 30.0, simulatedStock: 0, productLine: "Maquinário", supplier: "Fornecedor B", originCountry: "Hong Kong" }, // Increased cubage
             "PROD009": { code: "PROD009", clientCode: "SKU-009", description: "Monitor Ultrawide", moq: 1, unitPrice: 350.00, tableValue: 350.00, cubageUnit: 0.05, simulatedStock: 50, productLine: "Periféricos", supplier: "Fornecedor C", originCountry: "Colômbia" },
             "PROD010": { code: "PROD010", clientCode: "SKU-010", description: "Teclado Mecânico", moq: 1, unitPrice: 80.00, tableValue: 80.00, cubageUnit: 0.01, simulatedStock: 75, productLine: "Periféricos", supplier: "Fornecedor A", originCountry: "Hong Kong" },
             "PROD011": { code: "PROD011", clientCode: "SKU-011", description: "Mouse Gamer", moq: 1, unitPrice: 40.00, tableValue: 40.00, cubageUnit: 0.001, simulatedStock: 150, productLine: "Periféricos", supplier: "Fornecedor B", originCountry: "Hong Kong" }
@@ -1493,7 +1606,7 @@
                     { code: 'PROD001', name: 'Smartphone Premium X1', quantity: 10, unitPrice: 150.00, currentInternalUnitPrice: 160.00, newSupplierUnitPrice: 155.00, approvalStatus: 'Pendente' }
                 ],
                 newSupplierPriceTotal: (10 * 155).toFixed(2), currentInternalPriceTotal: (10 * 160).toFixed(2), overallApprovalStatus: 'Pendente',
-                totalCubage: (10 * 0.005).toFixed(2)
+                totalCubage: (10 * 3.5).toFixed(2) // Updated cubage for PROD001
             },
             {
                 parentOrderId: 'SOL-014', id: 'PED-017', supplier: 'Fornecedor C', supplierCode: '44', date: '2025-06-30',
@@ -1501,7 +1614,7 @@
                     { code: 'PROD003', name: 'Fone Bluetooth Max', quantity: 20, unitPrice: 40.00, currentInternalUnitPrice: 48.00, newSupplierUnitPrice: 42.00, approvalStatus: 'Pendente' }
                 ],
                 newSupplierPriceTotal: (20 * 42).toFixed(2), currentInternalPriceTotal: (20 * 48).toFixed(2), overallApprovalStatus: 'Pendente',
-                totalCubage: (20 * 0.001).toFixed(2)
+                totalCubage: (20 * 1.0).toFixed(2) // Updated cubage for PROD003
             },
             {
                 parentOrderId: 'SOL-003', id: 'PED-005', supplier: 'Fornecedor B', supplierCode: '33', date: '2025-06-24',
@@ -1510,7 +1623,7 @@
                     { code: 'PROD003', name: 'Fone Bluetooth Max', quantity: 3, unitPrice: 45.00, currentInternalUnitPrice: 48.00, newSupplierUnitPrice: 46.00, approvalStatus: 'Pendente' }
                 ],
                 newSupplierPriceTotal: (2 * 152 + 3 * 46).toFixed(2), currentInternalPriceTotal: (2 * 158 + 3 * 48).toFixed(2), overallApprovalStatus: 'Negociado',
-                totalCubage: (2 * 0.005 + 3 * 0.001).toFixed(2)
+                totalCubage: (2 * 3.5 + 3 * 1.0).toFixed(2) // Updated cubage for PROD001 and PROD003
             },
             {
                 parentOrderId: 'SOL-015', id: 'PED-018', supplier: 'Fornecedor A', supplierCode: '22', date: '2025-06-29',
@@ -1526,7 +1639,7 @@
                     { code: 'PROD001', name: 'Smartphone Premium X1', quantity: 5, unitPrice: 150.00, currentInternalUnitPrice: 158.00, newSupplierUnitPrice: 152.00, approvalStatus: 'Pendente' }
                 ],
                 newSupplierPriceTotal: (5 * 152).toFixed(2), currentInternalPriceTotal: (5 * 158).toFixed(2), overallApprovalStatus: 'Aguardando Aprovação',
-                totalCubage: (5 * 0.005).toFixed(2)
+                totalCubage: (5 * 3.5).toFixed(2) // Updated cubage for PROD001
             },
             {
                 parentOrderId: 'SOL-008', id: 'PED-016', supplier: 'Fornecedor B', supplierCode: '33', date: '2025-06-29',
@@ -1534,7 +1647,7 @@
                     { code: 'PROD002', name: 'Tablet Pro Z', quantity: 2, unitPrice: 250.00, currentInternalUnitPrice: 260.00, newSupplierUnitPrice: 255.00, approvalStatus: 'Pendente' }
                 ],
                 newSupplierPriceTotal: (2 * 255).toFixed(2), currentInternalPriceTotal: (2 * 260).toFixed(2), overallApprovalStatus: 'Aguardando Aprovação',
-                totalCubage: (2 * 0.008).toFixed(2)
+                totalCubage: (2 * 5.0).toFixed(2) // Updated cubage for PROD002
             },
             {
                 parentOrderId: 'SOL-016', id: 'PED-019', supplier: 'Fornecedor B', supplierCode: '33', date: '2025-06-30',
@@ -1566,17 +1679,27 @@
                     { code: 'PROD007', name: 'Cadeira Ergonômica', quantity: 2, unitPrice: 600.00, currentInternalUnitPrice: 630.00, newSupplierUnitPrice: 600.00, approvalStatus: 'Aprovado' }
                 ],
                 newSupplierPriceTotal: (2 * 600).toFixed(2), currentInternalPriceTotal: (2 * 630).toFixed(2), overallApprovalStatus: 'Aprovado',
-                totalCubage: (2 * 0.15).toFixed(2)
+                totalCubage: (2 * 18.0).toFixed(2) // Updated cubage for PROD007
             },
             {
                 parentOrderId: 'SOL-017', id: 'PED-020', supplier: 'Fornecedor A', supplierCode: '22', date: '2025-06-25',
                 products: [
-                    { code: 'PROD006', name: 'Bateria Portátil Mega', quantity: 15, unitPrice: 20.00, currentInternalUnitPrice: 28.00, newSupplierUnitPrice: 22.00, approvalStatus: 'Aprovado' }
+                    { code: 'PROD006', name: 'Bateria Portátil Mega', quantity: 15, unitPrice: 20.00, currentInternalUnitPrice: 28.00, newSupplierUnitPrice: 22.00, approvalStatus: 'Finalizado' }
                 ],
                 newSupplierPriceTotal: (15 * 22).toFixed(2), currentInternalPriceTotal: (15 * 28).toFixed(2), overallApprovalStatus: 'Finalizado',
                 totalCubage: (15 * 0.0005).toFixed(2)
             },
         ];
+
+        // Ensure that the initial generatedPurchaseOrders also has the cubage information
+        initialGeneratedPurchaseOrders.forEach(po => {
+            po.products.forEach(product => {
+                const productInfo = productDatabase[product.code];
+                if (productInfo) {
+                    product.cubageUnit = productInfo.cubageUnit;
+                }
+            });
+        });
 
         let generatedPurchaseOrders = JSON.parse(JSON.stringify(initialGeneratedPurchaseOrders));
 
@@ -1584,27 +1707,27 @@
             {
                 orderId: 'PED-001', parentOrderId: 'SOL-001', clientFlag: assignClientName('Hong Kong'), originCountry: 'Hong Kong',
                 totalValue: 1550.00, status: 'Pendente', requestDate: '2025-06-20', lastUpdateDate: '2025-06-20',
-                supplier: 'Fornecedor A', products: [{ code: 'PROD001', description: 'Smartphone Premium X1', quantity: 10, unitPrice: 155.00, cubageUnit: 0.005 }]
+                supplier: 'Fornecedor A', products: [{ code: 'PROD001', description: 'Smartphone Premium X1', quantity: 10, unitPrice: 155.00, cubageUnit: 3.5 }]
             },
             {
                 orderId: 'PED-002', parentOrderId: 'SOL-009', clientFlag: assignClientName('Colômbia'), originCountry: 'Colômbia',
                 totalValue: 1200.00, status: 'Pendente', requestDate: '2025-06-21', lastUpdateDate: '2025-06-21',
-                supplier: 'Fornecedor B', products: [{ code: 'PROD007', description: 'Cadeira Ergonômica', quantity: 2, unitPrice: 600.00, cubageUnit: 0.15 }]
+                supplier: 'Fornecedor B', products: [{ code: 'PROD007', description: 'Cadeira Ergonômica', quantity: 2, unitPrice: 600.00, cubageUnit: 18.0 }]
             },
             {
                 orderId: 'PED-003', parentOrderId: 'SOL-002', clientFlag: assignClientName('Hong Kong'), originCountry: 'Hong Kong',
                 totalValue: 300.00, status: 'Rejeitado', requestDate: '2025-06-18', lastUpdateDate: '2025-06-19',
-                supplier: 'Fornecedor A', products: [{ code: 'PROD003', description: 'Fone Bluetooth Max', quantity: 5, unitPrice: 45.00, cubageUnit: 0.001 }, { code: 'PROD006', description: 'Bateria Portátil Mega', quantity: 5, unitPrice: 25.00, cubageUnit: 0.0005 }]
+                supplier: 'Fornecedor A', products: [{ code: 'PROD003', description: 'Fone Bluetooth Max', quantity: 5, unitPrice: 45.00, cubageUnit: 1.0 }, { code: 'PROD006', description: 'Bateria Portátil Mega', quantity: 5, unitPrice: 25.00, cubageUnit: 0.0005 }]
             },
             {
                 orderId: 'PED-004', parentOrderId: 'SOL-010', clientFlag: assignClientName('Colômbia'), originCountry: 'Colômbia',
                 totalValue: 800.00, status: 'Entregue', requestDate: '2025-06-23', lastUpdateDate: '2025-06-23',
-                supplier: 'Fornecedor C', products: [{ code: 'PROD008', description: 'Impressora 3D Industrial', quantity: 1, unitPrice: 800.00, cubageUnit: 0.8 }]
+                supplier: 'Fornecedor C', products: [{ code: 'PROD008', description: 'Impressora 3D Industrial', quantity: 1, unitPrice: 800.00, cubageUnit: 30.0 }]
             },
             {
                 orderId: 'PED-005', parentOrderId: 'SOL-003', clientFlag: assignClientName('Hong Kong'), originCountry: 'Hong Kong',
                 totalValue: 454.00, status: 'Pendente', requestDate: '2025-06-24', lastUpdateDate: '2025-06-24',
-                supplier: 'Fornecedor B', products: [{ code: 'PROD001', description: 'Smartphone Premium X1', quantity: 2, unitPrice: 152.00, cubageUnit: 0.005 }, { code: 'PROD003', description: 'Fone Bluetooth Max', quantity: 3, unitPrice: 46.00, cubageUnit: 0.001 }]
+                supplier: 'Fornecedor B', products: [{ code: 'PROD001', description: 'Smartphone Premium X1', quantity: 2, unitPrice: 152.00, cubageUnit: 3.5 }, { code: 'PROD003', description: 'Fone Bluetooth Max', quantity: 3, unitPrice: 46.00, cubageUnit: 1.0 }]
             },
             {
                 orderId: 'PED-006', parentOrderId: 'SOL-003', clientFlag: assignClientName('Hong Kong'), originCountry: 'Hong Kong',
@@ -1614,7 +1737,7 @@
             {
                 orderId: 'PED-007', parentOrderId: 'SOL-004', clientFlag: assignClientName('Colômbia'), originCountry: 'Colômbia',
                 totalValue: 1800.00, status: 'Em Conferência', requestDate: '2025-06-25', lastUpdateDate: '2025-06-25',
-                supplier: 'Fornecedor C', products: [{ code: 'PROD007', description: 'Cadeira Ergonômica', quantity: 3, unitPrice: 600.00, cubageUnit: 0.15 }]
+                supplier: 'Fornecedor C', products: [{ code: 'PROD007', description: 'Cadeira Ergonômica', quantity: 3, unitPrice: 600.00, cubageUnit: 18.0 }]
             },
             {
                 orderId: 'PED-008', parentOrderId: 'SOL-011', clientFlag: assignClientName('Hong Kong'), originCountry: 'Hong Kong',
@@ -1634,37 +1757,37 @@
             {
                 orderId: 'PED-011', parentOrderId: 'SOL-006', clientFlag: assignClientName('Hong Kong'), originCountry: 'Hong Kong',
                 totalValue: 100.00, status: 'Cancelado', requestDate: '2025-06-27', lastUpdateDate: '2025-06-27',
-                supplier: 'Fornecedor A', products: [{ code: 'PROD003', description: 'Fone Bluetooth Max', quantity: 2, unitPrice: 50.00, cubageUnit: 0.001 }]
+                supplier: 'Fornecedor A', products: [{ code: 'PROD003', description: 'Fone Bluetooth Max', quantity: 2, unitPrice: 50.00, cubageUnit: 1.0 }]
             },
             {
                 orderId: 'PED-012', parentOrderId: 'SOL-012', clientFlag: assignClientName('Colômbia'), originCountry: 'Colômbia', // This client will not be "Cliente Colombia"
                 totalValue: 800.00, status: 'Em Rota de Entrega', requestDate: '2025-06-27', lastUpdateDate: '2025-06-27',
-                supplier: 'Fornecedor B', products: [{ code: 'PROD008', description: 'Impressora 3D Industrial', quantity: 1, unitPrice: 800.00, cubageUnit: 0.8 }]
+                supplier: 'Fornecedor B', products: [{ code: 'PROD008', description: 'Impressora 3D Industrial', quantity: 1, unitPrice: 800.00, cubageUnit: 30.0 }]
             },
             {
                 orderId: 'PED-013', parentOrderId: 'SOL-007', clientFlag: assignClientName('Colômbia'), originCountry: 'Colômbia',
                 totalValue: 1200.00, status: 'Pendente', requestDate: '2025-06-28', lastUpdateDate: '2025-06-28',
-                supplier: 'Fornecedor C', products: [{ code: 'PROD007', description: 'Cadeira Ergonômica', quantity: 2, unitPrice: 600.00, cubageUnit: 0.15 }]
+                supplier: 'Fornecedor C', products: [{ code: 'PROD007', description: 'Cadeira Ergonômica', quantity: 2, unitPrice: 600.00, cubageUnit: 18.0 }]
             },
             {
                 orderId: 'PED-014', parentOrderId: 'SOL-013', clientFlag: assignClientName('Hong Kong'), originCountry: 'Hong Kong',
                 totalValue: 160.00, status: 'Saída do Porto de Embarque (ATD)', requestDate: '2025-06-28', lastUpdateDate: '2025-06-28',
-                supplier: 'Fornecedor A', products: [{ code: 'PROD001', description: 'Smartphone Premium X1', quantity: 1, unitPrice: 160.00, cubageUnit: 0.005 }]
+                supplier: 'Fornecedor A', products: [{ code: 'PROD001', description: 'Smartphone Premium X1', quantity: 1, unitPrice: 160.00, cubageUnit: 3.5 }]
             },
             {
                 orderId: 'PED-015', parentOrderId: 'SOL-008', clientFlag: assignClientName('Hong Kong'), originCountry: 'Hong Kong',
                 totalValue: 760.00, status: 'Pendente', requestDate: '2025-06-29', lastUpdateDate: '2025-06-29',
-                supplier: 'Fornecedor A', products: [{ code: 'PROD001', description: 'Smartphone Premium X1', quantity: 5, unitPrice: 152.00, cubageUnit: 0.005 }]
+                supplier: 'Fornecedor A', products: [{ code: 'PROD001', description: 'Smartphone Premium X1', quantity: 5, unitPrice: 152.00, cubageUnit: 3.5 }]
             },
             {
                 orderId: 'PED-016', parentOrderId: 'SOL-008', clientFlag: assignClientName('Hong Kong'), originCountry: 'Hong Kong',
                 totalValue: 510.00, status: 'Pendente', requestDate: '2025-06-29', lastUpdateDate: '2025-06-29',
-                supplier: 'Fornecedor B', products: [{ code: 'PROD002', description: 'Tablet Pro Z', quantity: 2, unitPrice: 255.00, cubageUnit: 0.008 }]
+                supplier: 'Fornecedor B', products: [{ code: 'PROD002', description: 'Tablet Pro Z', quantity: 2, unitPrice: 255.00, cubageUnit: 5.0 }]
             },
             {
                 orderId: 'PED-017', parentOrderId: 'SOL-014', clientFlag: assignClientName('Hong Kong'), originCountry: 'Hong Kong',
                 totalValue: 840.00, status: 'Pendente', requestDate: '2025-06-30', lastUpdateDate: '2025-06-30',
-                supplier: 'Fornecedor C', products: [{ code: 'PROD003', description: 'Fone Bluetooth Max', quantity: 20, unitPrice: 42.00, cubageUnit: 0.001 }]
+                supplier: 'Fornecedor C', products: [{ code: 'PROD003', description: 'Fone Bluetooth Max', quantity: 20, unitPrice: 42.00, cubageUnit: 1.0 }]
             },
             {
                 orderId: 'PED-018', parentOrderId: 'SOL-015', clientFlag: assignClientName('Hong Kong'), originCountry: 'Hong Kong',
@@ -1684,7 +1807,7 @@
             {
                 orderId: 'SAP-001', parentOrderId: 'SOL-018', clientFlag: assignClientName('Colômbia'), originCountry: 'Colômbia', // Este cliente não será "Cliente Colombia"
                 totalValue: 500.00, status: 'Em Separação', requestDate: '2025-07-01', lastUpdateDate: '2025-07-01',
-                supplier: 'Fornecedor C', products: [{ code: 'PROD009', description: 'Monitor Ultrawide', quantity: 1, unitPrice: 350.00, cubageUnit: 0.05 }, { code: 'PROD003', description: 'Fone Bluetooth Max', quantity: 3, unitPrice: 50.00, cubageUnit: 0.001 }]
+                supplier: 'Fornecedor C', products: [{ code: 'PROD009', description: 'Monitor Ultrawide', quantity: 1, unitPrice: 350.00, cubageUnit: 0.05 }, { code: 'PROD003', description: 'Fone Bluetooth Max', quantity: 3, unitPrice: 50.00, cubageUnit: 1.0 }]
             }
         ];
 
@@ -2068,7 +2191,7 @@
                 ? getOrGenerateSupplierCode(currentOrderDetails.supplier)
                 : 'N/A';
 
-            document.getElementById('detailTotalValue').innerText = `R$ ${currentOrderDetails.totalValue.toFixed(2).replace('.', ',')}`;
+            document.getElementById('detailTotalValue').innerText = `R$ ${(currentOrderDetails.totalValue || 0).toFixed(2).replace('.', ',')}`;
             document.getElementById('detailStatus').innerText = currentOrderDetails.status;
             document.getElementById('detailRequestDate').innerText = currentOrderDetails.requestDate;
             document.getElementById('detailLastUpdateDate').innerText = currentOrderDetails.lastUpdateDate;
@@ -2187,6 +2310,20 @@
             document.getElementById('pasteCodes').value = '';
             document.getElementById('addProductMessage').style.display = 'none';
 
+            // Ensure collapsible sections are closed
+            const uploadPlanilhaContent = document.getElementById('uploadPlanilhaContent');
+            const pasteCodesContent = document.getElementById('pasteCodesContent');
+            const uploadPlanilhaHeader = uploadPlanilhaContent.previousElementSibling;
+            const pasteCodesHeader = pasteCodesContent.previousElementSibling;
+
+            if (uploadPlanilhaContent.classList.contains('active')) {
+                toggleCollapsible(uploadPlanilhaHeader, 'uploadPlanilhaContent');
+            }
+            if (pasteCodesContent.classList.contains('active')) {
+                toggleCollapsible(pasteCodesHeader, 'pasteCodesContent');
+            }
+
+
             switchOrderFormTab('easy');
         }
 
@@ -2242,6 +2379,7 @@
 
         function backToProductEntry() {
             showScreen('newOrderFormScreen');
+            resetNewOrderForm(); // Ensure the form is reset when navigating back
             renderProductList();
         }
 
@@ -2368,14 +2506,14 @@
                 return;
             }
 
-            const totalM3 = (productInfo.cubageUnit * quantity).toFixed(2);
-            const totalValue = (productInfo.tableValue * quantity).toFixed(2);
+            const totalM3 = (productInfo.cubageUnit * quantity); // Keep as number for calculations
+            const totalValue = (productInfo.tableValue * quantity); // Keep as number for calculations
 
             const existingProductIndex = productsInCurrentOrder.findIndex(p => p.code === productCode);
             if (existingProductIndex > -1) {
                 productsInCurrentOrder[existingProductIndex].quantity += quantity;
-                productsInCurrentOrder[existingProductIndex].totalM3 = (productInfo.cubageUnit * productsInCurrentOrder[existingProductIndex].quantity).toFixed(2);
-                productsInCurrentOrder[existingProductIndex].totalValue = (productInfo.tableValue * productsInCurrentOrder[existingProductIndex].quantity).toFixed(2);
+                productsInCurrentOrder[existingProductIndex].totalM3 = (productInfo.cubageUnit * productsInCurrentOrder[existingProductIndex].quantity);
+                productsInCurrentOrder[existingProductIndex].totalValue = (productInfo.tableValue * productsInCurrentOrder[existingProductIndex].quantity);
                 displayAddProductMessage(`Quantidade de "${productInfo.description}" atualizada para ${productsInCurrentOrder[existingProductIndex].quantity}.`, 'success');
             } else {
                 productsInCurrentOrder.push({
@@ -2392,7 +2530,8 @@
                     supplier: productInfo.supplier,
                     simulatedStock: productInfo.simulatedStock,
                     originCountry: productInfo.originCountry,
-                    selectedBranch: productInfo.originCountry
+                    selectedBranch: productInfo.originCountry,
+                    productLine: productInfo.productLine // Adiciona a linha do produto
                 });
                 displayAddProductMessage(`"${productInfo.description}" adicionado com sucesso.`, 'success');
             }
@@ -2437,8 +2576,8 @@
             }
 
             product.quantity = quantity;
-            product.totalM3 = (productInfoFromDB.cubageUnit * quantity).toFixed(2);
-            product.totalValue = (productInfoFromDB.tableValue * quantity).toFixed(2);
+            product.totalM3 = (productInfoFromDB.cubageUnit * quantity);
+            product.totalValue = (productInfoFromDB.tableValue * quantity);
 
             let validationMessage = '';
             let messageType = 'info';
@@ -2483,22 +2622,14 @@
                                 <table class="data-table" id="addedProductsTable">
                                     <thead>
                                         <tr>
-                                            <th rowspan="2">Cód Cliente</th>
-                                            <th rowspan="2">Cód Produto</th>
-                                            <th rowspan="2">Descrição</th>
-                                            <th rowspan="2">Qtd. Solicitada</th>
-                                            <th colspan="3" class="colombia-col" style="text-align: center;">Colômbia</th>
-                                            <th colspan="3" class="hongkong-col" style="text-align: center;">Hong Kong</th>
-                                            <th rowspan="2">Filial Selecionada</th>
-                                            <th rowspan="2">Ação</th>
-                                        </tr>
-                                        <tr>
+                                            <th>Cód Cliente</th>
+                                            <th>Cód Produto</th>
+                                            <th>Descrição</th>
+                                            <th>Qtd. Solicitada</th>
                                             <th class="colombia-col">Estoque</th>
-                                            <th class="colombia-col">Valor Unit.</th>
-                                            <th class="colombia-col">Valor Total</th>
-                                            <th class="hongkong-col">MOQ</th>
-                                            <th class="hongkong-col">Valor Unit.</th>
-                                            <th class="hongkong-col">Valor Total</th>
+                                            <th class="hongkong-col">MOQ Container</th>
+                                            <th>Filial Selecionada</th>
+                                            <th>Ação</th>
                                         </tr>
                                     </thead>
                                     <tbody>`;
@@ -2508,12 +2639,8 @@
 
                 const columbiaStockStatus = productInfoFromDB.simulatedStock > 0 ? 'Sim' : 'Não';
                 const columbiaStockColor = productInfoFromDB.simulatedStock > 0 ? 'var(--green-success)' : 'var(--red-alert)';
-                const columbiaUnitPrice = productInfoFromDB.tableValue;
-                const columbiaTotalPrice = (columbiaUnitPrice * product.quantity);
 
                 const hongKongMOQ = productInfoFromDB.moq;
-                const hongKongUnitPrice = productInfoFromDB.unitPrice;
-                const hongKongTotalPrice = (hongKongUnitPrice * product.quantity);
 
                 let rowClass = '';
                 if (product.selectedBranch === 'Hong Kong' && product.quantity < hongKongMOQ) {
@@ -2533,11 +2660,7 @@
                                 class="w-20 text-center border rounded-md px-2 py-1 text-sm">
                         </td>
                         <td class="colombia-col" style="color: ${columbiaStockColor}; font-weight: bold;">${columbiaStockStatus}</td>
-                        <td class="colombia-col">R$ ${columbiaUnitPrice.toFixed(2).replace('.', ',')}</td>
-                        <td class="colombia-col">R$ ${columbiaTotalPrice.toFixed(2).replace('.', ',')}</td>
                         <td class="hongkong-col">${hongKongMOQ}</td>
-                        <td class="hongkong-col">R$ ${hongKongUnitPrice.toFixed(2).replace('.', ',')}</td>
-                        <td class="hongkong-col">R$ ${hongKongTotalPrice.toFixed(2).replace('.', ',')}</td>
                         <td>
                             <select onchange="updateProductSelectedBranch(${index}, this.value)"
                                 class="border rounded-md px-2 py-1 text-sm">
@@ -2681,6 +2804,7 @@
         // Lógica para submeter o formulário para Colômbia
         function submitColombiaFormLogic(productsForColombia) {
             const totalValue = productsForColombia.reduce((sum, product) => sum + (product.tableValue * product.quantity), 0);
+            const totalCubageColombia = productsForColombia.reduce((sum, product) => sum + (product.cubageUnit * product.quantity), 0);
 
             const newOrderId = `SAP-${nextSapOrderIdCounter.toString().padStart(3, '0')}`;
             nextSapOrderIdCounter++;
@@ -2701,9 +2825,44 @@
                     quantity: p.quantity,
                     unitPrice: p.tableValue,
                     cubageUnit: p.cubageUnit,
-                    totalValue: (p.tableValue * p.quantity).toFixed(2)
-                }))
+                    totalValue: (p.tableValue * p.quantity),
+                    productLine: productDatabase[p.code].productLine // Add productLine for Colombia products
+                })),
+                totalCubage: totalCubageColombia.toFixed(2) // Add totalCubage for Colombia order
             };
+        }
+
+        // Função para determinar o tipo e quantidade de containers
+        function getContainerSuggestion(totalCubage) {
+            if (totalCubage <= 0) {
+                return "N/A"; // No products, no container
+            }
+            // Always suggest at least a 20ft container if cubage > 0
+            if (totalCubage <= MAX_CUBAGE_20HC) {
+                return "1 X CTN 20";
+            } else if (totalCubage <= MAX_CUBAGE_40HC_CU) { // Use 40HC_CU as the upper limit for a single 40HC
+                return "1 X CTN 40HC";
+            } else {
+                const num40HC = Math.ceil(totalCubage / MAX_CUBAGE_40HC_CU);
+                return `${num40HC} X CTN 40HC`;
+            }
+        }
+
+        // Helper function to get the capacity based on the container suggestion string
+        function getCapacityFromContainerSuggestion(suggestion) {
+            if (suggestion.includes('LCL')) {
+                return LCL_CAPACITY;
+            } else if (suggestion.includes('CTN 20')) {
+                return MAX_CUBAGE_20HC;
+            } else if (suggestion.includes('CTN 40HC')) {
+                // If it's multiple 40HC containers, we need to extract the number
+                const match = suggestion.match(/(\d+)\s*X\s*CTN 40HC/);
+                if (match && match[1]) {
+                    return parseInt(match[1]) * MAX_CUBAGE_40HC_CU;
+                }
+                return MAX_CUBAGE_40HC_CU;
+            }
+            return 0; // Should not happen if suggestion is always one of these types
         }
 
         // Função para renderizar o resumo unificado da solicitação
@@ -2741,8 +2900,9 @@
                     poDiv.className = 'supplier-summary-card';
 
                     const totalCubage = parseFloat(po.totalCubage || 0);
+                    const percentageOccupationLCL = (totalCubage / LCL_CAPACITY) * 100;
                     const percentageOccupation20HC = (totalCubage / MAX_CUBAGE_20HC) * 100;
-                    const percentageOccupation40HC = (totalCubage / MAX_CUBAGE_40HC) * 100;
+                    const percentageOccupation40HC_CU = (totalCubage / MAX_CUBAGE_40HC_CU) * 100;
 
                     let cardStatusEmoji = '';
                     if (po.overallApprovalStatus === 'Aguardando Aprovação') {
@@ -2752,30 +2912,15 @@
                     } else if (po.overallApprovalStatus === 'Rejeitado') {
                         cardStatusEmoji = '🔴';
                     } else if (po.overallApprovalStatus === 'Negociado') {
-                        cardStatusEmoji = '🟣';
+                        cardStatusEmoji = '�';
                     } else if (po.overallApprovalStatus === 'Finalizado') {
                         cardStatusEmoji = '✅';
                     }
 
-                    // Determine the most probable container
-                    let highlightLCL = false;
-                    let highlight20HC = false;
-                    let highlight40HC = false;
-                    let containerWarning = '';
+                    // Determine the most probable container for the PO
+                    const containerSuggestion = getContainerSuggestion(totalCubage);
+                    const predictedContainerCapacity = getCapacityFromContainerSuggestion(containerSuggestion);
 
-                    if (totalCubage === 0) {
-                        // No highlight needed if no cubage
-                    } else if (totalCubage <= 1) { // Small volume, likely LCL
-                        highlightLCL = true;
-                    } else if (percentageOccupation20HC <= 100) {
-                        highlight20HC = true;
-                    } else if (percentageOccupation40HC <= 100) {
-                        highlight40HC = true;
-                    } else {
-                        // If neither fits, highlight 40HC as the "least overflow" option
-                        highlight40HC = true;
-                        containerWarning = '<p class="text-red-600 mt-2 text-sm font-semibold">⚠️ A cubagem excede a capacidade de um container de 40HC. Necessário mais de um container ou solução alternativa.</p>';
-                    }
 
                     poDiv.innerHTML = `
                         <span class="supplier-status-indicator">${cardStatusEmoji}</span>
@@ -2783,40 +2928,45 @@
                         <p class="text-gray-600 mb-1">ID Solicitação Principal: <strong>${po.parentOrderId}</strong></p>
                         <p class="text-gray-600 mb-1">Data Geração: ${po.date}</p>
                         <p class="text-gray-600 mb-4">Valor Total Pedido (Estimado): <strong>R$ ${parseFloat(po.newSupplierPriceTotal).toFixed(2).replace('.', ',')}</strong></p>
+                        <p class="text-gray-600 mb-4">Previsão de Container: <strong>${containerSuggestion}</strong></p>
+
 
                         <h5 class="font-semibold text-md mb-2">Produtos:</h5>
                         <div class="overflow-x-auto">
                             <table class="data-table">
                                 <thead>
                                     <tr>
-                                        <th>Cód Produto</th>
+                                        <th>Modelo</th>
+                                        <th>Código</th>
                                         <th>Descrição</th>
                                         <th>Qtd.</th>
-                                        <th>Valor Unit. Interno</th>
-                                        <th>Valor Unit. Fornecedor (Atual)</th>
-                                        <th>M³ Total Item</th>
-                                        <th>Status Aprovação</th>
+                                        <th>Preço Unit.</th>
+                                        <th>Preço Total</th>
+                                        <th>M³ Unit.</th>
+                                        <th>M³ Total</th>
+                                        <th>% Container</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     ${po.products.map(p => {
-                                        const internalPrice = parseFloat(p.currentInternalUnitPrice);
-                                        const supplierPrice = parseFloat(p.newSupplierUnitPrice);
-                                        let priceClass = '';
-                                        if (supplierPrice > internalPrice) {
-                                            priceClass = 'price-difference-positive';
-                                        } else if (supplierPrice < internalPrice) {
-                                            priceClass = 'price-difference-negative';
-                                        }
+                                        const productInfo = productDatabase[p.code];
+                                        const totalM3Item = (productInfo.cubageUnit * p.quantity);
+                                        // % Container is totalM3Item / predictedContainerCapacity (of the PO)
+                                        const percentageContainer = predictedContainerCapacity > 0 ? (totalM3Item / predictedContainerCapacity) * 100 : 0;
+                                        const unitPriceDisplay = parseFloat(p.newSupplierUnitPrice).toFixed(2).replace('.', ',');
+                                        const totalPriceItem = (parseFloat(p.newSupplierUnitPrice) * p.quantity).toFixed(2).replace('.', ',');
+
                                         return `
                                         <tr>
+                                            <td>${productInfo.productLine || 'N/A'}</td>
                                             <td>${p.code}</td>
                                             <td>${p.name}</td>
                                             <td>${p.quantity}</td>
-                                            <td>R$ ${internalPrice.toFixed(2).replace('.', ',')}</td>
-                                            <td class="${priceClass}">R$ ${supplierPrice.toFixed(2).replace('.', ',')}</td>
-                                            <td>${(p.cubageUnit * p.quantity).toFixed(2).replace('.', ',')} m³</td>
-                                            <td class="product-approval-status ${p.approvalStatus}">${p.approvalStatus}</td>
+                                            <td>R$ ${unitPriceDisplay}</td>
+                                            <td>R$ ${totalPriceItem}</td>
+                                            <td>${productInfo.cubageUnit.toFixed(3).replace('.', ',')} m³</td>
+                                            <td>${totalM3Item.toFixed(2).replace('.', ',')} m³</td>
+                                            <td>${percentageContainer.toFixed(2).replace('.', ',')}%</td>
                                         </tr>
                                     `;
                                     }).join('')}
@@ -2824,31 +2974,34 @@
                             </table>
                         </div>
 
-                        <h5 class="font-semibold text-md mb-2 mt-4">Previsão de Cubagem por Tipo de Container:</h5>
+                        <h5 class="font-semibold text-md mb-2 mt-4">Previsão de Cubagem por Tipo de Container (Total do Pedido):</h5>
                         <p class="text-sm text-gray-700 mb-2">Cubagem Total do Pedido: <strong>${totalCubage.toFixed(2).replace('.', ',')} m³</strong></p>
                         <table class="cubage-table">
                             <thead>
                                 <tr>
                                     <th>Tipo CTN</th>
                                     <th>% Ocupação</th>
+                                    <th>M³ Total CTN</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr class="${highlightLCL ? 'highlight-container' : ''}">
+                                <tr class="${containerSuggestion.includes('LCL') ? 'highlight-container' : ''}">
                                     <td>LCL</td>
-                                    <td>${totalCubage > 0 ? '100.00' : '0.00'}%</td>
+                                    <td>${percentageOccupationLCL.toFixed(2).replace('.', ',')}%</td>
+                                    <td>-</td>
                                 </tr>
-                                <tr class="${highlight20HC ? 'highlight-container' : ''}">
+                                <tr class="${containerSuggestion.includes('CTN 20') ? 'highlight-container' : ''}">
                                     <td>CTN 20</td>
                                     <td>${percentageOccupation20HC.toFixed(2).replace('.', ',')}%</td>
+                                    <td>${MAX_CUBAGE_20HC.toFixed(2).replace('.', ',')} m³</td>
                                 </tr>
-                                <tr class="${highlight40HC ? 'highlight-container' : ''}">
+                                <tr class="${containerSuggestion.includes('CTN 40HC') ? 'highlight-container' : ''}">
                                     <td>CTN 40HC</td>
-                                    <td>${percentageOccupation40HC.toFixed(2).replace('.', ',')}%</td>
+                                    <td>${percentageOccupation40HC_CU.toFixed(2).replace('.', ',')}%</td>
+                                    <td>${MAX_CUBAGE_40HC_CU.toFixed(2).replace('.', ',')} m³</td>
                                 </tr>
                             </tbody>
                         </table>
-                        ${containerWarning}
                     `;
                     hongKongSection.appendChild(poDiv);
                 }
@@ -2865,28 +3018,48 @@
                         <p class="mb-1">Nº Pedido de Venda SAP: <strong>${simulatedColombiaOrder.orderId}</strong></p>
                         <p class="mb-1">ID Solicitação Principal: <strong>${simulatedColombiaOrder.parentOrderId}</strong></p>
                         <p class="mb-1">Valor Total: <strong>R$ ${simulatedColombiaOrder.totalValue.toFixed(2).replace('.', ',')}</strong></p>
+                        <p class="text-gray-600 mb-4">Previsão de Container: <strong>${getContainerSuggestion(parseFloat(simulatedColombiaOrder.totalCubage))}</strong></p>
+
                         <h4 class="font-semibold text-md mb-2 mt-4">Produtos:</h4>
                         <div class="overflow-x-auto">
                             <table class="data-table">
                                 <thead>
                                     <tr>
-                                        <th>Cód Produto</th>
+                                        <th>Modelo</th>
+                                        <th>Código</th>
                                         <th>Descrição</th>
                                         <th>Qtd.</th>
-                                        <th>Valor Unit.</th>
-                                        <th>Valor Total</th>
+                                        <th>Preço Unit.</th>
+                                        <th>Preço Total</th>
+                                        <th>M³ Unit.</th>
+                                        <th>M³ Total</th>
+                                        <th>% Container</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    ${simulatedColombiaOrder.products.map(p => `
+                                    ${simulatedColombiaOrder.products.map(p => {
+                                        const productInfo = productDatabase[p.code];
+                                        const totalM3Item = (productInfo.cubageUnit * p.quantity);
+                                        const containerSuggestionColombia = getContainerSuggestion(parseFloat(simulatedColombiaOrder.totalCubage));
+                                        const predictedContainerCapacityColombia = getCapacityFromContainerSuggestion(containerSuggestionColombia);
+                                        const percentageContainer = predictedContainerCapacityColombia > 0 ? (totalM3Item / predictedContainerCapacityColombia) * 100 : 0;
+
+                                        const unitPriceDisplay = parseFloat(p.unitPrice).toFixed(2).replace('.', ',');
+                                        const totalPriceItem = parseFloat(p.totalValue).toFixed(2).replace('.', ',');
+                                        return `
                                         <tr>
+                                            <td>${productInfo.productLine || 'N/A'}</td>
                                             <td>${p.code}</td>
                                             <td>${p.description}</td>
                                             <td>${p.quantity}</td>
-                                            <td>R$ ${parseFloat(p.unitPrice).toFixed(2).replace('.', ',')}</td>
-                                            <td>R$ ${parseFloat(p.totalValue).toFixed(2).replace('.', ',')}</td>
+                                            <td>R$ ${unitPriceDisplay}</td>
+                                            <td>R$ ${totalPriceItem}</td>
+                                            <td>${productInfo.cubageUnit.toFixed(3).replace('.', ',')} m³</td>
+                                            <td>${totalM3Item.toFixed(2).replace('.', ',')} m³</td>
+                                            <td>${percentageContainer.toFixed(2).replace('.', ',')}%</td>
                                         </tr>
-                                    `).join('')}
+                                    `;
+                                    }).join('')}
                                 </tbody>
                             </table>
                         </div>
@@ -3117,9 +3290,9 @@
 
             // Simulação de leitura de planilha com dados fixos
             const dummyProducts = [
-                { clientCode: "SKU-001", quantity: 5 },
-                { clientCode: "SKU-003", quantity: 10 },
-                { clientCode: "SKU-007", quantity: 1 }
+                { clientCode: "SKU-001", quantity: 10 }, // 10 * 3.5 = 35 m³ (CTN 20)
+                { clientCode: "SKU-003", quantity: 25 }, // 25 * 1.0 = 25 m³ (CTN 20)
+                { clientCode: "SKU-007", quantity: 2 } // 2 * 18.0 = 36 m³ (CTN 40HC)
             ];
 
             let productsAddedCount = 0;
@@ -3132,13 +3305,13 @@
 
                 if (productInfo) {
                     const existingProductIndex = productsInCurrentOrder.findIndex(p => p.code === productCode);
-                    const totalM3 = (productInfo.cubageUnit * item.quantity).toFixed(2);
-                    const totalValue = (productInfo.tableValue * item.quantity).toFixed(2);
+                    const totalM3 = (productInfo.cubageUnit * item.quantity);
+                    const totalValue = (productInfo.tableValue * item.quantity);
 
                     if (existingProductIndex > -1) {
                         productsInCurrentOrder[existingProductIndex].quantity += item.quantity;
-                        productsInCurrentOrder[existingProductIndex].totalM3 = (productInfo.cubageUnit * productsInCurrentOrder[existingProductIndex].quantity).toFixed(2);
-                        productsInCurrentOrder[existingProductIndex].totalValue = (productInfo.tableValue * productsInCurrentOrder[existingProductIndex].quantity).toFixed(2);
+                        productsInCurrentOrder[existingProductIndex].totalM3 = (productInfo.cubageUnit * productsInCurrentOrder[existingProductIndex].quantity);
+                        productsInCurrentOrder[existingProductIndex].totalValue = (productInfo.tableValue * productsInCurrentOrder[existingProductIndex].quantity);
                         messages.push(`Quantidade de "${productInfo.description}" atualizada para ${productsInCurrentOrder[existingProductIndex].quantity}.`);
                     } else {
                         productsInCurrentOrder.push({
@@ -3155,7 +3328,8 @@
                             supplier: productInfo.supplier,
                             simulatedStock: productInfo.simulatedStock,
                             originCountry: productInfo.originCountry,
-                            selectedBranch: productInfo.originCountry
+                            selectedBranch: productInfo.originCountry,
+                            productLine: productInfo.productLine // Adiciona a linha do produto
                         });
                         productsAddedCount++;
                         messages.push(`"${productInfo.description}" adicionado.`);
@@ -3216,13 +3390,13 @@
 
                     if (productInfo && !isNaN(quantity) && quantity > 0) {
                         const existingProductIndex = productsInCurrentOrder.findIndex(p => p.code === productCode);
-                        const totalM3 = (productInfo.cubageUnit * quantity).toFixed(2);
-                        const totalValue = (productInfo.tableValue * quantity).toFixed(2);
+                        const totalM3 = (productInfo.cubageUnit * quantity);
+                        const totalValue = (productInfo.tableValue * quantity);
 
                         if (existingProductIndex > -1) {
                             productsInCurrentOrder[existingProductIndex].quantity += quantity;
-                            productsInCurrentOrder[existingProductIndex].totalM3 = (productInfo.cubageUnit * productsInCurrentOrder[existingProductIndex].quantity).toFixed(2);
-                            productsInCurrentOrder[existingProductIndex].totalValue = (productInfo.tableValue * productsInCurrentOrder[existingProductIndex].quantity).toFixed(2);
+                            productsInCurrentOrder[existingProductIndex].totalM3 = (productInfo.cubageUnit * productsInCurrentOrder[existingProductIndex].quantity);
+                            productsInCurrentOrder[existingProductIndex].totalValue = (productInfo.tableValue * productsInCurrentOrder[existingProductIndex].quantity);
                             messages.push(`Quantidade de "${productInfo.description}" atualizada para ${productsInCurrentOrder[existingProductIndex].quantity}.`);
                         } else {
                             productsInCurrentOrder.push({
@@ -3239,7 +3413,8 @@
                                 supplier: productInfo.supplier,
                                 simulatedStock: productInfo.simulatedStock,
                                 originCountry: productInfo.originCountry,
-                                selectedBranch: productInfo.originCountry
+                                selectedBranch: productInfo.originCountry,
+                                productLine: productInfo.productLine // Adiciona a linha do produto
                             });
                             productsAddedCount++;
                             messages.push(`"${productInfo.description}" adicionado.`);
@@ -3304,7 +3479,10 @@
             // Adiciona event listeners para os botões de navegação e ação
             const novaSolicitacaoButton = document.getElementById('novaSolicitacao');
             if (novaSolicitacaoButton) {
-                novaSolicitacaoButton.addEventListener('click', () => showScreen('newOrderFormScreen'));
+                novaSolicitacaoButton.addEventListener('click', () => {
+                    showScreen('newOrderFormScreen');
+                    resetNewOrderForm(); // Reset the form when opening it
+                });
             }
 
             const logoutButtonCentralPedidos = document.getElementById('logoutButton');
