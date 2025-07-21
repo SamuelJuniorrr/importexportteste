@@ -2072,7 +2072,7 @@
                     <td><a href="#" class="pedido-link" onclick="viewPurchasingOrderDetails('${po.id}')">${po.id}</a></td>
                     <td>${getOrGenerateSupplierCode(po.supplier)} - ${po.supplier}</td>
                     <td>${po.originCountry}</td>
-                    <td>R$ ${parseFloat(po.newSupplierPriceTotal || 0).toFixed(2).replace('.', ',')}</td>
+                    <td>$ ${parseFloat(po.newSupplierPriceTotal || 0).toFixed(2).replace('.', ',')}</td>
                     <td><span class="status-indicator ${statusIndicatorClass}"></span>${po.overallApprovalStatus}</td>
                     <td>${po.date}</td>
                     <td>${po.lastUpdateDate || 'N/A'}</td>
@@ -2117,8 +2117,8 @@
             document.getElementById('detailPoETA').value = currentPurchasingPO.eta || '';
 
             document.getElementById('detailPoOverallStatus').innerHTML = `<span class="status-indicator ${getStatusClass(currentPurchasingPO.overallApprovalStatus)}"></span>${currentPurchasingPO.overallApprovalStatus}`;
-            document.getElementById('detailPoCurrentInternalPriceTotal').innerText = `R$ ${parseFloat(currentPurchasingPO.currentInternalPriceTotal || 0).toFixed(2).replace('.', ',')}`;
-            document.getElementById('detailPoNewSupplierPriceTotal').innerText = `R$ ${parseFloat(currentPurchasingPO.newSupplierPriceTotal || 0).toFixed(2).replace('.', ',')}`;
+            document.getElementById('detailPoCurrentInternalPriceTotal').innerText = `$ ${parseFloat(currentPurchasingPO.currentInternalPriceTotal || 0).toFixed(2).replace('.', ',')}`;
+            document.getElementById('detailPoNewSupplierPriceTotal').innerText = `$ ${parseFloat(currentPurchasingPO.newSupplierPriceTotal || 0).toFixed(2).replace('.', ',')}`;
             
             const currentInternalPriceTotal = parseFloat(currentPurchasingPO.currentInternalPriceTotal || 0);
             const newSupplierPriceTotal = parseFloat(currentPurchasingPO.newSupplierPriceTotal || 0);
@@ -2129,7 +2129,7 @@
             } else if (priceDifference < 0) {
                 priceDifferenceClass = 'price-difference-negative';
             }
-            document.getElementById('detailPoPriceDifference').innerHTML = `<span class="${priceDifferenceClass}">R$ ${priceDifference.toFixed(2).replace('.', ',')}</span>`;
+            document.getElementById('detailPoPriceDifference').innerHTML = `<span class="${priceDifferenceClass}">$ ${priceDifference.toFixed(2).replace('.', ',')}</span>`;
             document.getElementById('detailPoTotalCubage').innerText = `${parseFloat(currentPurchasingPO.totalCubage || 0).toFixed(2).replace('.', ',')} m³`;
             document.getElementById('detailPoLastUpdate').innerText = currentPurchasingPO.lastUpdateDate || 'N/A';
 
@@ -2213,8 +2213,8 @@
                     <td>${product.code}</td>
                     <td>${product.name}</td>
                     <td>${product.quantity}</td>
-                    <td>R$ ${internalPrice.toFixed(2).replace('.', ',')}</td>
-                    <td class="${priceClass}">R$ ${supplierPrice.toFixed(2).replace('.', ',')}</td>
+                    <td>$ ${internalPrice.toFixed(2).replace('.', ',')}</td>
+                    <td class="${priceClass}">$ ${supplierPrice.toFixed(2).replace('.', ',')}</td>
                     <td>
                         <input type="number" step="0.01" value="${supplierPrice.toFixed(2)}"
                             onchange="negotiatePrice(${index}, this.value)"
@@ -2524,11 +2524,11 @@
                 - Cód: ${p.code}
                   Descrição: ${p.name}
                   Qtd: ${p.quantity}
-                  Valor Unit.: R$ ${parseFloat(p.unitPrice).toFixed(2).replace('.', ',')}
-                  Valor Total Item: R$ ${(parseFloat(p.unitPrice) * p.quantity).toFixed(2).replace('.', ',')}
+                  Valor Unit.: $ ${parseFloat(p.unitPrice).toFixed(2).replace('.', ',')}
+                  Valor Total Item: $ ${(parseFloat(p.unitPrice) * p.quantity).toFixed(2).replace('.', ',')}
                 `).join('\n')}
 
-                Valor Total da NF-e: R$ ${parseFloat(currentPurchasingPO.newSupplierPriceTotal).toFixed(2).replace('.', ',')}
+                Valor Total da NF-e: $ ${parseFloat(currentPurchasingPO.newSupplierPriceTotal).toFixed(2).replace('.', ',')}
                 ----------------------------------------
             `;
             document.getElementById('nfePdfContent').innerText = nfeContent;
