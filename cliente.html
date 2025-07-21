@@ -1368,7 +1368,7 @@
                     </div>
                     <div class="input-group" id="productValueGroup">
                         <label for="productValueDisplay" data-translate="unitValueLabel">Valor Unit.:</label>
-                        <input type="text" id="productValueDisplay" readonly value="R$ 0,00">
+                        <input type="text" id="productValueDisplay" readonly value="$ 0,00">
                     </div>
                     <div class="input-group" id="totalM3Group">
                         <label for="totalM3Display" data-translate="totalM3Label">M³ Total:</label>
@@ -1376,7 +1376,7 @@
                     </div>
                     <div class="input-group" id="valorTotalGroup">
                         <label for="valorTotalDisplay" data-translate="totalValueLabel">Valor Total:</label>
-                        <input type="text" id="valorTotalDisplay" readonly value="R$ 0,00">
+                        <input type="text" id="valorTotalDisplay" readonly value="$ 0,00">
                     </div>
                     <div class="input-group" id="productStockGroup">
                         <label for="productStockDisplay" data-translate="stockLabel">Estoque:</label>
@@ -2933,7 +2933,7 @@
                     <td>${flagImageHtml}</td>
                     <td>${order.originCountry}</td>
                     <td>${displaySupplierInfo}</td>
-                    <td>R$ ${(order.totalValue || 0).toFixed(2).replace('.', ',')}</td>
+                    <td>$ ${(order.totalValue || 0).toFixed(2).replace('.', ',')}</td>
                     <td><span class="status-indicator ${statusIndicatorClass}"></span>${getTranslatedStatus(order.status)}</td>
                     <td>${order.requestDate}</td>
                     <td>${order.lastUpdateDate}</td>
@@ -2991,7 +2991,7 @@
 
             const detailTotalValueElement = document.getElementById('detailTotalValue');
             if (detailTotalValueElement) {
-                detailTotalValueElement.innerText = `R$ ${(currentOrderDetails.totalValue || 0).toFixed(2).replace('.', ',')}`;
+                detailTotalValueElement.innerText = `$ ${(currentOrderDetails.totalValue || 0).toFixed(2).replace('.', ',')}`;
             }
 
             const orderTotalCubage = currentOrderDetails.products.reduce((sum, product) => {
@@ -3029,8 +3029,8 @@
                         <td>${product.code}</td>
                         <td>${product.description}</td>
                         <td>${product.quantity}</td>
-                        <td>R$ ${product.unitPrice.toFixed(2).replace('.', ',')}</td>
-                        <td>R$ ${itemTotalPrice.replace('.', ',')}</td>
+                        <td>$ ${product.unitPrice.toFixed(2).replace('.', ',')}</td>
+                        <td>$ ${itemTotalPrice.replace('.', ',')}</td>
                     `;
                     productsTableBody.appendChild(row);
                 });
@@ -3100,9 +3100,9 @@
             document.getElementById('productDescriptionDisplay').value = '--';
             document.getElementById('productQuantity').value = '1';
             document.getElementById('validationFeedback').innerText = '';
-            document.getElementById('productValueDisplay').value = 'R$ 0,00';
+            document.getElementById('productValueDisplay').value = '$ 0,00';
             document.getElementById('totalM3Display').value = '0.00 m³';
-            document.getElementById('valorTotalDisplay').value = 'R$ 0,00'; // Corrigido para moeda
+            document.getElementById('valorTotalDisplay').value = '$ 0,00'; // Corrigido para moeda
             document.getElementById('productStockDisplay').value = '--';
 
             document.getElementById('totalM3Group').style.display = 'none';
@@ -3221,9 +3221,9 @@
 
             mappedProductCodeDisplay.value = '--';
             productDescriptionDisplay.value = '--';
-            productValueDisplay.value = 'R$ 0,00';
+            productValueDisplay.value = '$ 0,00';
             totalM3Display.value = '0.00 m³';
-            valorTotalDisplay.value = 'R$ 0,00'; // Corrigido para moeda
+            valorTotalDisplay.value = '$ 0,00'; // Corrigido para moeda
             productStockDisplay.value = '--';
             validationFeedbackDiv.innerText = '';
             validationFeedbackDiv.className = 'text-xs mt-1';
@@ -3236,7 +3236,7 @@
                 mappedProductCodeDisplay.value = productCode;
                 productDescriptionDisplay.value = productInfo.description;
                 productDescriptionDisplay.style.color = '#374151';
-                productValueDisplay.value = `R$ ${productInfo.tableValue.toFixed(2).replace('.', ',')}`;
+                productValueDisplay.value = `$ ${productInfo.tableValue.toFixed(2).replace('.', ',')}`;
 
                 updateManualProductFieldsVisibility(productInfo.originCountry);
 
@@ -3245,7 +3245,7 @@
                 } else if (productInfo.originCountry === 'Colômbia') {
                     productStockDisplay.value = productInfo.simulatedStock > 0 ? translations[currentLanguage]['yes'] : translations[currentLanguage]['no'];
                     productStockDisplay.style.color = productInfo.simulatedStock > 0 ? '#16a34a' : '#dc2626';
-                    valorTotalDisplay.value = `R$ ${(productInfo.tableValue * parseInt(productQuantityInput.value || 1)).toFixed(2).replace('.', ',')}`;
+                    valorTotalDisplay.value = `$ ${(productInfo.tableValue * parseInt(productQuantityInput.value || 1)).toFixed(2).replace('.', ',')}`;
                 }
                 handleQuantityChange();
             } else {
@@ -3280,7 +3280,7 @@
                 validationFeedbackDiv.innerText = translations[currentLanguage]['invalidQuantityInput'];
                 validationFeedbackDiv.className = 'validation-message status-error';
                 totalM3Display.value = '0.00 m³';
-                valorTotalDisplay.value = 'R$ 0,00';
+                valorTotalDisplay.value = '$ 0,00';
                 return;
             }
 
@@ -3296,7 +3296,7 @@
                 }
             } else if (productInfo.originCountry === 'Colômbia') {
                 const total = productInfo.tableValue * quantity;
-                valorTotalDisplay.value = `R$ ${(total).toFixed(2).replace('.', ',')}`;
+                valorTotalDisplay.value = `$ ${(total).toFixed(2).replace('.', ',')}`;
                 if (quantity > productInfo.simulatedStock) {
                     validationFeedbackDiv.innerText = translations[currentLanguage]['qtyExceedsStockError'](quantity, productInfo.simulatedStock);
                     validationFeedbackDiv.className = 'validation-message status-error';
@@ -3361,9 +3361,9 @@
             document.getElementById('mappedProductCodeDisplay').value = '--';
             document.getElementById('productDescriptionDisplay').value = '--';
             document.getElementById('productQuantity').value = '1';
-            document.getElementById('productValueDisplay').value = 'R$ 0,00';
+            document.getElementById('productValueDisplay').value = '$ 0,00';
             document.getElementById('totalM3Display').value = '0.00 m³';
-            document.getElementById('valorTotalDisplay').value = 'R$ 0,00'; // Corrigido para moeda
+            document.getElementById('valorTotalDisplay').value = '$ 0,00'; // Corrigido para moeda
             document.getElementById('productStockDisplay').value = '--';
             document.getElementById('validationFeedback').innerText = '';
             document.getElementById('productStockDisplay').style.color = '';
@@ -3741,7 +3741,7 @@
                         <h4 class="font-semibold text-lg mb-2">${translations[currentLanguage]['poNumberForSupplier'](po.id, po.supplierCode, po.supplier)}</h4>
                         <p class="text-gray-600 mb-1">${translations[currentLanguage]['mainRequestId']} <strong>${po.parentOrderId}</strong></p>
                         <p class="text-gray-600 mb-1">${translations[currentLanguage]['generationDate']} ${po.date}</p>
-                        <p class="text-gray-600 mb-4">${translations[currentLanguage]['estimatedOrderTotal']} <strong>R$ ${parseFloat(po.newSupplierPriceTotal).toFixed(2).replace('.', ',')}</strong></p>
+                        <p class="text-gray-600 mb-4">${translations[currentLanguage]['estimatedOrderTotal']} <strong>$ ${parseFloat(po.newSupplierPriceTotal).toFixed(2).replace('.', ',')}</strong></p>
                         <p class="text-gray-600 mb-4">${translations[currentLanguage]['containerForecast']} <strong>${containerSuggestion}</strong></p>
 
                         <h5 class="font-semibold text-md mb-2">${translations[currentLanguage]['products']}</h5>
@@ -3774,8 +3774,8 @@
                                             <td>${p.code}</td>
                                             <td>${p.name}</td>
                                             <td>${p.quantity}</td>
-                                            <td>R$ ${unitPriceDisplay}</td>
-                                            <td>R$ ${totalPriceItem}</td>
+                                            <td>$ ${unitPriceDisplay}</td>
+                                            <td>$ ${totalPriceItem}</td>
                                             <td>${productInfo.cubageUnit.toFixed(3).replace('.', ',')} m³</td>
                                             <td>${totalM3Item.toFixed(2).replace('.', ',')} m³</td>
                                             <td>${percentageContainer.toFixed(2).replace('.', ',')}%</td>
@@ -3830,7 +3830,7 @@
                         <h3 class="font-semibold text-lg mb-2">${translations[currentLanguage]['salesOrderDetailsTitle']}</h3>
                         <p class="mb-1">${translations[currentLanguage]['salesOrderNumberSAP']} <strong>${simulatedColombiaOrder.orderId}</strong></p>
                         <p class="mb-1">${translations[currentLanguage]['mainRequestId']} <strong>${simulatedColombiaOrder.parentOrderId}</strong></p>
-                        <p class="mb-1">${translations[currentLanguage]['totalValue']} <strong>R$ ${simulatedColombiaOrder.totalValue.toFixed(2).replace('.', ',')}</strong></p>
+                        <p class="mb-1">${translations[currentLanguage]['totalValue']} <strong>$ ${simulatedColombiaOrder.totalValue.toFixed(2).replace('.', ',')}</strong></p>
                         <p class="text-gray-600 mb-4">${translations[currentLanguage]['containerForecast']} <strong>${getContainerSuggestion(parseFloat(simulatedColombiaOrder.totalCubage))}</strong></p>
 
                         <h4 class="font-semibold text-md mb-2 mt-4">${translations[currentLanguage]['products']}</h4>
@@ -3865,8 +3865,8 @@
                                             <td>${p.code}</td>
                                             <td>${p.description}</td>
                                             <td>${p.quantity}</td>
-                                            <td>R$ ${unitPriceDisplay}</td>
-                                            <td>R$ ${totalPriceItem}</td>
+                                            <td>$ ${unitPriceDisplay}</td>
+                                            <td>$ ${totalPriceItem}</td>
                                             <td>${productInfo.cubageUnit.toFixed(3).replace('.', ',')} m³</td>
                                             <td>${totalM3Item.toFixed(2).replace('.', ',')} m³</td>
                                             <td>${percentageContainer.toFixed(2).replace('.', ',')}%</td>
@@ -4040,7 +4040,7 @@
                         <td class="product-code-display">${product.code}</td>
                         <td class="product-description-display">${product.description}</td>
                         <td>${product.originCountry}</td>
-                        <td>R$ ${displayPrice}</td>
+                        <td>$ ${displayPrice}</td>
                         <td>${product.moq}</td>
                         <td><span style="color: ${stockColor}; font-weight: bold;">${stockDisplay}</span></td>
                         <td>${product.cubageUnit.toFixed(3).replace('.', ',')}</td>
