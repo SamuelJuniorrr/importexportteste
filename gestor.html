@@ -2837,6 +2837,20 @@
         }
 
         /**
+         * Extrai o Incoterm (FOB, EXW, CIF) de uma string de termos.
+         * @param {string} termsString A string completa dos termos (e.g., "20% TT balance after BL - FOB Ningbo Port").
+         * @returns {string} O Incoterm extraído ou "N/A" se não encontrado.
+         */
+        function extractIncoterm(termsString) {
+            if (!termsString) {
+                return 'N/A';
+            }
+            // Regex para encontrar FOB, EXW, CIF no início ou em qualquer parte da string
+            const match = termsString.match(/\b(FOB|EXW|CIF)\b/i);
+            return match ? match[0].toUpperCase() : 'N/A';
+        }
+
+        /**
          * Gera o conteúdo HTML da Invoice com base nos dados da PO, replicando o layout da imagem.
          * @param {Object} po O objeto da Purchase Order.
          * @returns {string} O HTML da invoice.
@@ -2878,6 +2892,9 @@
 
             const otherCharge = 250.00; // Example fixed other charge
             const invoiceTotal = (parseFloat(subtotal) + otherCharge).toFixed(2);
+
+            // Extract Incoterm using the new function
+            const incoterm = extractIncoterm(po.terms);
 
             return `
                 <div class="simulated-invoice">
@@ -2951,7 +2968,7 @@
                             <td class="label-cell">Freight</td>
                             <td class="value-cell">${po.freight || 'N/A'}</td>
                             <td class="label-cell">Incoterm</td>
-                            <td class="value-cell">${po.terms || 'N/A'}</td>
+                            <td class="value-cell">${incoterm}</td> <!-- Changed this line -->
                         </tr>
                         <tr>
                             <td class="label-cell">Port of Origin</td>
