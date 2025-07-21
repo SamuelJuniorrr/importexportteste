@@ -2230,7 +2230,7 @@
                     <td>${po.id}</td>
                     <td>${clientName}</td>
                     <td>${supplierName}</td>
-                    <td>R$ ${parseFloat(po.newSupplierPriceTotal).toFixed(2).replace('.', ',')}</td>
+                    <td>$ ${parseFloat(po.newSupplierPriceTotal).toFixed(2).replace('.', ',')}</td>
                     <td>${lastUpdateDate}</td>
                     <td><span class="status-indicator ${statusIndicatorClass}"></span>${po.overallApprovalStatus}</td>
                     <td>${actionButtonHtml}</td>
@@ -2434,25 +2434,25 @@
                 <div class="financial-summary">
                     <div class="financial-metric">
                         <div class="label">Custo Total Interno</div>
-                        <div class="value">R$ ${totalInternalCostPO.toFixed(2).replace('.', ',')}</div>
+                        <div class="value">$ ${totalInternalCostPO.toFixed(2).replace('.', ',')}</div>
                     </div>
                     <div class="financial-metric">
                         <div class="label">Custo Total Fornecedor</div>
-                        <div class="value">R$ ${totalExternalCostPO.toFixed(2).replace('.', ',')}</div>
+                        <div class="value">$ ${totalExternalCostPO.toFixed(2).replace('.', ',')}</div>
                     </div>
                     <div class="financial-metric">
                         <div class="label">Diferença de Custo</div>
                         <div class="value ${costDifferencePO > 0 ? 'price-difference-positive' : (costDifferencePO < 0 ? 'price-difference-negative' : '')}">
-                            R$ ${costDifferencePO.toFixed(2).replace('.', ',')} (${costDifferencePercentPO.toFixed(2)}%)
+                            $ ${costDifferencePO.toFixed(2).replace('.', ',')} (${costDifferencePercentPO.toFixed(2)}%)
                         </div>
                     </div>
                     <div class="financial-metric">
                         <div class="label">Valor Total de Venda (Est.)</div>
-                        <div class="value">R$ ${totalInternalSaleValuePO.toFixed(2).replace('.', ',')}</div>
+                        <div class="value">$ ${totalInternalSaleValuePO.toFixed(2).replace('.', ',')}</div>
                     </div>
                     <div class="financial-metric">
                         <div class="label">Lucro Bruto Estimado</div>
-                        <div class="value ${grossProfitPO < 0 ? 'price-difference-positive' : 'price-difference-negative'}">R$ ${grossProfitPO.toFixed(2).replace('.', ',')}</div>
+                        <div class="value ${grossProfitPO < 0 ? 'price-difference-positive' : 'price-difference-negative'}">$ ${grossProfitPO.toFixed(2).replace('.', ',')}</div>
                     </div>
                     <div class="financial-metric">
                         <div class="label">Margem Bruta Estimada</div>
@@ -2553,15 +2553,15 @@
                                         <td class="po-column">${p.code}</td>
                                         <td class="po-column">${p.code}</td>
                                         <td class="po-column">${p.quantity}</td>
-                                        <td class="po-column">R$ ${parseFloat(p.currentInternalUnitPrice).toFixed(2).replace('.', ',')}</td>
-                                        <td class="po-column">R$ ${poTotalAmount.replace('.', ',')}</td>
+                                        <td class="po-column">$ ${parseFloat(p.currentInternalUnitPrice).toFixed(2).replace('.', ',')}</td>
+                                        <td class="po-column">$ ${poTotalAmount.replace('.', ',')}</td>
                                         <td class="pi-column">${p.piModel || p.code}</td> <!-- Use piModel if available -->
                                         <td class="pi-column">${p.piPN || p.code}</td> <!-- Use piPN if available -->
                                         <td class="pi-column">${p.piQuantity || p.quantity}</td> <!-- Use piQuantity if available -->
-                                        <td class="pi-column">R$ ${parseFloat(p.newSupplierUnitPrice).toFixed(2).replace('.', ',')}</td>
-                                        <td class="pi-column">R$ ${piTotalAmount.replace('.', ',')}</td>
+                                        <td class="pi-column">$ ${parseFloat(p.newSupplierUnitPrice).toFixed(2).replace('.', ',')}</td>
+                                        <td class="pi-column">$ ${piTotalAmount.replace('.', ',')}</td>
                                         <td>${qtyMatch}</td>
-                                        <td>R$ ${diffPrice.toFixed(2).replace('.', ',')}</td> <!-- Diferença absoluta de preço -->
+                                        <td>$ ${diffPrice.toFixed(2).replace('.', ',')}</td> <!-- Diferença absoluta de preço -->
                                         <td>${modelMatch}</td>
                                         <td>${pnMatch}</td>
                                         <td><span class="${priceDiffClass}">${percentPriceDiff.toFixed(2).replace('.', ',')}%</span></td> <!-- Nova coluna de percentual -->
