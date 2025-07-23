@@ -43,7 +43,7 @@
             flex-direction: column;
         }
         .container {
-            width: 100%;
+            width: 97%;
             margin: 20px auto;
             padding: 20px;
             background-color: #fff;
@@ -325,6 +325,10 @@
         .status-indicator.reprovado-inspection { background-color: var(--red-alert); }
         .status-indicator.n-a-inspection { background-color: var(--secondary-color); }
         .status-indicator.aprovado-com-ressalvas-inspection { background-color: var(--orange-warning); }
+        /* Status para Títulos Financeiros */
+        .status-indicator.pago { background-color: var(--green-success); }
+        .status-indicator.aberto { background-color: var(--orange-warning); }
+        .status-indicator.vencido { background-color: var(--red-alert); }
 
 
         .modal-overlay {
@@ -1136,6 +1140,55 @@
             text-decoration: none;
             cursor: pointer;
         }
+
+        /* New styles for Financial Titles Modal */
+        #financialTitlesModal .modal-content {
+            max-width: 90%;
+            width: 900px; /* Increased width for tables */
+            padding: 20px;
+        }
+        #financialTitlesModal .modal-content h3 {
+            margin-bottom: 15px;
+            font-size: 22px;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+        #financialTitlesModal .financial-section {
+            margin-bottom: 20px;
+        }
+        #financialTitlesModal .financial-section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 10px;
+            background-color: #f0f0f0;
+            padding: 8px 10px;
+            border-radius: 5px;
+        }
+        #financialTitlesModal .table-container {
+            margin-top: 0; /* Remove top margin as it's inside a section */
+        }
+        #financialTitlesModal table th,
+        #financialTitlesModal table td {
+            white-space: normal; /* Allow text wrapping in table cells */
+        }
+        #financialTitlesModal table th:nth-child(2),
+        #financialTitlesModal table td:nth-child(2) {
+            min-width: 150px; /* Ensure description has enough space */
+        }
+        #financialTitlesModal table th:nth-child(3),
+        #financialTitlesModal table td:nth-child(3) {
+            min-width: 100px; /* Ensure value has enough space */
+        }
+        #financialTitlesModal table th:nth-child(4),
+        #financialTitlesModal table td:nth-child(4) {
+            min-width: 100px; /* Ensure due date has enough space */
+        }
+        #financialTitlesModal .modal-actions {
+            text-align: center;
+            margin-top: 30px;
+        }
     </style>
 </head>
 <body>
@@ -1539,6 +1592,15 @@
                         <button class="btn-primary" onclick="sendToProtheus()">Enviar para Protheus</button>
                     </div>
                 </div>
+
+                <!-- Botões para abrir o modal de títulos -->
+                <div class="form-section">
+                    <h2 class="section-title">Títulos Financeiros</h2>
+                    <div style="display: flex; gap: 15px; justify-content: flex-end;">
+                        <button class="btn-primary" onclick="openFinancialTitlesModal('payable')">Ver Títulos a Pagar</button>
+                        <button class="btn-primary" onclick="openFinancialTitlesModal('receivable')">Ver Títulos a Receber</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1714,6 +1776,60 @@
         <div class="modal-content">
             <span class="modal-close-btn" onclick="closeFlowchartModal()">&times;</span>
             <img id="flowchartImage" src="https://raw.githubusercontent.com/SamuelJuniorrr/importexport/refs/heads/main/fluxograma.png" alt="Fluxograma do Processo">
+        </div>
+    </div>
+
+    <!-- NEW: Financial Titles Modal -->
+    <div id="financialTitlesModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeFinancialTitlesModal()">&times;</button>
+            <h3 id="financialTitlesModalTitle"></h3>
+            
+            <div id="accountsPayableSection" class="financial-section">
+                <div class="financial-section-title">Títulos a Pagar (Fornecedor)</div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fornecedor</th>
+                                <th>Descrição</th>
+                                <th>Valor</th>
+                                <th>Vencimento</th>
+                                <th>Status</th>
+                                <th>Data Emissão</th>
+                                <th>Nº Fatura</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modalAccountsPayableTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="accountsReceivableSection" class="financial-section">
+                <div class="financial-section-title">Títulos a Receber (Cliente)</div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th>Descrição</th>
+                                <th>Valor</th>
+                                <th>Vencimento</th>
+                                <th>Status</th>
+                                <th>Data Emissão</th>
+                                <th>Nº Pedido</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modalAccountsReceivableTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-primary" onclick="closeFinancialTitlesModal()">Fechar</button>
+            </div>
         </div>
     </div>
 
@@ -1980,7 +2096,15 @@
                     responsavel: '', 
                     observacoesGerais: '',
                     productInspections: []
-                }
+                },
+                accountsPayable: [
+                    { description: 'Fatura Motor Diesel', value: 140.00, dueDate: '2025-08-10', status: 'Aberto', issueDate: '2025-07-01', invoiceNumber: 'INV-001' },
+                    { description: 'Frete Marítimo', value: 50.00, dueDate: '2025-08-05', status: 'Pago', issueDate: '2025-06-25', invoiceNumber: 'FRETE-001' }
+                ],
+                accountsReceivable: [
+                    { description: 'Venda Motor Diesel', value: 152.00, dueDate: '2025-09-01', status: 'Aberto', issueDate: '2025-07-05', orderNumber: 'PED-015-VENDA' },
+                    { description: 'Taxa de Serviço', value: 10.00, dueDate: '2025-08-20', status: 'Pago', issueDate: '2025-07-10', orderNumber: 'SERV-001' }
+                ]
             },
             {
                 id: 'PED-019',
@@ -2070,7 +2194,15 @@
                     responsavel: '', 
                     observacoesGerais: '',
                     productInspections: [] 
-                }
+                },
+                accountsPayable: [
+                    { description: 'Fatura Gerador', value: 280.00, dueDate: '2025-08-20', status: 'Aberto', issueDate: '2025-07-05', invoiceNumber: 'INV-002' },
+                    { description: 'Taxas Aduaneiras', value: 75.00, dueDate: '2025-09-01', status: 'Aberto', issueDate: '2025-07-15', invoiceNumber: 'TAX-001' }
+                ],
+                accountsReceivable: [
+                    { description: 'Venda Gerador', value: 310.00, dueDate: '2025-09-15', status: 'Aberto', issueDate: '2025-07-10', orderNumber: 'PED-019-VENDA' },
+                    { description: 'Frete Cliente B', value: 20.00, dueDate: '2025-09-10', status: 'Aberto', issueDate: '2025-07-20', orderNumber: 'FRETE-CLI-001' }
+                ]
             },
             {
                 id: 'PED-020',
@@ -2164,7 +2296,15 @@
                             condicoesCarregamento: 'Conforme'
                         }
                     ]
-                }
+                },
+                accountsPayable: [
+                    { description: 'Fatura Mini Bomba', value: 20.00, dueDate: '2025-08-01', status: 'Pago', issueDate: '2025-07-01', invoiceNumber: 'INV-003' },
+                    { description: 'Despesas de Exportação', value: 30.00, dueDate: '2025-07-28', status: 'Pago', issueDate: '2025-06-20', invoiceNumber: 'EXP-001' }
+                ],
+                accountsReceivable: [
+                    { description: 'Venda Mini Bomba', value: 22.00, dueDate: '2025-08-15', status: 'Aberto', issueDate: '2025-07-05', orderNumber: 'PED-020-VENDA' },
+                    { description: 'Comissão de Venda', value: 5.00, dueDate: '2025-08-10', status: 'Aberto', issueDate: '2025-07-10', orderNumber: 'COM-001' }
+                ]
             },
             {
                 id: 'PED-025',
@@ -2258,7 +2398,15 @@
                             condicoesCarregamento: 'Conforme'
                         }
                     ]
-                }
+                },
+                accountsPayable: [
+                    { description: 'Fatura Gerador', value: 1200.00, dueDate: '2025-09-10', status: 'Aberto', issueDate: '2025-07-10', invoiceNumber: 'INV-004' },
+                    { description: 'Seguro de Carga', value: 100.00, dueDate: '2025-08-30', status: 'Aberto', issueDate: '2025-07-12', invoiceNumber: 'SEG-001' }
+                ],
+                accountsReceivable: [
+                    { description: 'Venda Gerador', value: 2500.00, dueDate: '2025-10-05', status: 'Aberto', issueDate: '2025-07-15', orderNumber: 'PED-025-VENDA' },
+                    { description: 'Taxa de Manuseio', value: 50.00, dueDate: '2025-09-25', status: 'Aberto', issueDate: '2025-07-20', orderNumber: 'MAN-001' }
+                ]
             },
             {
                 id: 'PED-026',
@@ -2343,7 +2491,15 @@
                     responsavel: '',
                     observacoesGerais: 'Inspeção solicitada pelo Dimpex. Aguardando início da engenharia.',
                     productInspections: []
-                }
+                },
+                accountsPayable: [
+                    { description: 'Fatura Mini Bomba', value: 120.00, dueDate: '2025-09-20', status: 'Aberto', issueDate: '2025-07-15', invoiceNumber: 'INV-005' },
+                    { description: 'Despesas Portuárias', value: 20.00, dueDate: '2025-10-01', status: 'Aberto', issueDate: '2025-07-20', invoiceNumber: 'PORT-001' }
+                ],
+                accountsReceivable: [
+                    { description: 'Venda Mini Bomba', value: 250.00, dueDate: '2025-10-10', status: 'Aberto', issueDate: '2025-07-25', orderNumber: 'PED-026-VENDA' },
+                    { description: 'Taxa de Desembaraço', value: 30.00, dueDate: '2025-10-05', status: 'Aberto', issueDate: '2025-07-30', orderNumber: 'DESEM-001' }
+                ]
             },
             {
                 id: 'PED-027',
@@ -2429,7 +2585,15 @@
                     responsavel: '', 
                     observacoesGerais: '',
                     productInspections: []
-                }
+                },
+                accountsPayable: [
+                    { description: 'Fatura Motor Diesel', value: 800.00, dueDate: '2025-09-25', status: 'Aberto', issueDate: '2025-07-18', invoiceNumber: 'INV-006' },
+                    { description: 'Impostos de Importação', value: 40.00, dueDate: '2025-10-01', status: 'Aberto', issueDate: '2025-07-22', invoiceNumber: 'IMP-001' }
+                ],
+                accountsReceivable: [
+                    { description: 'Venda Motor Diesel', value: 1500.00, dueDate: '2025-10-20', status: 'Aberto', issueDate: '2025-07-25', orderNumber: 'PED-027-VENDA' },
+                    { description: 'Taxa de Armazenagem', value: 20.00, dueDate: '2025-10-15', status: 'Aberto', issueDate: '2025-07-28', orderNumber: 'ARM-001' }
+                ]
             },
             {
                 id: 'PED-028',
@@ -2524,7 +2688,15 @@
                             condicoesCarregamento: 'Não aplicável'
                         }
                     ]
-                }
+                },
+                accountsPayable: [
+                    { description: 'Fatura Gerador', value: 1200.00, dueDate: '2025-10-01', status: 'Aberto', issueDate: '2025-07-20', invoiceNumber: 'INV-007' },
+                    { description: 'Transporte Interno', value: 60.00, dueDate: '2025-10-15', status: 'Aberto', issueDate: '2025-07-25', invoiceNumber: 'TRANS-001' }
+                ],
+                accountsReceivable: [
+                    { description: 'Venda Gerador', value: 2500.00, dueDate: '2025-11-01', status: 'Aberto', issueDate: '2025-07-28', orderNumber: 'PED-028-VENDA' },
+                    { description: 'Serviço de Instalação', value: 100.00, dueDate: '2025-11-10', status: 'Aberto', issueDate: '2025-08-01', orderNumber: 'INST-001' }
+                ]
             },
             {
                 id: 'PED-029',
@@ -2619,11 +2791,19 @@
                             condicoesCarregamento: 'Conforme'
                         }
                     ]
-                }
+                },
+                accountsPayable: [
+                    { description: 'Fatura Mini Bomba', value: 120.00, dueDate: '2025-10-01', status: 'Pago', issueDate: '2025-07-22', invoiceNumber: 'INV-008' },
+                    { description: 'Custo de Entrega', value: 15.00, dueDate: '2025-07-30', status: 'Pago', issueDate: '2025-07-25', invoiceNumber: 'ENT-001' }
+                ],
+                accountsReceivable: [
+                    { description: 'Venda Mini Bomba', value: 250.00, dueDate: '2025-11-05', status: 'Aberto', issueDate: '2025-07-30', orderNumber: 'PED-029-VENDA' },
+                    { description: 'Frete Terrestre', value: 10.00, dueDate: '2025-10-25', status: 'Pago', issueDate: '2025-07-28', orderNumber: 'FRETE-TER-001' }
+                ]
             }
         ];
 
-        // Variável para armazenar todos os pedidos Dimpex
+        // Variável global para armazenar todos os pedidos Dimpex
         let dimpexOrders = [];
 
         // Fluxo de rastreamento Dimpex com seus respectivos status e classes CSS
@@ -3375,6 +3555,115 @@
         }
 
         /**
+         * Renderiza a tabela de Títulos a Pagar no modal.
+         */
+        function renderAccountsPayableTable() {
+            const tbody = document.getElementById('modalAccountsPayableTableBody');
+            tbody.innerHTML = '';
+
+            if (!currentDimpexOrder || !currentDimpexOrder.accountsPayable || currentDimpexOrder.accountsPayable.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 15px;">Nenhum título a pagar cadastrado para este embarque.</td></tr>`;
+                return;
+            }
+
+            currentDimpexOrder.accountsPayable.forEach(item => {
+                const row = document.createElement('tr');
+                let statusClass = '';
+                if (item.status === 'Pago') {
+                    statusClass = 'pago';
+                } else if (item.status === 'Aberto') {
+                    statusClass = 'aberto';
+                } else if (item.status === 'Vencido') {
+                    statusClass = 'vencido';
+                }
+
+                row.innerHTML = `
+                    <td>${currentDimpexOrder.fornecedor || 'Não informado'}</td>
+                    <td>${item.description || 'Não informado'}</td>
+                    <td>R$ ${parseFloat(item.value || 0).toFixed(2).replace('.', ',')}</td>
+                    <td>${formatDate(item.dueDate)}</td>
+                    <td><span class="status-indicator ${statusClass}"></span>${item.status || 'Não informado'}</td>
+                    <td>${formatDate(item.issueDate)}</td>
+                    <td>${item.invoiceNumber || 'Não informado'}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        /**
+         * Renderiza a tabela de Títulos a Receber no modal.
+         */
+        function renderAccountsReceivableTable() {
+            const tbody = document.getElementById('modalAccountsReceivableTableBody');
+            tbody.innerHTML = '';
+
+            if (!currentDimpexOrder || !currentDimpexOrder.accountsReceivable || currentDimpexOrder.accountsReceivable.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 15px;">Nenhum título a receber cadastrado para este embarque.</td></tr>`;
+                return;
+            }
+
+            currentDimpexOrder.accountsReceivable.forEach(item => {
+                const row = document.createElement('tr');
+                let statusClass = '';
+                if (item.status === 'Pago') {
+                    statusClass = 'pago';
+                } else if (item.status === 'Aberto') {
+                    statusClass = 'aberto';
+                } else if (item.status === 'Vencido') {
+                    statusClass = 'vencido';
+                }
+
+                row.innerHTML = `
+                    <td>${currentDimpexOrder.cliente || 'Não informado'}</td>
+                    <td>${item.description || 'Não informado'}</td>
+                    <td>R$ ${parseFloat(item.value || 0).toFixed(2).replace('.', ',')}</td>
+                    <td>${formatDate(item.dueDate)}</td>
+                    <td><span class="status-indicator ${statusClass}"></span>${item.status || 'Não informado'}</td>
+                    <td>${formatDate(item.issueDate)}</td>
+                    <td>${item.orderNumber || 'Não informado'}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        /**
+         * Abre o modal de títulos financeiros e exibe a tabela correspondente.
+         * @param {string} type - O tipo de título a ser exibido ('payable' para pagar, 'receivable' para receber).
+         */
+        function openFinancialTitlesModal(type) {
+            if (!currentDimpexOrder) {
+                showMessage('Erro', 'Nenhum embarque selecionado para visualizar os títulos.', 'error');
+                return;
+            }
+
+            const modal = document.getElementById('financialTitlesModal');
+            const modalTitle = document.getElementById('financialTitlesModalTitle');
+            const payableSection = document.getElementById('accountsPayableSection');
+            const receivableSection = document.getElementById('accountsReceivableSection');
+
+            if (type === 'payable') {
+                modalTitle.innerText = `Títulos a Pagar (Fornecedor) - Embarque: ${currentDimpexOrder.shipmentName}`;
+                payableSection.style.display = 'block';
+                receivableSection.style.display = 'none';
+                renderAccountsPayableTable();
+            } else if (type === 'receivable') {
+                modalTitle.innerText = `Títulos a Receber (Cliente) - Embarque: ${currentDimpexOrder.shipmentName}`;
+                payableSection.style.display = 'none';
+                receivableSection.style.display = 'block';
+                renderAccountsReceivableTable();
+            }
+
+            modal.classList.add('active');
+        }
+
+        /**
+         * Fecha o modal de títulos financeiros.
+         */
+        function closeFinancialTitlesModal() {
+            document.getElementById('financialTitlesModal').classList.remove('active');
+        }
+
+        /**
          * Abre uma aba específica na página de detalhes do embarque.
          * @param {Event} evt - O evento de clique (pode ser nulo se chamado programaticamente).
          * @param {string} tabName - O ID da aba a ser aberta (ex: 'tabGeral').
@@ -3573,7 +3862,9 @@
                 pgAntecipCR: currentDimpexOrder.pgAntecipCR,
                 dtPgAntCR: currentDimpexOrder.dtPgAntCR,
                 pgSaldoCR: currentDimpexOrder.pgSaldoCR,
-                dtPgSalCR: currentDimpexOrder.dtPgSalCR
+                dtPgSalCR: currentDimpexOrder.dtPgSalCR,
+                accountsPayable: currentDimpexOrder.accountsPayable, 
+                accountsReceivable: currentDimpexOrder.accountsReceivable 
             };
 
             showMessage('Sucesso', `Dados financeiros do embarque ${currentDimpexOrder.shipmentName} simulados como enviados ao Protheus!`, 'success');
@@ -4087,6 +4378,14 @@
                     });
                 } else {
                     order.inspectionReport.productInspections = [];
+                }
+
+                // Initialize accountsPayable and accountsReceivable if they don't exist
+                if (!order.accountsPayable) {
+                    order.accountsPayable = [];
+                }
+                if (!order.accountsReceivable) {
+                    order.accountsReceivable = [];
                 }
 
                 if (!order.clienteEndereco) order.clienteEndereco = 'Não informado';
