@@ -1,10 +1,11 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Fluig - Cliente</title>
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Portal Fluig - Cliente</title>
+<style>
         /* Importação da fonte Roboto */
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
@@ -1103,459 +1104,437 @@
     </style>
 </head>
 <body>
+<!-- Tela da Central de Pedidos -->
+<div class="page active" id="central-pedidos-page">
+<header class="header">
+<div class="header-left">
+<h1 data-translate="centralOrdersTitle">Central de Pedidos</h1>
+</div>
+<div class="header-right">
+<select class="p-2 border rounded-md text-sm" id="language-selector-central" onchange="setLanguage(this.value)">
+<option value="pt-BR">Português</option>
+<option value="en">English</option>
+<option value="es">Español</option>
+</select>
+<button class="btn-primary" data-translate="newRequestButton" id="novaSolicitacao"><i class="icon-plus"></i> Nova Solicitação</button>
+<span class="header-icon" onclick="showScreenInfo()"><i class="icon-question"></i></span>
+<span class="header-icon" onclick="openFlowchartModal()"><i class="icon-flow"></i></span>
+<button class="btn-secondary" data-translate="logoutButton" id="logoutButton">Sair (Logout)</button>
+</div>
+</header>
+<div class="container">
+<div class="filters">
+<div class="filter-group">
+<label data-translate="statusFilterLabel" for="status">Status:</label>
+<select id="status" onchange="renderOrdersTable()">
+<option data-translate="allOption" value="Todos">Todos</option>
+<option data-translate="statusPending" value="Pendente">Pendente</option>
+<option data-translate="statusApproved" value="Aprovado">Aprovado</option>
+<option data-translate="statusRejected" value="Rejeitado">Rejeitado</option>
+<option data-translate="statusInConference" value="Em Conferência">Em Conferência</option>
+<option data-translate="statusDelivered" value="Entregue">Entregue</option>
+<option data-translate="statusCargoReady" value="Carga Pronta">Carga Pronta</option>
+<option data-translate="statusInDeliveryRoute" value="Em Rota de Entrega">Em Rota de Entrega</option>
+<option data-translate="statusATD" value="Saída do Porto de Embarque (ATD)">Saída do Porto de Embarque (ATD)</option>
+<option data-translate="statusATA" value="Chegada no Porto de Destino (ATA)">Chegada no Porto de Destino (ATA)</option>
+<option data-translate="statusCancelled" value="Cancelado">Cancelado</option>
+</select>
+</div>
+<div class="filter-group">
+<label data-translate="supplierFilterLabel" for="fornecedor">Fornecedor:</label>
+<select id="fornecedor" onchange="renderOrdersTable()">
+<option data-translate="allOption" value="Todos">Todos</option>
+</select>
+</div>
+<div class="filter-group">
+<label data-translate="originCountryFilterLabel" for="paisOrigem">País Origem:</label>
+<select id="paisOrigem" onchange="renderOrdersTable()">
+<option data-translate="allOption" value="Todos">Todos</option>
+</select>
+</div>
+<div class="filter-group search-group">
+<label data-translate="searchLabel" for="search">Buscar por Nº Pedido ou Cliente:</label>
+<div class="search-input-wrapper">
+<input data-translate-placeholder="searchPlaceholder" id="search" placeholder="Buscar por Nº Pedido ou Cliente" type="text"/>
+<button class="search-icon-btn" onclick="renderOrdersTable()"><i class="icon-search"></i></button>
+</div>
+</div>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th data-translate="colMainRequestId">ID SOLICITAÇÃO PRINCIPAL</th>
+<th data-translate="colOrderNumber">Nº PEDIDO</th>
+<th data-translate="colOrigin">ORIGEM</th>
+<th data-translate="colOriginCountry">PAÍS ORIGEM</th>
+<th data-translate="colSupplier">FORNECEDOR</th>
+<th data-translate="colTotalValue">VALOR TOTAL</th>
+<th data-translate="colOrderStatus">STATUS DO PEDIDO</th>
+<th data-translate="colRequestDate">DATA SOLICITAÇÃO/CRIAÇÃO</th>
+<th data-translate="colLastChangeDate">DATA ÚLTIMA ALTERAÇÃO</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Tela de Detalhes do Pedido -->
+<div class="page" id="orderDetailsScreen">
+<header class="header">
+<div class="header-left">
+<h1 data-translate="orderDetailsTitle">Detalhes do Pedido <span id="currentOrderId"></span></h1>
+</div>
+<div class="header-right">
+<select class="p-2 border rounded-md text-sm" id="language-selector-details" onchange="setLanguage(this.value)">
+<option value="pt-BR">Português</option>
+<option value="en">English</option>
+<option value="es">Español</option>
+</select>
+<span class="header-icon" onclick="showScreenInfo()"><i class="icon-question"></i></span>
+<span class="header-icon" onclick="openFlowchartModal()"><i class="icon-flow"></i></span>
+</div>
+</header>
+<div class="container">
+<div class="form-section">
+<h2 class="text-xl font-semibold mb-4" data-translate="generalInfoTitle">Informações Gerais</h2>
+<div class="details-grid">
+<div class="detail-row">
+<div class="detail-label" data-translate="orderNumberLabel">Nº Pedido:</div>
+<div class="detail-value" id="detailOrderId"></div>
+</div>
+<div class="detail-row">
+<div class="detail-label" data-translate="mainIdLabel">ID Principal:</div>
+<div class="detail-value" id="detailParentOrderId"></div>
+</div>
+<div class="detail-row">
+<div class="detail-label" data-translate="originLabel">Origem:</div>
+<div class="detail-value" id="detailOriginDisplay"></div>
+</div>
+<div class="detail-row">
+<div class="detail-label" data-translate="supplierLabel">Fornecedor:</div>
+<div class="detail-value" id="detailSupplier"></div>
+</div>
+<div class="detail-row">
+<div class="detail-label" data-translate="totalValueLabel">Valor Total:</div>
+<div class="detail-value" id="detailTotalValue"></div>
+</div>
+<div class="detail-row">
+<div class="detail-label" data-translate="freightLabel">FREIGHT:</div>
+<div class="detail-value" id="detailFreight"></div>
+</div>
+<div class="detail-row">
+<div class="detail-label" data-translate="orderStatusLabel">Status do Pedido:</div>
+<div class="detail-value" id="detailStatus"></div>
+</div>
+<div class="detail-row">
+<div class="detail-label" data-translate="requestCreationDateLabel">Data Solicitação/Criação:</div>
+<div class="detail-value" id="detailRequestDate"></div>
+</div>
+<div class="detail-row">
+<div class="detail-label" data-translate="lastChangeDateLabel">Data Última Alteração:</div>
+<div class="detail-value" id="detailLastUpdateDate"></div>
+</div>
+</div>
+</div>
+<div class="form-section">
+<h2 class="text-xl font-semibold mb-4" data-translate="trackingStatusTitle">Status de Rastreamento</h2>
+<div class="relative flex justify-between items-center my-8 p-4 bg-gray-50 rounded-lg shadow-inner" id="orderTrackingSection">
+</div>
+</div>
+<div class="form-section">
+<h2 class="text-xl font-semibold mb-4" data-translate="orderProductsTitle">Produtos do Pedido</h2>
+<div class="table-container">
+<table class="w-full">
+<thead>
+<tr>
+<th data-translate="colProductCode">Código Produto</th>
+<th data-translate="colDescription">Descrição</th>
+<th data-translate="colQuantity">Quantidade</th>
+<th data-translate="colUnitPrice">Valor Unitário</th>
+<th data-translate="colTotalItemValue">Valor Total Item</th>
+</tr>
+</thead>
+<tbody id="orderDetailsProductsTableBody">
+</tbody>
+</table>
+</div>
+</div>
+<div class="form-actions">
+<button class="btn-secondary" data-translate="backToOrderCenterButton" onclick="backToOrderCenter()">Voltar para Central de Pedidos</button>
+<button class="btn-secondary" data-translate="CenterButton2" onclick="window.location.href='tracking.html'">Tracking</button>
+</div>
+</div>
+</div>
+<!-- Tela de Nova Solicitação de Compra -->
+<div class="page" id="newOrderFormScreen">
+<header class="header">
+<div class="header-left">
+<h1 data-translate="newPurchaseRequestTitle">Nova Solicitação de Compra</h1>
+<p data-translate="newPurchaseRequestSubtitle">Por favor, preencha os detalhes dos produtos desejados.</p>
+</div>
+<div class="header-right">
+<select class="p-2 border rounded-md text-sm" id="language-selector-new-request" onchange="setLanguage(this.value)">
+<option value="pt-BR">Português</option>
+<option value="en">English</option>
+<option value="es">Español</option>
+</select>
+<span class="header-icon" onclick="showScreenInfo()"><i class="icon-question"></i></span>
+<span class="header-icon" onclick="openFlowchartModal()"><i class="icon-flow"></i></span>
+</div>
+</header>
+<div class="container">
+<div class="form-section">
+<label data-translate="clientOrderNumberLabel" for="clientOrderNumber">Número do Pedido do Cliente (Opcional)</label>
+<input data-translate-placeholder="clientOrderNumberPlaceholder" id="clientOrderNumber" placeholder="Seu número de referência do pedido" type="text"/>
+</div>
+<div class="tab-buttons" id="orderFormTabButtons">
+<button class="tab-button active" data-translate="easyOrderTab" onclick="switchOrderFormTab('easy')">Pedido Fácil</button>
+<button class="tab-button" data-translate="manualOrderTab" onclick="switchOrderFormTab('manual')">Pedido Manual</button>
+</div>
+<div class="tab-content active" id="easyOrderTab">
+<h2 data-translate="easyOrderTitle">Pedido Fácil</h2>
+<p data-translate="easyOrderSubtitle">Escolha uma das opções abaixo para adicionar os produtos ao carrinho de compras</p>
+<div class="accordion">
+<div class="accordion-item">
+<button class="accordion-header" data-translate="uploadSpreadsheetHeader" onclick="toggleCollapsible(this, 'uploadPlanilhaContent')">Upload de Planilha <span class="arrow">▼</span></button>
+<div class="accordion-content" id="uploadPlanilhaContent">
+<input accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" id="fileUpload" onchange="displayFileName('fileUpload', 'fileNameDisplay')" type="file"/>
+<span class="text-sm text-gray-500 ml-2" data-translate="noFileSelected" id="fileNameDisplay">Nenhum arquivo selecionado</span>
+<button class="btn-primary mt-2" data-translate="uploadButton" onclick="handleFileUpload()">Fazer Upload</button>
+<p class="text-xs text-gray-500 mt-2" data-translate="uploadLimitInfo">Limite de 50 linhas de produtos e 5MB de tamanho.</p>
+</div>
+</div>
+<div class="accordion-item">
+<button class="accordion-header" data-translate="pasteCodesHeader" onclick="toggleCollapsible(this, 'pasteCodesContent')">Copiar e Colar Códigos <span class="arrow">▼</span></button>
+<div class="accordion-content" id="pasteCodesContent">
+<textarea data-translate-placeholder="pasteCodesPlaceholder" id="pasteCodes" placeholder="Cole aqui os códigos e quantidades (Ex: COD1,10;COD2,5 ou COD1,10 ENTER COD2,5)" rows="10"></textarea>
+<button class="btn-primary mt-2" data-translate="processCodesButton" onclick="processPastedCodes()">Processar Códigos Colados</button>
+<div class="validation-message" id="addProductMessage"></div>
+</div>
+</div>
+</div>
+<h3 data-translate="howToUseSpreadsheetTitle">Saiba como utilizar nosso modelo de planilha</h3>
+<div class="how-to-use-grid">
+<div class="how-to-use-item">
+<h4 data-translate="step1Title">Passo 1</h4>
+<p data-translate="step1Description">Faça o download do modelo de planilha. Abra a planilha no seu computador e preencha com o código do produto do cliente e a quantidade desejada. Máximo de 50 linhas de produtos por pedido.</p>
+<a data-translate="spreadsheetModelLink" href="#" id="downloadModeloPlanilha" onclick="downloadSpreadsheetModel()">Modelo de Planilha</a>
+</div>
+<div class="how-to-use-item">
+<h4 data-translate="step2Title">Passo 2</h4>
+<p data-translate="step2Description">Com sua planilha pronta e salva no seu computador, clique em Selecionar arquivo. Em seguida, clique em Fazer upload. O tamanho da planilha não deve ultrapassar 5MB de tamanho.</p>
+</div>
+<div class="how-to-use-item">
+<h4 data-translate="step3Title">Passo 3</h4>
+<p data-translate="step3Description">Com sua planilha pronta e salva no seu computador, clique em Selecionar arquivo. Em seguida, clique em Fazer upload. O tamanho da planilha não deve ultrapassar 5MB de tamanho.</p>
+</div>
+</div>
+</div>
+<div class="tab-content" id="manualOrderTab">
+<h2 data-translate="addProductsTitle">Adicionar Produtos</h2>
+<div class="add-product-grid">
+<div class="input-group search-input">
+<label data-translate="clientProductCodeLabel" for="clientProductCode">Cód Prod Cliente:</label>
+<input data-translate-placeholder="clientProductCodePlaceholder" id="clientProductCode" oninput="updateProductDetailsOnClientCodeChange()" placeholder="Cód Cliente" type="text"/>
+<button class="btn-secondary" onclick="openProductCatalogModal()"><i class="icon-search"></i></button>
+</div>
+<div class="input-group">
+<label data-translate="productCodeLabel" for="mappedProductCodeDisplay">Cód Produto:</label>
+<input id="mappedProductCodeDisplay" readonly="" type="text" value="--"/>
+</div>
+<div class="input-group full-width">
+<label data-translate="descriptionLabel" for="productDescriptionDisplay">Descrição:</label>
+<input id="productDescriptionDisplay" readonly="" type="text" value="--"/>
+</div>
+<div class="input-group">
+<label data-translate="quantityLabel" for="productQuantity">Quantidade:</label>
+<input id="productQuantity" min="1" oninput="handleQuantityChange()" type="number" value="1"/>
+<div class="text-xs mt-1" id="validationFeedback"></div>
+</div>
+<div class="input-group" id="productValueGroup">
+<label data-translate="unitValueLabel" for="productValueDisplay">Valor Unit.:</label>
+<input id="productValueDisplay" readonly="" type="text" value="$ 0,00"/>
+</div>
+<div class="input-group" id="totalM3Group">
+<label data-translate="totalM3Label" for="totalM3Display">M³ Total:</label>
+<input id="totalM3Display" readonly="" type="text" value="0.00 m³"/>
+</div>
+<div class="input-group" id="valorTotalGroup">
+<label data-translate="totalValueLabel" for="valorTotalDisplay">Valor Total:</label>
+<input id="valorTotalDisplay" readonly="" type="text" value="$ 0,00"/>
+</div>
+<div class="input-group" id="productStockGroup">
+<label data-translate="stockLabel" for="productStockDisplay">Estoque:</label>
+<input id="productStockDisplay" readonly="" type="text" value="--"/>
+</div>
+<div class="add-button-container">
+<button class="btn-primary" data-translate="addProductButton" id="addProductBtn" onclick="addProduct()">Adicionar Produto</button>
+</div>
+</div>
+<div class="validation-message" id="addProductMessage"></div>
+</div>
+<div class="products-added-section">
+<h3 class="font-semibold text-gray-700 mb-4" data-translate="branchDifferencesTitle">Diferenças de Compra por Filial:</h3>
+<div class="branch-comparison-container">
+<div class="branch-card colombia-card">
+<h3 data-translate="colombiaBranchTitle"><img alt="Bandeira da Colômbia" class="flag-icon-large" src="https://e7.pngegg.com/pngimages/796/10/png-clipart-flag-of-colombia-flag-of-cambodia-colombia-flag-flag-sphere-thumbnail.png"/> Colômbia</h3>
+<p class="delivery-time" data-translate="colombiaDeliveryTime">Previsão de Entrega: ~45 dias</p>
+<div class="price-model">
+<h4 data-translate="priceModelTitle">Modelo de Preço:</h4>
+<ul>
+<li data-translate="colombiaPriceModelDesc">Preço único para produtos disponíveis em estoque.</li>
+</ul>
+</div>
+<p class="stock-info" data-translate="colombiaStockInfo">Foco em produtos com estoque disponível.</p>
+</div>
+<div class="branch-card hongkong-card">
+<h3 data-translate="hongKongBranchTitle"><img alt="Bandeira de Hong Kong" class="flag-icon-large" src="https://e7.pngegg.com/pngimages/630/750/png-clipart-flag-of-china-association-of-southeast-asian-nations-national-flag-asean%E3%81%AE%E7%B4%8B%E7%AB%A0-china-orange-world-thumbnail.png"/> Hong Kong</h3>
+<p class="delivery-time" data-translate="hongKongDeliveryTime">Previsão de Entrega: ~90 dias</p>
+<div class="price-model">
+<h4 data-translate="priceModelTitle">Modelo de Preço:</h4>
+<ul>
+<li data-translate="hongKongPriceModelLCL"><strong>LCL:</strong> Mais caro (para volumes pequenos)</li>
+<li data-translate="hongKongPriceModel20ft"><strong>Container 20ft:</strong> Preço intermediário</li>
+<li data-translate="hongKongPriceModel40ft"><strong>Container 40ft:</strong> Mais barato (para volumes maiores)</li>
+</ul>
+</div>
+<p class="moq-info" data-translate="hongKongMOQInfo">Para adquirir, é necessário atender ao MOQ (Quantidade Mínima de Pedido).</p>
+</div>
+</div>
+<div id="productList">
+</div>
+</div>
+<div class="form-actions">
+<button class="btn-secondary" data-translate="backButton" onclick="backToOrderCenter()">Voltar</button>
+<button class="btn-primary" data-translate="submitRequestButton" onclick="submitOrderForm()">Enviar Solicitação</button>
+</div>
+</div>
+</div>
+<!-- Tela de Resumo da Solicitação -->
+<div class="page" id="summaryScreen">
+<header class="header">
+<div class="header-left">
+<h1 data-translate="requestSummaryTitle">Resumo da Solicitação</h1>
+<p data-translate="requestSummarySubtitle">Confira a divisão dos produtos por filial e fornecedor.</p>
+</div>
+<div class="header-right">
+<select class="p-2 border rounded-md text-sm" id="language-selector-summary" onchange="setLanguage(this.value)">
+<option value="pt-BR">Português</option>
+<option value="en">English</option>
+<option value="es">Español</option>
+</select>
+<span class="header-icon" onclick="showScreenInfo()"><i class="icon-question"></i></span>
+<span class="header-icon" onclick="openFlowchartModal()"><i class="icon-flow"></i></span>
+</div>
+</header>
+<div class="container">
+<div id="unifiedSummaryContent">
+</div>
+<div class="form-actions">
+<button class="btn-secondary" data-translate="backAndAdjustButton" onclick="backToProductEntry()">Voltar e Ajustar</button>
+<button class="btn-primary" data-translate="confirmAndGenerateButton" onclick="confirmAndGenerateOrders()">Confirmar e Gerar Pedidos</button>
+</div>
+</div>
+</div>
+<!-- Tela de Ordem de Compra Gerada -->
+<div class="page" id="purchaseOrderScreen">
+<header class="header">
+<div class="header-left">
+<h1 data-translate="requestGeneratedSuccessTitle">Solicitação Gerada com Sucesso!</h1>
+<p data-translate="requestGeneratedSuccessSubtitle">Sua solicitação foi enviada para o time de Compras Internacionais.</p>
+</div>
+<div class="header-right">
+<select class="p-2 border rounded-md text-sm" id="language-selector-po" onchange="setLanguage(this.value)">
+<option value="pt-BR">Português</option>
+<option value="en">English</option>
+<option value="es">Español</option>
+</select>
+<span class="header-icon" onclick="showScreenInfo()"><i class="icon-question"></i></span>
+<span class="header-icon" onclick="openFlowchartModal()"><i class="icon-flow"></i></span>
+</div>
+</header>
+<div class="container">
+<div class="form-section">
+<h2 class="text-xl font-semibold mb-4" data-translate="poDetailsTitle">Detalhes da Ordem de Compra (PO)</h2>
+<div class="bg-gray-50 p-4 rounded-lg border border-gray-200" id="poDetails">
+</div>
+</div>
+<div class="form-actions">
+<button class="btn-primary" data-translate="backToOrderCenterButton" onclick="backToOrderCenter()"></button>
+<button class="btn-primary" data-translate="CenterButton2" onclick="backToOrderCenter()"></button>
 
-    <!-- Tela da Central de Pedidos -->
-    <div id="central-pedidos-page" class="page active">
-        <header class="header">
-            <div class="header-left">
-                <h1 data-translate="centralOrdersTitle">Central de Pedidos</h1>
-            </div>
-            <div class="header-right">
-                <select id="language-selector-central" onchange="setLanguage(this.value)" class="p-2 border rounded-md text-sm">
-                    <option value="pt-BR">Português</option>
-                    <option value="en">English</option>
-                    <option value="es">Español</option>
-                </select>
-                <button class="btn-primary" id="novaSolicitacao" data-translate="newRequestButton"><i class="icon-plus"></i> Nova Solicitação</button>
-                <span class="header-icon" onclick="showScreenInfo()"><i class="icon-question"></i></span>
-                <span class="header-icon" onclick="openFlowchartModal()"><i class="icon-flow"></i></span>
-                <button class="btn-secondary" id="logoutButton" data-translate="logoutButton">Sair (Logout)</button>
-            </div>
-        </header>
-
-        <div class="container">
-            <div class="filters">
-                <div class="filter-group">
-                    <label for="status" data-translate="statusFilterLabel">Status:</label>
-                    <select id="status" onchange="renderOrdersTable()">
-                        <option value="Todos" data-translate="allOption">Todos</option>
-                        <option value="Pendente" data-translate="statusPending">Pendente</option>
-                        <option value="Aprovado" data-translate="statusApproved">Aprovado</option>
-                        <option value="Rejeitado" data-translate="statusRejected">Rejeitado</option>
-                        <option value="Em Conferência" data-translate="statusInConference">Em Conferência</option>
-                        <option value="Entregue" data-translate="statusDelivered">Entregue</option>
-                        <option value="Carga Pronta" data-translate="statusCargoReady">Carga Pronta</option>
-                        <option value="Em Rota de Entrega" data-translate="statusInDeliveryRoute">Em Rota de Entrega</option>
-                        <option value="Saída do Porto de Embarque (ATD)" data-translate="statusATD">Saída do Porto de Embarque (ATD)</option>
-                        <option value="Chegada no Porto de Destino (ATA)" data-translate="statusATA">Chegada no Porto de Destino (ATA)</option>
-                        <option value="Cancelado" data-translate="statusCancelled">Cancelado</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label for="fornecedor" data-translate="supplierFilterLabel">Fornecedor:</label>
-                    <select id="fornecedor" onchange="renderOrdersTable()">
-                        <option value="Todos" data-translate="allOption">Todos</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label for="paisOrigem" data-translate="originCountryFilterLabel">País Origem:</label>
-                    <select id="paisOrigem" onchange="renderOrdersTable()">
-                        <option value="Todos" data-translate="allOption">Todos</option>
-                    </select>
-                </div>
-                <div class="filter-group search-group">
-                    <label for="search" data-translate="searchLabel">Buscar por Nº Pedido ou Cliente:</label>
-                    <div class="search-input-wrapper">
-                        <input type="text" id="search" placeholder="Buscar por Nº Pedido ou Cliente" data-translate-placeholder="searchPlaceholder">
-                        <button class="search-icon-btn" onclick="renderOrdersTable()"><i class="icon-search"></i></button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th data-translate="colMainRequestId">ID SOLICITAÇÃO PRINCIPAL</th>
-                            <th data-translate="colOrderNumber">Nº PEDIDO</th>
-                            <th data-translate="colOrigin">ORIGEM</th>
-                            <th data-translate="colOriginCountry">PAÍS ORIGEM</th>
-                            <th data-translate="colSupplier">FORNECEDOR</th>
-                            <th data-translate="colTotalValue">VALOR TOTAL</th>
-                            <th data-translate="colOrderStatus">STATUS DO PEDIDO</th>
-                            <th data-translate="colRequestDate">DATA SOLICITAÇÃO/CRIAÇÃO</th>
-                            <th data-translate="colLastChangeDate">DATA ÚLTIMA ALTERAÇÃO</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tela de Detalhes do Pedido -->
-    <div id="orderDetailsScreen" class="page">
-        <header class="header">
-            <div class="header-left">
-                <h1 data-translate="orderDetailsTitle">Detalhes do Pedido <span id="currentOrderId"></span></h1>
-            </div>
-            <div class="header-right">
-                <select id="language-selector-details" onchange="setLanguage(this.value)" class="p-2 border rounded-md text-sm">
-                    <option value="pt-BR">Português</option>
-                    <option value="en">English</option>
-                    <option value="es">Español</option>
-                </select>
-                <span class="header-icon" onclick="showScreenInfo()"><i class="icon-question"></i></span>
-                <span class="header-icon" onclick="openFlowchartModal()"><i class="icon-flow"></i></span>
-            </div>
-        </header>
-        <div class="container">
-            <div class="form-section">
-                <h2 class="text-xl font-semibold mb-4" data-translate="generalInfoTitle">Informações Gerais</h2>
-                <div class="details-grid">
-                    <div class="detail-row">
-                        <div class="detail-label" data-translate="orderNumberLabel">Nº Pedido:</div>
-                        <div class="detail-value" id="detailOrderId"></div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label" data-translate="mainIdLabel">ID Principal:</div>
-                        <div class="detail-value" id="detailParentOrderId"></div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label" data-translate="originLabel">Origem:</div>
-                        <div class="detail-value" id="detailOriginDisplay"></div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label" data-translate="supplierLabel">Fornecedor:</div>
-                        <div class="detail-value" id="detailSupplier"></div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label" data-translate="totalValueLabel">Valor Total:</div>
-                        <div class="detail-value" id="detailTotalValue"></div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label" data-translate="freightLabel">FREIGHT:</div>
-                        <div class="detail-value" id="detailFreight"></div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label" data-translate="orderStatusLabel">Status do Pedido:</div>
-                        <div class="detail-value" id="detailStatus"></div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label" data-translate="requestCreationDateLabel">Data Solicitação/Criação:</div>
-                        <div class="detail-value" id="detailRequestDate"></div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label" data-translate="lastChangeDateLabel">Data Última Alteração:</div>
-                        <div class="detail-value" id="detailLastUpdateDate"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-section">
-                <h2 class="text-xl font-semibold mb-4" data-translate="trackingStatusTitle">Status de Rastreamento</h2>
-                <div id="orderTrackingSection" class="relative flex justify-between items-center my-8 p-4 bg-gray-50 rounded-lg shadow-inner">
-                </div>
-            </div>
-
-            <div class="form-section">
-                <h2 class="text-xl font-semibold mb-4" data-translate="orderProductsTitle">Produtos do Pedido</h2>
-                <div class="table-container">
-                    <table class="w-full">
-                        <thead>
-                            <tr>
-                                <th data-translate="colProductCode">Código Produto</th>
-                                <th data-translate="colDescription">Descrição</th>
-                                <th data-translate="colQuantity">Quantidade</th>
-                                <th data-translate="colUnitPrice">Valor Unitário</th>
-                                <th data-translate="colTotalItemValue">Valor Total Item</th>
-                            </tr>
-                        </thead>
-                        <tbody id="orderDetailsProductsTableBody">
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="form-actions">
-                <button class="btn-secondary" onclick="backToOrderCenter()" data-translate="backToOrderCenterButton">Voltar para Central de Pedidos</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tela de Nova Solicitação de Compra -->
-    <div id="newOrderFormScreen" class="page">
-        <header class="header">
-            <div class="header-left">
-                <h1 data-translate="newPurchaseRequestTitle">Nova Solicitação de Compra</h1>
-                <p data-translate="newPurchaseRequestSubtitle">Por favor, preencha os detalhes dos produtos desejados.</p>
-            </div>
-            <div class="header-right">
-                <select id="language-selector-new-request" onchange="setLanguage(this.value)" class="p-2 border rounded-md text-sm">
-                    <option value="pt-BR">Português</option>
-                    <option value="en">English</option>
-                    <option value="es">Español</option>
-                </select>
-                <span class="header-icon" onclick="showScreenInfo()"><i class="icon-question"></i></span>
-                <span class="header-icon" onclick="openFlowchartModal()"><i class="icon-flow"></i></span>
-            </div>
-        </header>
-
-        <div class="container">
-            <div class="form-section">
-                <label for="clientOrderNumber" data-translate="clientOrderNumberLabel">Número do Pedido do Cliente (Opcional)</label>
-                <input type="text" id="clientOrderNumber" placeholder="Seu número de referência do pedido" data-translate-placeholder="clientOrderNumberPlaceholder">
-            </div>
-
-            <div class="tab-buttons" id="orderFormTabButtons">
-                <button class="tab-button active" onclick="switchOrderFormTab('easy')" data-translate="easyOrderTab">Pedido Fácil</button>
-                <button class="tab-button" onclick="switchOrderFormTab('manual')" data-translate="manualOrderTab">Pedido Manual</button>
-            </div>
-
-            <div id="easyOrderTab" class="tab-content active">
-                <h2 data-translate="easyOrderTitle">Pedido Fácil</h2>
-                <p data-translate="easyOrderSubtitle">Escolha uma das opções abaixo para adicionar os produtos ao carrinho de compras</p>
-
-                <div class="accordion">
-                    <div class="accordion-item">
-                        <button class="accordion-header" onclick="toggleCollapsible(this, 'uploadPlanilhaContent')" data-translate="uploadSpreadsheetHeader">Upload de Planilha <span class="arrow">▼</span></button>
-                        <div class="accordion-content" id="uploadPlanilhaContent">
-                            <input type="file" id="fileUpload" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" onchange="displayFileName('fileUpload', 'fileNameDisplay')">
-                            <span id="fileNameDisplay" class="text-sm text-gray-500 ml-2" data-translate="noFileSelected">Nenhum arquivo selecionado</span>
-                            <button class="btn-primary mt-2" onclick="handleFileUpload()" data-translate="uploadButton">Fazer Upload</button>
-                            <p class="text-xs text-gray-500 mt-2" data-translate="uploadLimitInfo">Limite de 50 linhas de produtos e 5MB de tamanho.</p>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <button class="accordion-header" onclick="toggleCollapsible(this, 'pasteCodesContent')" data-translate="pasteCodesHeader">Copiar e Colar Códigos <span class="arrow">▼</span></button>
-                        <div class="accordion-content" id="pasteCodesContent">
-                            <textarea id="pasteCodes" rows="10" placeholder="Cole aqui os códigos e quantidades (Ex: COD1,10;COD2,5 ou COD1,10 ENTER COD2,5)" data-translate-placeholder="pasteCodesPlaceholder"></textarea>
-                            <button class="btn-primary mt-2" onclick="processPastedCodes()" data-translate="processCodesButton">Processar Códigos Colados</button>
-                            <div id="addProductMessage" class="validation-message"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <h3 data-translate="howToUseSpreadsheetTitle">Saiba como utilizar nosso modelo de planilha</h3>
-                <div class="how-to-use-grid">
-                    <div class="how-to-use-item">
-                        <h4 data-translate="step1Title">Passo 1</h4>
-                        <p data-translate="step1Description">Faça o download do modelo de planilha. Abra a planilha no seu computador e preencha com o código do produto do cliente e a quantidade desejada. Máximo de 50 linhas de produtos por pedido.</p>
-                        <a href="#" id="downloadModeloPlanilha" onclick="downloadSpreadsheetModel()" data-translate="spreadsheetModelLink">Modelo de Planilha</a>
-                    </div>
-                    <div class="how-to-use-item">
-                        <h4 data-translate="step2Title">Passo 2</h4>
-                        <p data-translate="step2Description">Com sua planilha pronta e salva no seu computador, clique em Selecionar arquivo. Em seguida, clique em Fazer upload. O tamanho da planilha não deve ultrapassar 5MB de tamanho.</p>
-                    </div>
-                    <div class="how-to-use-item">
-                        <h4 data-translate="step3Title">Passo 3</h4>
-                        <p data-translate="step3Description">Com sua planilha pronta e salva no seu computador, clique em Selecionar arquivo. Em seguida, clique em Fazer upload. O tamanho da planilha não deve ultrapassar 5MB de tamanho.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div id="manualOrderTab" class="tab-content">
-                <h2 data-translate="addProductsTitle">Adicionar Produtos</h2>
-                <div class="add-product-grid">
-                    <div class="input-group search-input">
-                        <label for="clientProductCode" data-translate="clientProductCodeLabel">Cód Prod Cliente:</label>
-                        <input type="text" id="clientProductCode" placeholder="Cód Cliente" data-translate-placeholder="clientProductCodePlaceholder" oninput="updateProductDetailsOnClientCodeChange()">
-                        <button class="btn-secondary" onclick="openProductCatalogModal()"><i class="icon-search"></i></button>
-                    </div>
-                    <div class="input-group">
-                        <label for="mappedProductCodeDisplay" data-translate="productCodeLabel">Cód Produto:</label>
-                        <input type="text" id="mappedProductCodeDisplay" readonly value="--">
-                    </div>
-                    <div class="input-group full-width">
-                        <label for="productDescriptionDisplay" data-translate="descriptionLabel">Descrição:</label>
-                        <input type="text" id="productDescriptionDisplay" readonly value="--">
-                    </div>
-                    <div class="input-group">
-                        <label for="productQuantity" data-translate="quantityLabel">Quantidade:</label>
-                        <input type="number" id="productQuantity" value="1" min="1" oninput="handleQuantityChange()">
-                        <div id="validationFeedback" class="text-xs mt-1"></div>
-                    </div>
-                    <div class="input-group" id="productValueGroup">
-                        <label for="productValueDisplay" data-translate="unitValueLabel">Valor Unit.:</label>
-                        <input type="text" id="productValueDisplay" readonly value="$ 0,00">
-                    </div>
-                    <div class="input-group" id="totalM3Group">
-                        <label for="totalM3Display" data-translate="totalM3Label">M³ Total:</label>
-                        <input type="text" id="totalM3Display" readonly value="0.00 m³">
-                    </div>
-                    <div class="input-group" id="valorTotalGroup">
-                        <label for="valorTotalDisplay" data-translate="totalValueLabel">Valor Total:</label>
-                        <input type="text" id="valorTotalDisplay" readonly value="$ 0,00">
-                    </div>
-                    <div class="input-group" id="productStockGroup">
-                        <label for="productStockDisplay" data-translate="stockLabel">Estoque:</label>
-                        <input type="text" id="productStockDisplay" readonly value="--">
-                    </div>
-                    <div class="add-button-container">
-                        <button id="addProductBtn" class="btn-primary" onclick="addProduct()" data-translate="addProductButton">Adicionar Produto</button>
-                    </div>
-                </div>
-                <div id="addProductMessage" class="validation-message"></div>
-            </div>
-
-            <div class="products-added-section">
-                <h3 class="font-semibold text-gray-700 mb-4" data-translate="branchDifferencesTitle">Diferenças de Compra por Filial:</h3>
-                <div class="branch-comparison-container">
-                    <div class="branch-card colombia-card">
-                        <h3 data-translate="colombiaBranchTitle"><img src="https://e7.pngegg.com/pngimages/796/10/png-clipart-flag-of-colombia-flag-of-cambodia-colombia-flag-flag-sphere-thumbnail.png" alt="Bandeira da Colômbia" class="flag-icon-large"> Colômbia</h3>
-                        <p class="delivery-time" data-translate="colombiaDeliveryTime">Previsão de Entrega: ~45 dias</p>
-                        <div class="price-model">
-                            <h4 data-translate="priceModelTitle">Modelo de Preço:</h4>
-                            <ul>
-                                <li data-translate="colombiaPriceModelDesc">Preço único para produtos disponíveis em estoque.</li>
-                            </ul>
-                        </div>
-                        <p class="stock-info" data-translate="colombiaStockInfo">Foco em produtos com estoque disponível.</p>
-                    </div>
-                    <div class="branch-card hongkong-card">
-                        <h3 data-translate="hongKongBranchTitle"><img src="https://e7.pngegg.com/pngimages/630/750/png-clipart-flag-of-china-association-of-southeast-asian-nations-national-flag-asean%E3%81%AE%E7%B4%8B%E7%AB%A0-china-orange-world-thumbnail.png" alt="Bandeira de Hong Kong" class="flag-icon-large"> Hong Kong</h3>
-                        <p class="delivery-time" data-translate="hongKongDeliveryTime">Previsão de Entrega: ~90 dias</p>
-                        <div class="price-model">
-                            <h4 data-translate="priceModelTitle">Modelo de Preço:</h4>
-                            <ul>
-                                <li data-translate="hongKongPriceModelLCL"><strong>LCL:</strong> Mais caro (para volumes pequenos)</li>
-                                <li data-translate="hongKongPriceModel20ft"><strong>Container 20ft:</strong> Preço intermediário</li>
-                                <li data-translate="hongKongPriceModel40ft"><strong>Container 40ft:</strong> Mais barato (para volumes maiores)</li>
-                            </ul>
-                        </div>
-                        <p class="moq-info" data-translate="hongKongMOQInfo">Para adquirir, é necessário atender ao MOQ (Quantidade Mínima de Pedido).</p>
-                    </div>
-                </div>
-                <div id="productList">
-                </div>
-            </div>
-
-            <div class="form-actions">
-                <button class="btn-secondary" onclick="backToOrderCenter()" data-translate="backButton">Voltar</button>
-                <button class="btn-primary" onclick="submitOrderForm()" data-translate="submitRequestButton">Enviar Solicitação</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tela de Resumo da Solicitação -->
-    <div id="summaryScreen" class="page">
-        <header class="header">
-            <div class="header-left">
-                <h1 data-translate="requestSummaryTitle">Resumo da Solicitação</h1>
-                <p data-translate="requestSummarySubtitle">Confira a divisão dos produtos por filial e fornecedor.</p>
-            </div>
-            <div class="header-right">
-                <select id="language-selector-summary" onchange="setLanguage(this.value)" class="p-2 border rounded-md text-sm">
-                    <option value="pt-BR">Português</option>
-                    <option value="en">English</option>
-                    <option value="es">Español</option>
-                </select>
-                <span class="header-icon" onclick="showScreenInfo()"><i class="icon-question"></i></span>
-                <span class="header-icon" onclick="openFlowchartModal()"><i class="icon-flow"></i></span>
-            </div>
-        </header>
-        <div class="container">
-            <div id="unifiedSummaryContent">
-            </div>
-            <div class="form-actions">
-                <button class="btn-secondary" onclick="backToProductEntry()" data-translate="backAndAdjustButton">Voltar e Ajustar</button>
-                <button class="btn-primary" onclick="confirmAndGenerateOrders()" data-translate="confirmAndGenerateButton">Confirmar e Gerar Pedidos</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tela de Ordem de Compra Gerada -->
-    <div id="purchaseOrderScreen" class="page">
-        <header class="header">
-            <div class="header-left">
-                <h1 data-translate="requestGeneratedSuccessTitle">Solicitação Gerada com Sucesso!</h1>
-                <p data-translate="requestGeneratedSuccessSubtitle">Sua solicitação foi enviada para o time de Compras Internacionais.</p>
-            </div>
-            <div class="header-right">
-                <select id="language-selector-po" onchange="setLanguage(this.value)" class="p-2 border rounded-md text-sm">
-                    <option value="pt-BR">Português</option>
-                    <option value="en">English</option>
-                    <option value="es">Español</option>
-                </select>
-                <span class="header-icon" onclick="showScreenInfo()"><i class="icon-question"></i></span>
-                <span class="header-icon" onclick="openFlowchartModal()"><i class="icon-flow"></i></span>
-            </div>
-        </header>
-        <div class="container">
-            <div class="form-section">
-                <h2 class="text-xl font-semibold mb-4" data-translate="poDetailsTitle">Detalhes da Ordem de Compra (PO)</h2>
-                <div id="poDetails" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                </div>
-            </div>
-            <div class="form-actions">
-                <button class="btn-primary" onclick="backToOrderCenter()" data-translate="backToOrderCenterButton">Voltar para Central de Pedidos</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modais Genéricos -->
-    <div id="messageModal" class="modal-overlay">
-        <div class="modal-content">
-            <button class="modal-close-btn" id="messageModalCloseBtn">&times;</button>
-            <h3 id="messageModalTitle"></h3>
-            <div id="messageModalContent"></div>
-            <div class="modal-actions">
-                <button class="btn-primary" id="messageModalConfirmBtn" data-translate="okButton">OK</button>
-                <button class="btn-secondary" id="messageModalCancelBtn" data-translate="cancelButton">Cancelar</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="summaryModal" class="modal-overlay">
-        <div class="modal-content">
-            <button class="modal-close-btn" onclick="document.getElementById('summaryModal').classList.remove('active');">&times;</button>
-            <h3 data-translate="requestSummaryTitle">Resumo da Solicitação</h3>
-            <pre id="summaryContent"></pre>
-            <div class="modal-actions">
-                <button class="btn-primary" id="modalConfirmBtn" onclick="document.getElementById('summaryModal').classList.remove('active');" data-translate="okButton">OK</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="productCatalogModal" class="modal-overlay">
-        <div class="modal-content">
-            <button class="modal-close-btn" onclick="closeProductCatalogModal()">&times;</button>
-            <h3 data-translate="productCatalogTitle">Catálogo de Produtos</h3>
-            <div class="search-bar">
-                <input type="text" id="productCatalogSearchInput" placeholder="Buscar por código ou descrição..." data-translate-placeholder="searchCatalogPlaceholder" onkeyup="filterProductCatalog()">
-                <button class="btn-primary" onclick="filterProductCatalog()" data-translate="searchButton">Buscar</button>
-            </div>
-            <div class="product-catalog-table-container">
-                <div id="productCatalogList">
-                </div>
-            </div>
-            <div class="modal-actions">
-                <button class="btn-secondary" onclick="closeProductCatalogModal()" data-translate="closeButton">Fechar</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="nfePdfViewer" class="modal-overlay">
-        <div class="modal-content">
-            <button class="modal-close-btn" onclick="document.getElementById('nfePdfViewer').classList.remove('active');">&times;</button>
-            <h3 data-translate="viewNFeTitle">Visualizar NF-e</h3>
-            <pre id="nfePdfContent" class="whitespace-pre-wrap"></pre>
-            <div class="modal-actions">
-                <button class="btn-primary" onclick="document.getElementById('nfePdfViewer').classList.remove('active');" data-translate="closeButton">Fechar</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="poPdfViewer" class="modal-overlay">
-        <div class="modal-content">
-            <button class="modal-close-btn" onclick="document.getElementById('poPdfViewer').classList.remove('active');">&times;</button>
-            <h3 data-translate="viewPOPdfTitle">Visualizar PDF da PO</h3>
-            <pre id="poPdfContent" class="whitespace-pre-wrap"></pre>
-            <div class="modal-actions">
-                <button class="btn-primary" onclick="document.getElementById('poPdfViewer').classList.remove('active');" data-translate="closeButton">Fechar</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="flowchartModal" class="modal-overlay">
-        <div class="modal-content">
-            <span class="modal-close-btn" onclick="closeFlowchartModal()">&times;</span>
-            <img id="flowchartImage" src="https://raw.githubusercontent.com/SamuelJuniorrr/importexport/refs/heads/main/fluxograma.png" alt="Fluxograma do Processo">
-        </div>
-    </div>
-
-    <script>
+</div>
+</div>
+</div>
+<!-- Modais Genéricos -->
+<div class="modal-overlay" id="messageModal">
+<div class="modal-content">
+<button class="modal-close-btn" id="messageModalCloseBtn">×</button>
+<h3 id="messageModalTitle"></h3>
+<div id="messageModalContent"></div>
+<div class="modal-actions">
+<button class="btn-primary" data-translate="okButton" id="messageModalConfirmBtn">OK</button>
+<button class="btn-secondary" data-translate="cancelButton" id="messageModalCancelBtn">Cancelar</button>
+</div>
+</div>
+</div>
+<div class="modal-overlay" id="summaryModal">
+<div class="modal-content">
+<button class="modal-close-btn" onclick="document.getElementById('summaryModal').classList.remove('active');">×</button>
+<h3 data-translate="requestSummaryTitle">Resumo da Solicitação</h3>
+<pre id="summaryContent"></pre>
+<div class="modal-actions">
+<button class="btn-primary" data-translate="okButton" id="modalConfirmBtn" onclick="document.getElementById('summaryModal').classList.remove('active');">OK</button>
+</div>
+</div>
+</div>
+<div class="modal-overlay" id="productCatalogModal">
+<div class="modal-content">
+<button class="modal-close-btn" onclick="closeProductCatalogModal()">×</button>
+<h3 data-translate="productCatalogTitle">Catálogo de Produtos</h3>
+<div class="search-bar">
+<input data-translate-placeholder="searchCatalogPlaceholder" id="productCatalogSearchInput" onkeyup="filterProductCatalog()" placeholder="Buscar por código ou descrição..." type="text"/>
+<button class="btn-primary" data-translate="searchButton" onclick="filterProductCatalog()">Buscar</button>
+</div>
+<div class="product-catalog-table-container">
+<div id="productCatalogList">
+</div>
+</div>
+<div class="modal-actions">
+<button class="btn-secondary" data-translate="closeButton" onclick="closeProductCatalogModal()">Fechar</button>
+</div>
+</div>
+</div>
+<div class="modal-overlay" id="nfePdfViewer">
+<div class="modal-content">
+<button class="modal-close-btn" onclick="document.getElementById('nfePdfViewer').classList.remove('active');">×</button>
+<h3 data-translate="viewNFeTitle">Visualizar NF-e</h3>
+<pre class="whitespace-pre-wrap" id="nfePdfContent"></pre>
+<div class="modal-actions">
+<button class="btn-primary" data-translate="closeButton" onclick="document.getElementById('nfePdfViewer').classList.remove('active');">Fechar</button>
+</div>
+</div>
+</div>
+<div class="modal-overlay" id="poPdfViewer">
+<div class="modal-content">
+<button class="modal-close-btn" onclick="document.getElementById('poPdfViewer').classList.remove('active');">×</button>
+<h3 data-translate="viewPOPdfTitle">Visualizar PDF da PO</h3>
+<pre class="whitespace-pre-wrap" id="poPdfContent"></pre>
+<div class="modal-actions">
+<button class="btn-primary" data-translate="closeButton" onclick="document.getElementById('poPdfViewer').classList.remove('active');">Fechar</button>
+</div>
+</div>
+</div>
+<div class="modal-overlay" id="flowchartModal">
+<div class="modal-content">
+<span class="modal-close-btn" onclick="closeFlowchartModal()">×</span>
+<img alt="Fluxograma do Processo" id="flowchartImage" src="https://raw.githubusercontent.com/SamuelJuniorrr/importexport/refs/heads/main/fluxograma.png"/>
+</div>
+</div>
+<script>
         // Variáveis de estado globais
         let currentScreen = 'central-pedidos-page';
         let productsInCurrentOrder = [];
@@ -1956,6 +1935,7 @@
                 colUnitPrice: 'Valor Unitário',
                 colTotalItemValue: 'Valor Total Item',
                 backToOrderCenterButton: 'Voltar para Central de Pedidos',
+                CenterButton2: 'Tracking',
                 newPurchaseRequestTitle: 'Nova Solicitação de Compra',
                 newPurchaseRequestSubtitle: 'Por favor, preencha os detalhes dos produtos desejados.',
                 clientOrderNumberLabel: 'Número do Pedido do Cliente (Opcional)',
@@ -2176,6 +2156,7 @@
                 colUnitPrice: 'Unit Value',
                 colTotalItemValue: 'Total Item Value',
                 backToOrderCenterButton: 'Back to Order Center',
+                CenterButton2: 'Tracking',
                 newPurchaseRequestTitle: 'New Purchase Request',
                 newPurchaseRequestSubtitle: 'Please fill in the details of the desired products.',
                 clientOrderNumberLabel: 'Client Order Number (Optional)',
@@ -2396,6 +2377,7 @@
                 colUnitPrice: 'Valor Unitario',
                 colTotalItemValue: 'Valor Total Artículo',
                 backToOrderCenterButton: 'Volver al Centro de Pedidos',
+                CenterButton2: 'Tracking',
                 newPurchaseRequestTitle: 'Nueva Solicitud de Compra',
                 newPurchaseRequestSubtitle: 'Por favor, complete los detalles de los productos deseados.',
                 clientOrderNumberLabel: 'Número de Pedido del Cliente (Opcional)',
